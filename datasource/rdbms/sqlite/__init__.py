@@ -1,6 +1,8 @@
+from contextlib import contextmanager
+
 from sqlalchemy.orm import sessionmaker
 
-from .tables import *
+from .entities import *
 from .engine import engine
 
 sqlite_session = None
@@ -13,6 +15,13 @@ def initialize():
         sqlite_session = sessionmaker(bind=engine)()
 
 
+@contextmanager
 def get_session():
     initialize()
-    return sqlite_session
+    try:
+        yield sqlite_session
+    except:
+        sqlite_session.rollback()
+        raise
+    else:
+        sqlite_session.commit()

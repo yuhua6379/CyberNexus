@@ -1,1 +1,1 @@
-from bot.toolkits.internet_tools.get_weather_information_in_china import GetWeatherInformationInChina
+from bot.toolkits.internet_tools.get_weather_information_in_china import get_weather_info_in_china
