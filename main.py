@@ -39,6 +39,8 @@ if __name__ == '__main__':
     agent = BotBuilder.build(character1=me, character2=bot, llm=llm, tools=[get_weather_info_in_china, watch], prompt=str(pb))
     agent.chat("我晚上8点的时候去逛街买了点东西，你记住，等下我会问你刚刚说了什么")
     agent.chat("还记得我刚刚跟你说了什么吗？")
+    agent.chat("明明在记录里，你确定不记得？")
+
 
 
 
