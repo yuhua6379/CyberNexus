@@ -93,6 +93,8 @@ def get_base_functions_prompt(functions):
     return f'{_base_prompt}\n{functions}\n{_sample_conversations}'
 
 
-def get_base_prompt():
+def get_base_prompt(simple=False):
+    if simple:
+        return "You're a smart assistant"
     return _base_prompt
 

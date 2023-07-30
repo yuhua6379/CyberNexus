@@ -48,7 +48,7 @@ class GetWeatherInformationInChina(BaseTool):
             return wi
         except Exception as e:
             logging.error(e)
-            return "get_weather failed because of bad network"
+            return "get_weather failed because of bad network, maybe tell the user to shutoff the proxy will be better"
 
     def _run(self, location: str) -> WeatherInfo:
         return GetWeatherInformationInChina.get_weather(location)
