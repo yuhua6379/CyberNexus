@@ -7,11 +7,11 @@ from pydantic import BaseModel
 from langchain.chat_models.base import BaseChatModel
 from langchain.chat_models import ChatOpenAI
 from langchain.agents import AgentExecutor
-from agent.config.base_prompt import get_base_prompt
+from bot.config.base_prompt import get_base_prompt
 from datasource.rdbms.sqlite import get_session, ChatLog
 
 
-class Agent(BaseModel):
+class Bot(BaseModel):
     agent_core: AgentExecutor
     version: str = '0.0.1'
 
@@ -36,13 +36,13 @@ class Agent(BaseModel):
         session.commit()
 
 
-class AgentBuilder(BaseModel):
+class BotBuilder(BaseModel):
     llm: BaseChatModel
     tools: List[BaseTool]
     prompt: str
 
     @staticmethod
-    def build(llm: BaseChatModel, tools: List[BaseTool], prompt: Optional[str] = None) -> Agent:
+    def build(llm: BaseChatModel, tools: List[BaseTool], prompt: Optional[str] = None) -> Bot:
         if prompt is None:
             prompt = get_base_prompt(simple=True)
         if isinstance(llm, ChatOpenAI):
@@ -50,6 +50,6 @@ class AgentBuilder(BaseModel):
                 content=prompt)
             prompt = OpenAIFunctionsAgent.create_prompt(system_message=system_message)
             agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
-            return Agent(agent_core=AgentExecutor.from_agent_and_tools(agent=agent, tools=tools, verbose=True))
+            return Bot(agent_core=AgentExecutor.from_agent_and_tools(agent=agent, tools=tools, verbose=True))
         else:
             raise Exception(f"unknown llm type: {type(llm)}")
