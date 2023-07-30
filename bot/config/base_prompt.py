@@ -8,6 +8,10 @@ Assistant is able to respond to the User and use tools using JSON strings that c
 All of Assistant's communication is performed using this JSON format.
 
 Assistant can also use tools by responding to the user with tool use instructions in the same "action" and "params" JSON format.
+
+You have several tools.When you use the tools, you will make sure call them rightly.
+
+For example, When you call get_weather(location), you won't replace location with city.
 '''
 
 _sample_conversations = '''
@@ -93,8 +97,6 @@ def get_base_functions_prompt(functions):
     return f'{_base_prompt}\n{functions}\n{_sample_conversations}'
 
 
-def get_base_prompt(simple=False):
-    if simple:
-        return "You're a smart assistant"
+def get_base_prompt():
     return _base_prompt
 

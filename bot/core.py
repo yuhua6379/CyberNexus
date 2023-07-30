@@ -1,5 +1,4 @@
-from abc import abstractmethod
-from typing import List, Optional
+from typing import List
 from langchain.schema import SystemMessage
 from langchain.agents import OpenAIFunctionsAgent
 from langchain.tools import BaseTool
@@ -42,9 +41,9 @@ class BotBuilder(BaseModel):
     prompt: str
 
     @staticmethod
-    def build(llm: BaseChatModel, tools: List[BaseTool], prompt: Optional[str] = None) -> Bot:
-        if prompt is None:
-            prompt = get_base_prompt(simple=True)
+    def build(llm: BaseChatModel, tools: List[BaseTool], prompt: str = "") -> Bot:
+        prompt = get_base_prompt() + "\n" + prompt
+
         if isinstance(llm, ChatOpenAI):
             system_message = SystemMessage(
                 content=prompt)

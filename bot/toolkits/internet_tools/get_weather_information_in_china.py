@@ -51,7 +51,7 @@ class GetWeatherInformationInChina(BaseTool):
             return "get_weather failed because of bad network, maybe tell the user to shutoff the proxy will be better"
 
     def _run(self, location: str) -> WeatherInfo:
-        return GetWeatherInformationInChina.get_weather(location)
+        return self.get_weather(location)
 
     async def _arun(self, location: str) -> WeatherInfo:
-        return GetWeatherInformationInChina.get_weather(location)
+        return self.get_weather(location)
