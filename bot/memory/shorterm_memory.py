@@ -80,7 +80,7 @@ class ShortTermMemoryLoader(BaseMemory):
             messages = []
             for record in results:
                 message = ShortTermMemory.build_short_term_memory(record)
-                messages.append(str(message))
+                messages.append(message)
             return {"history": messages}
 
     def clear(self) -> None:

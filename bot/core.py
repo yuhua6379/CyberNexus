@@ -2,7 +2,7 @@ import logging
 from enum import Enum
 from typing import List
 
-
+from langchain.memory import ConversationBufferMemory
 from langchain.schema import SystemMessage
 from .agent_hooker import OpenAIFunctionsAgent
 from langchain.tools import BaseTool
@@ -74,19 +74,23 @@ class BotBuilder(BaseModel):
 
     @staticmethod
     def build(character1: Character, character2: Character, llm: BaseChatModel, tools: List[BaseTool], prompt: str = "") -> Bot:
-        prompt = (get_base_prompt() + "\n" +
-                  prompt + '\n' +
-                  f"suppose i am {character1.name} and you are {character2.name}")
+        prompt = (get_base_prompt() + "\n"
+                  + prompt + '\n'
+                  + f"suppose i am {character1.name} and you are {character2.name}"
+                  )
 
         if isinstance(llm, ChatOpenAI):
             system_message = SystemMessage(
                 content=prompt)
             prompt = OpenAIFunctionsAgent.create_prompt(system_message=system_message)
+
             agent = OpenAIFunctionsAgent(llm=llm, tools=tools, prompt=prompt)
 
+            # ConversationBufferMemory
             memory = ShortTermMemoryLoader(character1_id=character1.id,
                                            character2_id=character2.id,
                                            limiter=ShortTermMemoryLoader.LengthLimiter(50))
+            # memory = ConversationBufferMemory()
             return Bot(character1=character1,
                        character2=character2,
                        agent_core=
