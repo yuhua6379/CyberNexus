@@ -1,4 +1,4 @@
-from bot.prompt_builder.env_aware.level import Level
+from bot.prompt_factory.env_aware.level import Level
 
 _strong_awareness = '''
 you have a strong sense of temperature.

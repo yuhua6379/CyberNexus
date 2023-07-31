@@ -1,14 +1,14 @@
 from abc import abstractmethod
+from datetime import datetime
 from typing import Dict, Any, List
 
 from langchain.schema import BaseMemory
 from pydantic import BaseModel
 
 from datasource.rdbms.sqlite import get_session, HistoryModel, CharacterModel
-from datetime import datetime
 
 
-class ShortTermMemory(BaseModel, orm_mode=True):
+class History(BaseModel, orm_mode=True):
     character1_id: int
     character2_id: int
     character1_name: str
@@ -37,7 +37,7 @@ class ShortTermMemory(BaseModel, orm_mode=True):
                 f"{self.character2_name}: {self.character2_message}")
 
 
-class ShortTermMemoryLoader(BaseMemory):
+class ShortTermMemory(BaseMemory):
     class BaseLimiter:
         @abstractmethod
         def limit(self, statement):
@@ -79,7 +79,7 @@ class ShortTermMemoryLoader(BaseMemory):
             results = self.limiter.limit(statement)
             messages = []
             for record in results:
-                message = ShortTermMemory.build_short_term_memory(record)
+                message = History.build_short_term_memory(record)
                 messages.append(message)
             return {"history": messages}
 

@@ -1,9 +1,9 @@
+import logging
 from typing import Union
 
-from langchain.tools import BaseTool, tool, Tool, StructuredTool
-from pydantic import BaseModel, Field
 import requests
-import logging
+from langchain.tools import StructuredTool
+from pydantic import BaseModel
 
 
 class WeatherInfo(BaseModel):
@@ -55,4 +55,3 @@ def get_weather_info_in_china(location: str) -> Union[WeatherInfo, str]:
 
 
 get_weather_info_in_china = StructuredTool.from_function(get_weather_info_in_china)
-

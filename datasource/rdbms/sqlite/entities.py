@@ -1,4 +1,5 @@
-from sqlalchemy import Column, String, Integer, Enum, UniqueConstraint
+from sqlalchemy import Column, String, Integer, Enum
+
 from datasource.rdbms.base import OrmBaseModel
 from datasource.rdbms.sqlite.engine import Base
 

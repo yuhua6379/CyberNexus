@@ -99,4 +99,3 @@ def get_base_functions_prompt(functions):
 
 def get_base_prompt():
     return _base_prompt
-

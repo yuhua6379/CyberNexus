@@ -1,8 +1,7 @@
-from typing import List
-
-from sqlalchemy import Column, String, DateTime, Integer, Boolean
-from sqlalchemy.ext.declarative import AbstractConcreteBase
 from datetime import datetime
+
+from sqlalchemy import Column, DateTime, Integer, Boolean
+from sqlalchemy.ext.declarative import AbstractConcreteBase
 
 
 class OrmBaseModel(AbstractConcreteBase):

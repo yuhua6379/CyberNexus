@@ -1,7 +1,7 @@
-from langchain.tools import BaseTool, StructuredTool
-import requests
 import logging
 from datetime import datetime
+
+from langchain.tools import StructuredTool
 
 
 def watch() -> datetime:

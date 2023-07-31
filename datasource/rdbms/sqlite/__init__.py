@@ -2,8 +2,8 @@ from contextlib import contextmanager
 
 from sqlalchemy.orm import sessionmaker
 
-from .entities import *
 from .engine import engine
+from .entities import *
 
 sqlite_session = None
 

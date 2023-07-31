@@ -4,6 +4,7 @@ import logging.config
 import logging.handlers
 import os
 from typing import Dict
+
 import common.config as config
 
 FORMAT = '{%(name)s} {%(levelname)s} {pid:%(process)d} {%(module)s.%(funcName)s:%(lineno)d} >>> %(message)s'
@@ -55,6 +56,3 @@ def initialize():
         LOGGING['loggers']["root"]['handlers'] = ['console', 'file-log']
 
     logging.config.dictConfig(LOGGING)
-
-
-
