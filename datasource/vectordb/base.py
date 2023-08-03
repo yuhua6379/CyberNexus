@@ -1,7 +1,10 @@
 from abc import ABC, abstractmethod
 from enum import Enum
+from typing import List, Tuple
 
 from pydantic import BaseModel
+
+from datasource.vectordb.entities import Document, Response
 
 
 class VectorDBType(Enum):
@@ -19,9 +22,10 @@ class VectorDbBase(ABC):
         self.conf = conf
 
     @abstractmethod
-    def initialize(self):
+    def batch_query(self, query_texts: List[str]) -> List[Tuple[str, List[Response]]]:
         pass
 
-    @abstractmethod
-    def get_connection(self):
-        pass
+    def query(self, query_text) -> List[Response]:
+        return self.batch_query([query_text])[0][1]
+
+

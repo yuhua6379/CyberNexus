@@ -1,29 +1,37 @@
-from datasource.vectordb.base import VectorDbBase
+from typing import List, Tuple
+
+import chromadb
+
+from datasource.vectordb.base import VectorDbBase, VectorDB
+from datasource.vectordb.entities import Response, Document
 
 
 class ChromaDB(VectorDbBase):
-    def initialize(self):
-        # setup Chroma in-memory, for easy prototyping. Can add persistence easily!
-        client = chromadb.Client()
 
-        # Create collection. get_collection, get_or_create_collection, delete_collection also available!
-        collection = client.create_collection("all-my-documents")
+    def __init__(self, conf: VectorDB, collection_name: str, create_if_not_exists=True):
+        super().__init__(conf)
+        self.connection = chromadb.PersistentClient(self.conf.uri)
+        try:
+            self.collection = self.connection.get_collection(collection_name)
+        except:
+            if create_if_not_exists:
+                self.connection = self.connection.create_collection(collection_name)
+            else:
+                raise
 
-        # Add docs to the collection. Can also update and delete. Row-based API coming soon!
-        collection.add(
-            documents=["This is document1", "This is document2"],
-            # we handle tokenization, embedding, and indexing automatically. You can skip that and add your own embeddings as well
-            metadatas=[{"source": "notion"}, {"source": "google-docs"}],  # filter on these!
-            ids=["doc1", "doc2"],  # unique for each doc
-        )
+    def batch_query(self, query_texts: List[str]) -> List[Tuple[str, List[Response]]]:
+        ret = self.connection.query(query_texts=query_texts)
+        response_list = []
+        for i in range(len(ret["ids"])):
+            single_response = []
+            for j in range(len(ret['ids'][0])):
+                ids = ret["ids"][i]
+                distances = ret['distances'][i]
+                metadatas = ret['metadatas'][i]
+                documents = ret['documents'][i]
 
-        # Query/search 2 most similar results. You can also .get by id
-        results = collection.query(
-            query_texts=["This is a query document"],
-            n_results=2,
-            # where={"metadata_field": "is_equal_to_this"}, # optional filter
-            # where_document={"$contains":"search_string"}  # optional filter
-        )
+                doc = Document(id=ids[j], meta_data=dict(metadatas[j]), content=documents[j])
 
-    def get_connection(self):
-        pass
+                single_response.append(Response(distance=distances[j], document=doc))
+            response_list.append((query_texts[i], single_response))
+        return response_list
