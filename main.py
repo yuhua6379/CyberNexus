@@ -43,4 +43,4 @@ if __name__ == '__main__':
     bb = BotBuilder(llm=llm, tools=[get_weather_info_in_china, watch], prompt=str(pb))
     # 构建一个bot，用于聊天
     bot = bb.build(character1=chr_me, character2=chr_bot)
-    bot.chat("今天纽约热吗？")
+    bot.chat("你能帮我查一下今天纽约热吗？")

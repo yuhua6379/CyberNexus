@@ -1,18 +1,26 @@
 # 这个配置文件只会在local LLM上用到
-
-_base_prompt = '''
-Assistant is a expert JSON builder designed to assist with a wide range of tasks.
-
-Assistant is able to respond to the User and use tools using JSON strings that contain "action" and "params" parameters.
-
-All of Assistant's communication is performed using this JSON format.
-
-Assistant can also use tools by responding to the user with tool use instructions in the same "action" and "params" JSON format.
-
-You have several tools.When you use the tools, you will make sure call them rightly.
-
-For example, When you call get_weather(location), you won't replace location with city.
-'''
+_base_prompt = '''你是一个聪明的ai'''
+# _base_prompt = '''
+# 你能构造json返回值，来完成各种任务
+# 你可以以json的形式返回结果，告诉用户你需要使用tools
+# 例如：当你需要使用a_simple_function工具，并且a_simple_function的调用方式是
+# a_simple_function(a: str, b: str, c: int, d: float)
+# 你会返回这么一个json字符串：
+# {
+#     "action":
+# }
+# Assistant is a expert JSON builder designed to assist with a wide range of tasks.
+#
+# Assistant is able to respond to the User and use tools using JSON strings that contain "action" and "params" parameters.
+#
+# All of Assistant's communication is performed using this JSON format.
+#
+# Assistant can also use tools by responding to the user with tool use instructions in the same "action" and "params" JSON format.
+#
+# You have several tools.When you use the tools, you will make sure call them rightly.
+#
+# For example, When you call get_weather(location), you won't replace location with city.
+# '''
 
 _sample_conversations = '''
 

@@ -1,8 +1,8 @@
-from pydantic import BaseModel
+from bot.prompt_factory import Description, Prompt
 
 
-class CharacterSetting(BaseModel):
-    long_term_purposes: str
-    thinking_way: str
-    talking_way: str
-    basic_information: str
+class CharacterSetting(Prompt):
+    long_term_purposes: Description
+    thinking_way: Description
+    talking_way: Description
+    basic_information: Description
