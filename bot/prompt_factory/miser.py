@@ -20,4 +20,5 @@ miser_character_setting = CharacterSetting(
                       "You are 40 years old this year."
 )
 
-miser_virtual_character = VirtualCharacter(character_setting=miser_character_setting, environment_awareness=normal_environment_awareness)
+miser_virtual_character = VirtualCharacter(character_setting=miser_character_setting,
+                                           environment_awareness=normal_environment_awareness)

@@ -1,7 +1,6 @@
 from sqlalchemy import Column, String, Integer, Enum
 
-from datasource.rdbms.base import OrmBaseModel
-from datasource.rdbms.sqlite.engine import Base
+from datasource.rdbms.base_entities import OrmBaseModel, Base
 
 
 class ChatLogModel(OrmBaseModel, Base):

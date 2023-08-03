@@ -1,5 +1,4 @@
 import logging
-from enum import Enum
 from typing import List
 
 from langchain.agents import AgentExecutor
@@ -12,26 +11,9 @@ from pydantic import BaseModel
 from bot.agent.openai_conversational_agent import OpenAIConversationalAgent
 from bot.config.base_prompt import get_base_prompt
 from bot.memory.shorterm_memory import ShortTermMemory
-from datasource.rdbms.sqlite import get_session, ChatLogModel, CharacterModel
-
-
-class Character(BaseModel, orm_mode=True):
-    """
-    角色entity,主要用于在bot内部传递数据
-    """
-    class CharacterType(Enum):
-        bot = "bot"
-        user = "user"
-
-    id: str
-    name: str
-    type: CharacterType
-
-    @classmethod
-    def get_by_name(cls, name: str):
-        with get_session() as session:
-            result = session.query(CharacterModel).filter(CharacterModel.name == name).one()
-            return Character.from_orm(result)
+from datasource.config import rdbms_instance
+from datasource.rdbms.entities import ChatLogModel
+from repo.character import Character
 
 
 class Bot(BaseModel):
@@ -63,7 +45,7 @@ class Bot(BaseModel):
         # 记录agent的版本，便于筛选数据
         log.version = self.version
 
-        with get_session() as session:
+        with rdbms_instance.get_session() as session:
             session.add(log)
             session.commit()
 
@@ -72,23 +54,21 @@ class BotBuilder(BaseModel):
     """bot构造器，用于整合llm，底层agent，底层memory类等"""
     llm: BaseChatModel
     tools: List[BaseTool]
-    prompt: str
+    prompt: str = ""
 
-    @staticmethod
-    def build(character1: Character, character2: Character, llm: BaseChatModel, tools: List[BaseTool],
-              prompt: str = "") -> Bot:
+    def build(self, character1: Character, character2: Character) -> Bot:
 
         # get_base_prompt返回llm的基础prompt，如定义它是一个可以试用工具并且接受json的
         prompt = (get_base_prompt() + "\n"
-                  + prompt + '\n'
+                  + self.prompt + '\n'
                   )
 
-        if isinstance(llm, ChatOpenAI):
+        if isinstance(self.llm, ChatOpenAI):
             system_message = SystemMessage(
                 content=prompt)
             prompt = OpenAIConversationalAgent.create_prompt(system_message=system_message)
 
-            agent = OpenAIConversationalAgent(llm=llm, tools=tools, prompt=prompt)
+            agent = OpenAIConversationalAgent(llm=self.llm, tools=self.tools, prompt=prompt)
 
             # 目前阶段默认使用短期记忆
             memory = ShortTermMemory(character1_id=character1.id,
@@ -100,8 +80,8 @@ class BotBuilder(BaseModel):
                        agent_core=
                        AgentExecutor(
                            agent=agent,
-                           tools=tools,
+                           tools=self.tools,
                            verbose=True,
                            memory=memory))
         else:
-            raise Exception(f"unknown llm type: {type(llm)}")
+            raise Exception(f"unknown llm type: {type(self.llm)}")

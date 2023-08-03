@@ -1,5 +1,4 @@
 from bot.config.base_prompt import get_base_prompt
-from bot.prompt_factory.env_aware.time_aware import get_time_awareness
 from bot.prompt_factory.virtual_character import VirtualCharacter
 
 

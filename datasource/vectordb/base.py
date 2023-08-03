@@ -4,18 +4,18 @@ from enum import Enum
 from pydantic import BaseModel
 
 
-class RdbmsType(Enum):
-    Sqlite = "sqlite"
+class VectorDBType(Enum):
+    Chromadb = "chromadb"
 
 
-class Rdbms(BaseModel):
+class VectorDB(BaseModel):
     uri: str
-    type: RdbmsType
+    type: VectorDBType
 
 
-class RDBMSBase(ABC):
+class VectorDbBase(ABC):
 
-    def __init__(self, conf: Rdbms):
+    def __init__(self, conf: VectorDB):
         self.conf = conf
 
     @abstractmethod
@@ -23,5 +23,5 @@ class RDBMSBase(ABC):
         pass
 
     @abstractmethod
-    def get_session(self):
+    def get_connection(self):
         pass

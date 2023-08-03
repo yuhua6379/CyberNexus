@@ -3,17 +3,15 @@ import os
 import initialize
 from bot.core import BotBuilder, Character
 from bot.prompt_factory.core import PromptFactory
-from bot.prompt_factory.env_aware.level import Level
-from bot.prompt_factory.env_aware.temperature import get_temperature_awareness
-from bot.prompt_factory.env_aware.time_aware import get_time_awareness
 from bot.prompt_factory.miser import miser_virtual_character
 from bot.toolkits.internet_tools.get_weather_information_in_china import get_weather_info_in_china
 from bot.toolkits.system_tools.watch import watch
-from datasource.rdbms.sqlite import CharacterModel, get_session
+from datasource.config import rdbms_instance
+from datasource.rdbms.entities import CharacterModel
 from model.openai import get_openai_llm
 
 try:
-    with get_session() as session:
+    with rdbms_instance.get_session() as session:
         chr_me = CharacterModel()
         chr_bot = CharacterModel()
         chr_me.name = "yuhua"
@@ -29,7 +27,7 @@ except Exception as e:
 if __name__ == '__main__':
     # 初始化，一些数据库session和日志等公共组件
     initialize.initialize()
-    print(f'your key is {os.environ["open_ai_key"]}')
+    # print(f'your key is {os.environ["open_ai_key"]}')
 
     # 获取llm实例，用于后面predict
     llm = get_openai_llm(openai_api_key=os.environ['open_ai_key'])
@@ -42,7 +40,7 @@ if __name__ == '__main__':
     pb = PromptFactory(miser_virtual_character)
     print(pb.build())
 
+    bb = BotBuilder(llm=llm, tools=[get_weather_info_in_china, watch], prompt=str(pb))
     # 构建一个bot，用于聊天
-    bot = BotBuilder.build(character1=chr_me, character2=chr_bot, llm=llm, tools=[get_weather_info_in_china, watch],
-                           prompt=str(pb))
+    bot = bb.build(character1=chr_me, character2=chr_bot)
     bot.chat("今天纽约热吗？")
