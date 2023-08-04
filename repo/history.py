@@ -2,6 +2,7 @@ from enum import Enum
 from typing import Optional
 
 from pydantic import BaseModel
+from sqlalchemy import and_
 
 from datasource.config import rdbms_instance
 from datasource.rdbms.entities import HistoryModel
@@ -67,8 +68,9 @@ class History(BaseModel):
     def get_available_history_by_character_id(cls, character_id: int):
         with rdbms_instance.get_session() as session:
             results = session.query(HistoryModel).filter(
-                HistoryModel.remembered == False and
-                HistoryModel.my_character_id == character_id).all()
+                and_(
+                    HistoryModel.remembered == False,
+                    HistoryModel.my_character_id == character_id)).all()
             return [cls.from_model(model) for model in results]
 
     @classmethod

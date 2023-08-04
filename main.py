@@ -16,8 +16,8 @@ if __name__ == '__main__':
 
     # 设置聊天对象，name是唯一的，会根据对象去加载历史聊天记录
     chr_me = Character.get_by_name("yuhua")
-    chr_bot = Character.get_by_name("adam")
+    chr_bot = Character.get_by_name("wang")
 
     # 构建一个bot，用于聊天
     bot = Bot(llm=llm, tools=[get_weather_info_in_china, watch], character=chr_bot)
-    bot.interact("你还记得我跟你说过的叉烧包的口感和味道吗？", chr_me)
+    bot.interact("你对学校的印象是怎么样的？", chr_me)

@@ -1,4 +1,4 @@
-base_prompt = '''你是一个聪明的ai'''
+base_prompt = ''''''
 
 conclude_prompt_template = '''
 下面有一段对话:
