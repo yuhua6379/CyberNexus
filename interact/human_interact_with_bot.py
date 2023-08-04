@@ -1,36 +1,41 @@
-from pydantic import BaseModel
 
 from bot.core import Bot
-from interact.command_line_interact import CommandLineInteracter
-from interact.role.bot import BotRole
-from interact.role.human import HumanRole
+from interact.base_interact_tool import BaseInteractTool
+
 from repo.character import Character
 
 
-class HumanInteractWithBot(BaseModel):
-    command_line: CommandLineInteracter
+class HumanInteractWithBot(BaseInteractTool):
 
-    def start(self, bot_instance: Bot):
-        bot = None
-        human = None
+    def __init__(self, llm, tools, human=None, bot=None):
+        self.human = human
+        self.bot = bot
+        self.llm = llm
+        self.tools = tools
 
-        while bot is None or human is None:
-            if human is None:
-                human_name = self.command_line.next("请输入human的角色名:\n")
-                human = Character.get_by_name(human_name)
+    def call(self, message: str):
+        try:
+            message = message.strip()
 
-            if bot is None:
-                bot_name = self.command_line.next("请输入bot的角色名:\n")
-                bot = Character.get_by_name(bot_name)
+            if message.startswith("/human="):
+                human_name = message.replace("/human=", "")
+                self.human = Character.get_by_name(human_name)
+                return f"设定为{self.human.name}"
 
-        human_role = HumanRole()
-        bot_role = BotRole(bot_instance=bot_instance)
+            if message.startswith("/bot="):
+                bot_name = message.replace("/bot=", "")
+                self.bot = Character.get_by_name(bot_name)
+                return f"设定为{self.bot.name}"
 
-        while True:
-            print(f"{human.name} says to {bot.name}:")
-            message = human_role.talk()
-            bot_role.listen(message)
+            if self.human is None:
+                return "请输入/human={name}来设定你的角色"
+            if self.bot is None:
+                return "请输入/bot={name}来设定对话机器人的角色"
 
-            print(f"{bot.name} says to {human.name}:")
-            message = bot_role.talk(human)
-            human_role.listen(message)
+            bot = Bot(llm=self.llm, tools=self.tools, character=self.bot)
+            return bot.interact(message, self.human)
+        except:
+            import traceback
+            traceback.print_exc()
+            return "出现了奇怪的错误，自己看日志咯"
+

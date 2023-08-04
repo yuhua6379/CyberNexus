@@ -65,7 +65,7 @@ class AgentBuilder:
 
         return Agent(character1=character1,
                      character2=character2,
-                     agent_core=AgentExecutor(agent=langchain_agent, tools=self.tools))
+                     agent_core=AgentExecutor(agent=langchain_agent, tools=self.tools, verbose=True))
 
 
 class Brain:
