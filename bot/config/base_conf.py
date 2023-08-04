@@ -13,4 +13,3 @@ title_of_history = '''以下是你最近的一些记忆'''
 name_of_god = "god"
 
 max_short_term_memory = 10
-

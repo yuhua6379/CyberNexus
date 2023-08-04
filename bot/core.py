@@ -1,19 +1,20 @@
 import logging
 from typing import List
+
 from langchain.agents import AgentExecutor, OpenAIFunctionsAgent
 from langchain.chat_models.base import BaseChatModel
 from langchain.schema import SystemMessage
 from langchain.tools import BaseTool
 from pydantic import BaseModel
+
 from bot.config.base_conf import base_prompt, conclude_prompt_template, title_of_relative_memory, \
     title_of_history, name_of_god, max_short_term_memory
+from bot.memory.longterm_memory import LongTermMemory
+from bot.memory.shorterm_memory import ShortTermMemory
 from bot.prompt_factory.core import PromptFactory
 from datasource.config import rdbms_instance
 from datasource.rdbms.entities import ChatLogModel
-from bot.memory.longterm_memory import LongTermMemory
-from bot.memory.shorterm_memory import ShortTermMemory
 from repo.character import Character
-from repo.history import History
 
 
 class Agent(BaseModel):

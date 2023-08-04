@@ -55,4 +55,3 @@ def initialize():
         LOGGING['loggers']["root"]['handlers'] = ['console', 'file-log']
 
     logging.config.dictConfig(LOGGING)
-

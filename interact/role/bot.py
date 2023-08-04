@@ -1,6 +1,4 @@
-from pydantic import BaseModel
-
-from bot.core import Agent, Bot
+from bot.core import Bot
 from repo.character import Character
 
 
@@ -19,4 +17,3 @@ class BotRole:
     @property
     def me(self):
         return self.bot_instance.brain.character
-

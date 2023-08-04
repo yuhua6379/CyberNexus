@@ -27,7 +27,7 @@ class PromptFactory:
     def _process_prompt(self, content_list, layer, prompt: Prompt):
         content_list.append(f"{self.base_space * layer}{self.prefix}{prompt.title}: \n")
         for k in prompt.__fields_set__:
-            self._process_members(content_list, layer+1, getattr(prompt, k))
+            self._process_members(content_list, layer + 1, getattr(prompt, k))
 
     def _process_members(self, content_list, layer, prompt):
         if isinstance(prompt, Description):
@@ -36,7 +36,7 @@ class PromptFactory:
             self._process_prompt(content_list, layer, prompt)
         if isinstance(prompt, list):
             for item in prompt:
-                self._process_description(content_list, layer+1, item)
+                self._process_description(content_list, layer + 1, item)
 
     def append(self, next_prompt: str):
         self.prompt.append(next_prompt)

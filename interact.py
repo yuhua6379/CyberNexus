@@ -2,7 +2,6 @@ import os
 
 import initialize
 from bot.core import Bot
-from bot.prompt_factory.core import PromptFactory
 from bot.toolkits import get_weather_info_in_china
 from bot.toolkits.system_tools import watch
 from interact.command_line_interact import CommandLineInteracter

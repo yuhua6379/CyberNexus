@@ -68,6 +68,7 @@ def SqlEnum(enum_type: Type[Enum]):
 
     return NoName(20)
 
+
 def Pydantic(base_model: Type[BaseModel]):
     class NoName(TypeDecorator):
 

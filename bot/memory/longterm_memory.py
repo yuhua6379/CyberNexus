@@ -1,11 +1,9 @@
-from typing import List, Union
+import time
+from uuid import uuid4
 
 from datasource.config import vector_db_factory
 from datasource.vectordb.entities import Document
 from repo.character import Character
-from uuid import uuid4
-import time
-
 from repo.memory import Memory
 
 
@@ -29,5 +27,3 @@ class LongTermMemory:
         vector_db_instance = vector_db_factory.get_vector_db(self._get_memory_collection_name())
         res_list = vector_db_instance.query(key_word)
         return [res.document.content for res in res_list[:10]]
-
-

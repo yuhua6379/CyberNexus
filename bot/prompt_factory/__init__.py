@@ -8,6 +8,7 @@ class BasePrompt(BaseModel):
 class Prompt(BasePrompt):
     pass
 
+
 class Description(BasePrompt):
     content: str
     title: str

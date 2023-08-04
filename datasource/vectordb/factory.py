@@ -16,4 +16,3 @@ class VectorDBFactory:
                 raise RuntimeError(f"unsupported vector db: {self.conf.type}")
 
         return self.vector_db_instances[collection_name]
-

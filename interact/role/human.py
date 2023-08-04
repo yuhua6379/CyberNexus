@@ -1,8 +1,3 @@
-from pydantic import BaseModel
-
-from repo.character import Character
-
-
 class HumanRole:
 
     def __init__(self):

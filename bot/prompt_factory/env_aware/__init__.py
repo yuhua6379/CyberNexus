@@ -1,5 +1,4 @@
-
-from bot.prompt_factory import Description, BasePrompt, Prompt
+from bot.prompt_factory import Description, Prompt
 
 
 class EnvironmentAwareness(Prompt):

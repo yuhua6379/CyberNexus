@@ -2,11 +2,8 @@ import os
 
 import initialize
 from bot.core import Character, Bot
-from bot.prompt_factory.adam import adam_virtual_character
 from bot.toolkits.internet_tools.get_weather_information_in_china import get_weather_info_in_china
 from bot.toolkits.system_tools.watch import watch
-from datasource.config import rdbms_instance
-from datasource.rdbms.entities import CharacterModel
 from model.openai import get_openai_llm
 
 if __name__ == '__main__':

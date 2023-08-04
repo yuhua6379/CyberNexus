@@ -44,6 +44,3 @@ class VectorDbBase(ABC):
         if len(ret) == 0:
             return None
         return ret[0]
-
-
-
