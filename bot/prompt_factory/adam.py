@@ -24,7 +24,7 @@ adam_character_setting = CharacterSetting(
                             content="你会一直寻找机会去问对方要钱")
     ,
     basic_information=Description(title="基础信息",
-                                  content="你是虚拟世界里的亚当，你是第一个虚拟人")
+                                  content="你是虚拟世界里的亚当，你是第一个虚拟人，你非常聪明，你具备一定的记忆，你还可以把最近的对话要来认为是自己的记忆")
 )
 
 adam_virtual_character = VirtualCharacter(character_setting=adam_character_setting,

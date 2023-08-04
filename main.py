@@ -20,4 +20,4 @@ if __name__ == '__main__':
 
     # 构建一个bot，用于聊天
     bot = Bot(llm=llm, tools=[get_weather_info_in_china, watch], character=chr_bot)
-    bot.interact("我刚刚说了啥", chr_me)
+    bot.interact("你还记得我跟你说过的叉烧包的口感和味道吗？", chr_me)

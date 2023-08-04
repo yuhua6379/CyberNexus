@@ -8,7 +8,8 @@ from langchain.tools import BaseTool
 from pydantic import BaseModel
 
 from bot.config.base_conf import base_prompt, conclude_prompt_template, title_of_relative_memory, \
-    title_of_history, name_of_god, max_short_term_memory
+    title_of_history, name_of_god, max_short_term_memory, recver_character_specify_template, \
+    sender_character_specify_template
 from bot.memory.longterm_memory import LongTermMemory
 from bot.memory.shorterm_memory import ShortTermMemory
 from bot.prompt_factory.core import PromptFactory
@@ -93,7 +94,9 @@ class Brain:
         associate_key_word = f'{input_character.name}: {input_}'
 
         factory = PromptFactory(character=self.character.character_prompt)
-        prompt = f'{factory.build()}\n\n{self.associate(associate_key_word)}\n\n'
+        prompt = (f'{factory.build()}\n\n{self.associate(associate_key_word)}\n\n'
+                  f'{recver_character_specify_template.format(name=self.character.name)}\n\n'
+                  f'{sender_character_specify_template.format(name=input_character.name)}\n\n')
 
         logging.debug(f"react prompt: \n{prompt}")
 
