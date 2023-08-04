@@ -1,7 +1,10 @@
+import json
 from enum import Enum
+from typing import Optional
 
 from pydantic import BaseModel
 
+from bot.prompt_factory.virtual_character import VirtualCharacter
 from datasource.config import rdbms_instance
 from datasource.rdbms.entities import CharacterModel
 
@@ -14,10 +17,12 @@ class Character(BaseModel, orm_mode=True):
     class CharacterType(Enum):
         bot = "bot"
         user = "user"
+        system = "system"
 
-    id: str
+    id: int
     name: str
     type: CharacterType
+    character_prompt: Optional[VirtualCharacter]
 
     @classmethod
     def get_by_name(cls, name: str):

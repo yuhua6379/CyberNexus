@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from bot.core import BotBuilder
+from bot.core import Bot
 from interact.command_line_interact import CommandLineInteracter
 from interact.role.bot import BotRole
 from interact.role.human import HumanRole
@@ -10,7 +10,7 @@ from repo.character import Character
 class HumanInteractWithBot(BaseModel):
     command_line: CommandLineInteracter
 
-    def start(self, builder: BotBuilder):
+    def start(self, bot_instance: Bot):
         bot = None
         human = None
 
@@ -23,14 +23,14 @@ class HumanInteractWithBot(BaseModel):
                 bot_name = self.command_line.next("请输入bot的角色名:\n")
                 bot = Character.get_by_name(bot_name)
 
-        human_role = HumanRole(me=human, other=bot)
-        bot_role = BotRole(bot_instance=builder.build(human, bot))
+        human_role = HumanRole()
+        bot_role = BotRole(bot_instance=bot_instance)
 
         while True:
-            print(f"{human_role.me.name} says to {bot_role.me.name}:")
+            print(f"{human.name} says to {bot.name}:")
             message = human_role.talk()
             bot_role.listen(message)
 
-            print(f"{bot_role.me.name} says to {human_role.me.name}:")
-            message = bot_role.talk()
+            print(f"{bot.name} says to {human.name}:")
+            message = bot_role.talk(human)
             human_role.listen(message)

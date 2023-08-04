@@ -1,12 +1,12 @@
-from bot.config.base_prompt import get_base_prompt
-from bot.prompt_factory import BasePrompt, Description, Prompt
+from bot.config.base_conf import base_prompt
+from bot.prompt_factory import Description, Prompt
 from bot.prompt_factory.virtual_character import VirtualCharacter
 
 
 class PromptFactory:
     def __init__(self, character: VirtualCharacter, base_space='    ', prefix="你的"):
         self.prompt = []
-        self.base_prompt = get_base_prompt()
+        self.base_prompt = base_prompt
         self.character = character
         self.base_space = base_space
         self.prompt.append(self.base_prompt)

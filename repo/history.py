@@ -1,34 +1,79 @@
 from datetime import datetime
+from enum import Enum
+from typing import Optional
 
 from pydantic import BaseModel
 
+from datasource.config import rdbms_instance
 from datasource.rdbms.entities import HistoryModel
 from repo.character import Character
 
 
-class History(BaseModel, orm_mode=True):
-    character1_id: int
-    character2_id: int
-    character1_name: str
-    character2_name: str
-    character1_message: str
-    character2_message: str
+class Direction(Enum):
+    to_right = "to_right"
+    to_left = "to_left"
 
-    create_time: datetime
 
-    @classmethod
-    def from_orm(cls, history: HistoryModel):
-        c1 = Character.get(history.character1_id)
-        c2 = Character.get(history.character2_id)
-        return cls(character1_id=history.character1_id,
-                   character2_id=history.character2_id,
-                   character1_name=c1.name,
-                   character2_name=c2.name,
-                   character1_message=history.character1_message,
-                   character2_message=history.character2_message,
-                   create_time=history.create_time
-                   )
+class History(BaseModel):
+    id: Optional[int]
+    my_character: Character
+    other_character: Character
+    my_message: str
+    other_message: str
+
+    direction: Direction
 
     def __str__(self):
-        return (f"{self.character1_name}: {self.character1_message}\n"
-                f"{self.character2_name}: {self.character2_message}")
+
+        if self.direction == Direction.to_right:
+            requester = self.my_character
+            req_msg = self.my_message
+            responser = self.other_character
+            res_msg = self.other_message
+        else:
+            requester = self.other_character
+            req_msg = self.other_message
+            responser = self.my_character
+            res_msg = self.my_message
+
+        return (f"{requester.name}: {req_msg}\n"
+                f"{responser.name}: {res_msg}\n\n")
+
+    @classmethod
+    def from_model(cls, model: HistoryModel):
+
+        return cls(id=model.id,
+                   my_character=Character.get(model.my_character_id),
+                   other_character=Character.get(model.other_character_id),
+                   my_message=model.my_message,
+                   other_message=model.other_message,
+                   direction=model.direction
+                   )
+
+    @classmethod
+    def add(cls, history):
+        history: cls
+        model = HistoryModel()
+        model.my_character_id = history.my_character.id
+        model.other_character_id = history.other_character.id
+        model.my_message = history.my_message
+        model.other_message = history.other_message
+        model.direction = history.direction.value
+
+        with rdbms_instance.get_session() as session:
+            session.add(model)
+            session.commit()
+
+    @classmethod
+    def get_available_history_by_character_id(cls, character_id: int):
+        with rdbms_instance.get_session() as session:
+            results = session.query(HistoryModel).filter(
+                HistoryModel.remembered == False and
+                HistoryModel.my_character_id == character_id).all()
+            return [cls.from_model(model) for model in results]
+
+    @classmethod
+    def batch_set_history_remembered(cls, ids: list[int]):
+        with rdbms_instance.get_session() as session:
+            ret = session.query(HistoryModel).filter(HistoryModel.id.in_(ids)).update({HistoryModel.remembered: True})
+            session.commit()

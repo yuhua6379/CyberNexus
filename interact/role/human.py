@@ -3,11 +3,10 @@ from pydantic import BaseModel
 from repo.character import Character
 
 
-class HumanRole(BaseModel):
-    me: Character
-    other: Character
+class HumanRole:
 
-    temp: str = ""
+    def __init__(self):
+        self.temp: str = ""
 
     def listen(self, message: str):
         self.temp = message

@@ -22,37 +22,37 @@ def get_rotating_file_handler_config(file_name: str) -> Dict:
     }
 
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': True,
-    'formatters': {
-        'console': {
-            'format': FORMAT
+def initialize():
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': True,
+        'formatters': {
+            'console': {
+                'format': FORMAT
+            },
+            'file': {
+                'format': f'%(asctime)s {FORMAT}'
+            },
         },
-        'file': {
-            'format': f'%(asctime)s {FORMAT}'
+        'handlers': {
+            'console': {
+                'level': os.environ.get("log_level", "INFO").upper(),
+                'class': 'logging.StreamHandler',
+                'formatter': 'console'
+            },
         },
-    },
-    'handlers': {
-        'console': {
-            'level': 'INFO',
-            'class': 'logging.StreamHandler',
-            'formatter': 'console'
-        },
-    },
-    'loggers': {
-        'root': {
-            'handlers': ['console'],
-            'level': 'INFO',
+        'loggers': {
+            'root': {
+                'handlers': ['console'],
+                'level': os.environ.get("log_level", "INFO").upper(),
+            }
         }
     }
-}
 
-
-def initialize():
     if config.environment != "local":
         os.makedirs(config.log_path, exist_ok=True)
         LOGGING['handlers']['file-log'] = get_rotating_file_handler_config('vb.log')
         LOGGING['loggers']["root"]['handlers'] = ['console', 'file-log']
 
     logging.config.dictConfig(LOGGING)
+
