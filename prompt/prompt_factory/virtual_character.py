@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
-from bot.prompt_factory.character_setting import CharacterSetting
-from bot.prompt_factory.env_aware import EnvironmentAwareness
+from prompt.prompt_factory.character_setting import CharacterSetting
+from prompt.prompt_factory.env_aware import EnvironmentAwareness
 
 
 class VirtualCharacter(BaseModel):

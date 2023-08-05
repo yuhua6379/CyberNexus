@@ -1,7 +1,7 @@
-from bot.prompt_factory import Description
-from bot.prompt_factory.character_setting import CharacterSetting
-from bot.prompt_factory.env_aware import EnvironmentAwareness
-from bot.prompt_factory.virtual_character import VirtualCharacter
+from prompt.prompt_factory import Description
+from prompt.prompt_factory.character_setting import CharacterSetting
+from prompt.prompt_factory.env_aware import EnvironmentAwareness
+from prompt.prompt_factory.virtual_character import VirtualCharacter
 
 normal_environment_awareness = EnvironmentAwareness(
     title="环境感知",

@@ -1,7 +1,7 @@
-from bot.prompt_factory.adam import adam_virtual_character
 from common.log import logger
 from datasource.config import rdbms_instance
 from datasource.rdbms.entities import CharacterModel
+from prompt.prompt_factory.adam import adam_virtual_character
 
 
 def initialize():

@@ -1,7 +1,8 @@
 import os
 
 import initialize
-from bot.core import Character, Bot
+from bot.agent import Character
+from bot.base_bot import SimpleChatBot
 from bot.toolkits.internet_tools.get_weather_information_in_china import get_weather_info_in_china
 from bot.toolkits.system_tools.watch import watch
 from model.openai import get_openai_llm
@@ -19,5 +20,5 @@ if __name__ == '__main__':
     chr_bot = Character.get_by_name("wang")
 
     # 构建一个bot，用于聊天
-    bot = Bot(llm=llm, tools=[get_weather_info_in_china, watch], character=chr_bot)
+    bot = SimpleChatBot(llm=llm, tools=[get_weather_info_in_china, watch], character=chr_bot)
     bot.interact("你记得你第一次溜冰是什么时候吗？", chr_me)

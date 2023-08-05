@@ -22,8 +22,18 @@ def get_rotating_file_handler_config(file_name: str) -> Dict:
     }
 
 
-def initialize():
-    LOGGING = {
+def get_rotating_file_handler(file_name: str):
+    handler = logging.handlers.RotatingFileHandler(
+        f"{config.log_path}/{file_name}",
+        "a", maxBytes=1024 << 17,
+        backupCount=10,
+        encoding='utf-8')
+    handler.setFormatter(logging.Formatter(f'%(asctime)s {FORMAT}'))
+    return handler
+
+
+def get_log_dict_config(level):
+    return {
         'version': 1,
         'disable_existing_loggers': True,
         'formatters': {
@@ -36,7 +46,7 @@ def initialize():
         },
         'handlers': {
             'console': {
-                'level': os.environ.get("log_level", "INFO").upper(),
+                'level': level,
                 'class': 'logging.StreamHandler',
                 'formatter': 'console'
             },
@@ -44,14 +54,30 @@ def initialize():
         'loggers': {
             'root': {
                 'handlers': ['console'],
-                'level': os.environ.get("log_level", "INFO").upper(),
+                'level': level,
             }
         }
     }
 
+
+def create_file_logger(name: str):
+    import os
+    exists = os.path.exists(config.log_path)
+    if not exists:
+        os.mkdir(config.log_path)
+
+    if not name.endswith(".log"):
+        name = f'{name}.log'
+
+    logger = logging.getLogger(name)
+    logger.addHandler(get_rotating_file_handler(name))
+    return logger
+
+
+def initialize():
+    dict_conf = get_log_dict_config(os.environ.get("log_level", "INFO").upper())
     if config.environment != "local":
         os.makedirs(config.log_path, exist_ok=True)
-        LOGGING['handlers']['file-log'] = get_rotating_file_handler_config('vb.log')
-        LOGGING['loggers']["root"]['handlers'] = ['console', 'file-log']
+        dict_conf['loggers']["root"]['handlers'] = ['console']
 
-    logging.config.dictConfig(LOGGING)
+    logging.config.dictConfig(dict_conf)

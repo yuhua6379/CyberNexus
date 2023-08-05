@@ -1,2 +1,2 @@
 environment = "local"
-log_path = '?'
+log_path = './logs.log'

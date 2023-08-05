@@ -1,4 +1,4 @@
-from bot.prompt_factory import Description, Prompt
+from prompt.prompt_factory import Description, Prompt
 
 
 class CharacterSetting(Prompt):

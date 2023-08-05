@@ -1,3 +1,4 @@
+from bot.message import Message
 from repo.character import Character
 from repo.history import History, Direction
 
@@ -7,12 +8,14 @@ class ShortTermMemory:
         self.character = character
         self.max_length = max_length
 
-    def add(self, character_input: Character, message_in: str, message_out: str):
-        History.add(History(my_character=self.character,
+    def add(self, character_input: Character, message_in: Message, message_out: Message):
+        History.add(History(main_character=self.character,
                             other_character=character_input,
-                            my_message=message_out,
-                            other_message=message_in,
-                            direction=Direction.to_left
+                            main_message=message_out.message,
+                            main_action=message_out.action,
+                            other_message=message_in.message,
+                            other_action=message_in.action,
+                            direction=Direction.to_main
                             ))
 
     def shrink(self):
@@ -28,9 +31,9 @@ class ShortTermMemory:
     def batch_set_history_remembered(cls, ids: list[int]):
         History.batch_set_history_remembered(ids)
 
-    def to_prompt(self, title):
+    def to_prompt(self):
         history_list = History.get_available_history_by_character_id(self.character.id)
-        ret = f'{title}: \n'
+        ret = ""
         for history in history_list:
             dialog = str(history)
 

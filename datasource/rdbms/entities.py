@@ -1,8 +1,9 @@
 from sqlalchemy import Column, String, Integer, Enum, Boolean
 
-from bot.prompt_factory.virtual_character import VirtualCharacter
+from bot.config.base_conf import EMPTY_ACTION, EMPTY_MESSAGE
 from datasource.rdbms.base_entities import OrmBaseModel, Base
 from datasource.rdbms.sql import Pydantic
+from prompt.prompt_factory.virtual_character import VirtualCharacter
 
 
 class ChatLogModel(OrmBaseModel, Base):
@@ -18,12 +19,16 @@ class ChatLogModel(OrmBaseModel, Base):
 
 class HistoryModel(OrmBaseModel, Base):
     __tablename__ = "vb_history"
-    my_character_id = Column(Integer, nullable=False, index=True)
+    main_character_id = Column(Integer, nullable=False, index=True)
     other_character_id = Column(Integer, nullable=False, index=True)
-    my_message = Column(String(10000), nullable=False)
-    other_message = Column(String(10000), nullable=False)
 
-    direction = Column(Enum("to_right", "to_left"), nullable=False)
+    main_message = Column(String(10000), nullable=False, default=EMPTY_ACTION)
+    other_message = Column(String(10000), nullable=False, default=EMPTY_MESSAGE)
+
+    main_action = Column(String(10000), nullable=False, default=EMPTY_ACTION)
+    other_action = Column(String(10000), nullable=False, default=EMPTY_MESSAGE)
+
+    direction = Column(Enum("to_other", "to_main"), nullable=False)
 
     remembered = Column(Boolean, default=False, nullable=False)
 

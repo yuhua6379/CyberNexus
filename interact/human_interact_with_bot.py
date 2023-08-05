@@ -1,7 +1,11 @@
-from bot.core import Bot
+from bot.base_bot import SimpleChatBot
+from bot.message import Message
+from bot.self_drive_bot import SelfDriveBot
 from interact.base_interact_tool import BaseInteractTool
 
 from repo.character import Character
+from world.round_controller.turn_base_round_controller import TurnBaseController
+from world.world import BaseWorld
 
 
 class HumanInteractWithBot(BaseInteractTool):
@@ -11,6 +15,9 @@ class HumanInteractWithBot(BaseInteractTool):
         self.bot = bot
         self.llm = llm
         self.tools = tools
+        controller = TurnBaseController(10)
+        self.world = BaseWorld(round_controller=controller, logger_name="world")
+        self.bot_instance = None
 
     def call(self, message: str):
         try:
@@ -31,8 +38,13 @@ class HumanInteractWithBot(BaseInteractTool):
             if self.bot is None:
                 return "请输入/bot={name}来设定对话机器人的角色"
 
-            bot = Bot(llm=self.llm, tools=self.tools, character=self.bot)
-            return bot.interact(message, self.human)
+            if self.bot_instance is None:
+                self.bot_instance = SelfDriveBot(llm=self.llm, tools=self.tools, character=self.bot)
+                self.world.join(self.bot_instance)
+
+            ret = self.bot_instance.interact(Message(message=message), self.human)
+            return f"动作：{ret.action}\n对话：{ret.message}"
+
         except:
             import traceback
             traceback.print_exc()

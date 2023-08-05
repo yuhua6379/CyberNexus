@@ -4,49 +4,55 @@ from typing import Optional
 from pydantic import BaseModel
 from sqlalchemy import and_
 
+from bot.config.base_conf import MESSAGE_TEMPLATE, EMPTY_ACTION, EMPTY_MESSAGE
 from datasource.config import rdbms_instance
 from datasource.rdbms.entities import HistoryModel
 from repo.character import Character
 
 
 class Direction(Enum):
-    to_right = "to_right"
-    to_left = "to_left"
+    to_other = "to_other"
+    to_main = "to_main"
 
 
 class History(BaseModel):
     id: Optional[int]
-    my_character: Character
+    main_character: Character
     other_character: Character
-    my_message: str
-    other_message: str
+    main_message: Optional[str] = EMPTY_MESSAGE
+    other_message: Optional[str] = EMPTY_MESSAGE
+    main_action: Optional[str] = EMPTY_ACTION
+    other_action: Optional[str] = EMPTY_ACTION
 
     direction: Direction
 
     def __str__(self):
 
-        if self.direction == Direction.to_right:
-            requester = self.my_character
-            req_msg = self.my_message
-            responser = self.other_character
-            res_msg = self.other_message
-        else:
-            requester = self.other_character
-            req_msg = self.other_message
-            responser = self.my_character
-            res_msg = self.my_message
+        history_str = ""
+        if self.direction == Direction.to_other:
+            history_str += MESSAGE_TEMPLATE.format(c1=self.main_character.name,
+                                                   c2=self.other_character.name,
+                                                   action=self.main_action,
+                                                   message=self.main_message) + '\n\n'
 
-        return (f"{requester.name}: {req_msg}\n"
-                f"{responser.name}: {res_msg}\n\n")
+        else:
+            history_str += MESSAGE_TEMPLATE.format(c1=self.other_character.name,
+                                                   c2=self.main_character.name,
+                                                   action=self.other_action,
+                                                   message=self.other_message) + '\n\n'
+
+        return history_str
 
     @classmethod
     def from_model(cls, model: HistoryModel):
 
         return cls(id=model.id,
-                   my_character=Character.get(model.my_character_id),
+                   main_character=Character.get(model.main_character_id),
                    other_character=Character.get(model.other_character_id),
-                   my_message=model.my_message,
+                   main_message=model.main_message,
                    other_message=model.other_message,
+                   main_action=model.main_action,
+                   other_action=model.other_action,
                    direction=model.direction
                    )
 
@@ -54,10 +60,13 @@ class History(BaseModel):
     def add(cls, history):
         history: cls
         model = HistoryModel()
-        model.my_character_id = history.my_character.id
+        model.main_character_id = history.main_character.id
         model.other_character_id = history.other_character.id
-        model.my_message = history.my_message
+        model.main_message = history.main_message
         model.other_message = history.other_message
+        model.main_action = history.main_action
+        model.other_action = history.other_action
+
         model.direction = history.direction.value
 
         with rdbms_instance.get_session() as session:
@@ -70,7 +79,7 @@ class History(BaseModel):
             results = session.query(HistoryModel).filter(
                 and_(
                     HistoryModel.remembered == False,
-                    HistoryModel.my_character_id == character_id)).all()
+                    HistoryModel.main_character_id == character_id)).all()
             return [cls.from_model(model) for model in results]
 
     @classmethod
