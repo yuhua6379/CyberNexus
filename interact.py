@@ -15,7 +15,12 @@ if __name__ == '__main__':
     # 获取llm实例，用于后面predict
     llm = get_openai_llm(openai_api_key=os.environ['open_ai_key'])
 
-    fun = HumanInteractWithBot(llm, [get_weather_info_in_china, watch])
+    yuhua = Character.get_by_name('yuhua')
+    hero = Character.get_by_name('hero')
+    fun = HumanInteractWithBot(llm,
+                               [get_weather_info_in_china, watch],
+                               human=yuhua,
+                               bot=hero)
 
     demo = gr.ChatInterface(fun)
 
