@@ -1,5 +1,5 @@
 from bot.prompt_factory import Description
-from bot.prompt_factory.adam import adam_virtual_character, normal_environment_awareness
+from bot.prompt_factory.adam import normal_environment_awareness
 from bot.prompt_factory.character_setting import CharacterSetting
 from bot.prompt_factory.virtual_character import VirtualCharacter
 from datasource.config import rdbms_instance

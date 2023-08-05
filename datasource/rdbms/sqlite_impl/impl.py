@@ -7,9 +7,10 @@ from sqlalchemy.orm import sessionmaker
 from datasource.rdbms.base import RDBMSBase, Rdbms
 from datasource.rdbms.entities import *
 
-
 _engine = None
 _session_maker: Optional[sessionmaker] = None
+
+
 class Sqlite(RDBMSBase):
 
     def __init__(self, conf: Rdbms):

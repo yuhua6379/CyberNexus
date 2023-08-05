@@ -1,4 +1,3 @@
-
 from bot.core import Bot
 from interact.base_interact_tool import BaseInteractTool
 
@@ -38,4 +37,3 @@ class HumanInteractWithBot(BaseInteractTool):
             import traceback
             traceback.print_exc()
             return "出现了奇怪的错误，自己看日志咯"
-

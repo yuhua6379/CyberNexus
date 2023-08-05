@@ -1,11 +1,11 @@
 from functools import wraps
+from threading import RLock
 from typing import List, Tuple
 
 import chromadb
 
 from datasource.vectordb.base import VectorDbBase, VectorDBConf
 from datasource.vectordb.entities import Response, Document
-from threading import RLock
 
 
 def synchronized(func):
