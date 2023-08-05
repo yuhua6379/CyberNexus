@@ -12,15 +12,14 @@ class Rdbms(BaseModel):
     uri: str
     type: RdbmsType
 
+    # 线程池的数量
+    pool_size: int = 10
+
 
 class RDBMSBase(ABC):
 
     def __init__(self, conf: Rdbms):
         self.conf = conf
-
-    @abstractmethod
-    def initialize(self):
-        pass
 
     @abstractmethod
     def get_session(self):
