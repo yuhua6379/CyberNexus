@@ -17,6 +17,9 @@ class BaseBot:
     def interact(self, message: Message, input_character: Character):
         return self.brain.react(message, input_character)
 
+    def set_debug_prompt(self, prompt: str):
+        self.brain.set_debug_prompt(prompt)
+
 
 class SimpleChatBot(BaseBot):
     """朴素，简单的，只能做普通一对一交互的机器人"""

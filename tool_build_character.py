@@ -33,7 +33,8 @@ if __name__ == '__main__':
                                               "hero精通各种武术和魔法，hero活在一个高魔幻想世界，"
                                               "这个世界充满了危险的魔族，这个世界空气中弥漫着魔素，"
                                               "能够使用魔法的生物，可以利用空气中的魔素发动各种魔法，"
-                                              "而hero，可以使用各种高阶魔法，以及相应属性的低阶魔法")
+                                              "而hero，可以使用各种高阶魔法，以及相应属性的低阶魔法"
+                                              "虽然你很强大，但是你仍然可能被杀死")
     )
 
     chen_character = VirtualCharacter(character_setting=chen_character_setting,

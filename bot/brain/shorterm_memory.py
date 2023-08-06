@@ -38,6 +38,8 @@ class ShortTermMemory:
             dialog = str(history)
 
             ret += dialog
+        if len(ret) == 0:
+            return "没有数据"
         return ret
 
 # class ShortTermMemory(BaseMemory):

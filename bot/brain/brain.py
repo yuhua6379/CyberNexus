@@ -2,10 +2,11 @@ from typing import List
 
 from bot.agent import AgentBuilder
 from bot.brain.ablity.conclude import ConcludeAbility
+from bot.brain.ablity.plan import PlanAbility
 from bot.brain.longterm_memory import LongTermMemory
 from bot.brain.shorterm_memory import ShortTermMemory
-from bot.config.base_conf import MAX_SHORT_TERM_MEMORY, RELATIVE_MEMORY_TEMPLATE, HISTORY_TEMPLATE, REACT_FORMAT, \
-    REACT_TEMPLATE, DELIMITER
+from bot.config.base_conf import MAX_SHORT_TERM_MEMORY, RELATIVE_MEMORY_TEMPLATE, HISTORY_TEMPLATE, \
+    REACT_TEMPLATE, HISTORY_FORMAT
 from bot.message import Message
 from common.base_thread import get_logger
 from prompt.prompt_factory.core import PromptFactory
@@ -23,16 +24,29 @@ class Brain:
         self.factory = PromptFactory(character=self.character.character_prompt)
         self.conclude_ability = ConcludeAbility(self.llm_agent_builder, self.character)
 
+        self.latest_long_term_plan = None
+        self.plan_ability = PlanAbility(self.llm_agent_builder, self.character, self.factory, self.st_memory)
+
+        self.debug_prompt = ""
+
+    def set_debug_prompt(self, prompt: str):
+        self.debug_prompt = prompt.strip()
+
+    def get_debug_prompt(self):
+        if len(self.debug_prompt) == 0:
+            return ""
+        else:
+            return self.debug_prompt + "\n\n"
+
     def associate(self, input_: Message, input_character: Character):
         """机器人大脑对外部刺激联想到某些事情"""
         # 联想的关键词，要包含input_character的名字，否则可能联想不出input_character的记忆
         kw1 = f'{input_character.name}: {input_.message}'
         kw2 = f'{input_character.name}: {input_.action}'
-        return (f"{self.get_relative_memory_prompt(key_word=kw1)}\n"
-                f"{self.get_relative_memory_prompt(key_word=kw2)}")
-
-    def short_term_memory(self):
-        return self.st_memory.to_prompt()
+        ret = (f"{self.get_relative_memory_prompt(key_word=kw1)}\n"
+               f"{self.get_relative_memory_prompt(key_word=kw2)}").strip()
+        if len(ret) == 0:
+            return "没有数据"
 
     def react(self, input_: Message, input_character: Character):
         """
@@ -44,17 +58,19 @@ class Brain:
         """
 
         prompt = (f'{self.factory.build()}\n\n'  # 基础人物设定
+                  f'{self.get_debug_prompt()}'
                   f'{RELATIVE_MEMORY_TEMPLATE.format(content=self.associate(input_, input_character))}\n\n'  # 联想到的信息
-                  f'{HISTORY_TEMPLATE.format(content=self.short_term_memory())}\n\n'  # 最近的对话
+                  f'{HISTORY_TEMPLATE.format(content=self.st_memory.to_prompt())}\n\n'  # 最近的对话
                   )
 
         # c1做出行动，c1对c2说了话，假设llm是c2，等待llm的回应
-        react_guide = (f'{REACT_FORMAT}\n\n'  # 通用prompt告诉llm用固定格式返回
+        react_guide = (f'{HISTORY_FORMAT}\n\n'  # 通用prompt告诉llm用固定格式返回
                        + REACT_TEMPLATE.format(
-                    c1=input_character.name,
                     c2=self.character.name,
-                    action=input_.action,
-                    message=input_.message))
+                    message=Message(from_character=input_character.name,
+                                    to_character=self.character.name,
+                                    action=input_.action,
+                                    message=input_.message)))
 
         get_logger().debug(f"react prompt: \n{prompt}")
         get_logger().debug(f"react guide: \n{react_guide}")
@@ -65,30 +81,20 @@ class Brain:
         ret = agent.chat(react_guide)
 
         get_logger().debug(f'{ret}\n')
-        ret = ret.split(":")[1].split(DELIMITER)
-        message = Message(action=ret[0], message=ret[1])
+        message = Message.parse_raw(ret)
         # 记录到history
         self.record(input_character, input_, message)
 
         return message
 
-    def long_term_plan(self):
+    def long_term_plan(self, steps_of_plan: int):
         """机器人的大脑具备计划能力，他可以根据目前的情况规划出之后需要做的事情"""
-
-        # prompt = (f'{self.factory.build()}\n\n'  # 基础人物设定
-        #           f'{HISTORY_TEMPLATE.format(content=self.short_term_memory())}\n\n'  # 最近的对话
-        #           )
-        #
-        # logging.debug(f"react prompt: \n{prompt}")
-        # logging.debug(f"react guide: \n{react_guide}")
-        #
-        # agent = self.llm_agent_builder.build(prompt=prompt,
-        #                                      character1=input_character,
-        #                                      character2=self.character)
-        # ret = agent.chat(input_)
+        self.latest_long_term_plan = self.plan_ability.long_term_ability(steps_of_plan)
+        return self.latest_long_term_plan
 
     def short_term_plan(self):
         """机器人具备短期计划的能力，他可以根据目前的情况和长期计划规划出下一步需要做的事情"""
+        return self.plan_ability.short_term_ability(self.latest_long_term_plan)
 
     def record(self, character_input: Character, message_in: Message, message_out: Message):
         """机器人大脑记录信息"""

@@ -4,7 +4,8 @@ from typing import Optional
 from pydantic import BaseModel
 from sqlalchemy import and_
 
-from bot.config.base_conf import MESSAGE_TEMPLATE, EMPTY_ACTION, EMPTY_MESSAGE
+from bot.config.base_conf import EMPTY_ACTION, EMPTY_MESSAGE
+from bot.message import Message
 from datasource.config import rdbms_instance
 from datasource.rdbms.entities import HistoryModel
 from repo.character import Character
@@ -30,16 +31,16 @@ class History(BaseModel):
 
         history_str = ""
         if self.direction == Direction.to_other:
-            history_str += MESSAGE_TEMPLATE.format(c1=self.main_character.name,
-                                                   c2=self.other_character.name,
-                                                   action=self.main_action,
-                                                   message=self.main_message) + '\n\n'
+            history_str += str(Message(from_character=self.main_character.name,
+                                       to_character=self.other_character.name,
+                                       action=self.main_action,
+                                       message=self.main_message)) + '\n\n'
 
         else:
-            history_str += MESSAGE_TEMPLATE.format(c1=self.other_character.name,
-                                                   c2=self.main_character.name,
-                                                   action=self.other_action,
-                                                   message=self.other_message) + '\n\n'
+            history_str += str(Message(from_character=self.other_character.name,
+                                       to_character=self.main_character.name,
+                                       action=self.other_action,
+                                       message=self.other_message)) + '\n\n'
 
         return history_str
 

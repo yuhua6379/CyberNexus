@@ -1,16 +1,14 @@
-from bot.config.base_conf import BASE_PROMPT
 from prompt.prompt_factory import Description, Prompt
 from prompt.prompt_factory.virtual_character import VirtualCharacter
 
 
 class PromptFactory:
-    def __init__(self, character: VirtualCharacter, base_space='    ', prefix="你的"):
-        self.prompt = []
-        self.base_prompt = BASE_PROMPT
+    def __init__(self, character: VirtualCharacter, base_space='    ', prefix=""):
+
         self.character = character
         self.base_space = base_space
-        self.prompt.append(self.base_prompt)
         self.prefix = prefix
+        self.prompt = []
 
         self.prompt_build = None
 
@@ -45,6 +43,7 @@ class PromptFactory:
     def build(self):
         self.prompt.append(self.build_yaml_character_prompt())
         self.prompt_build = "\n".join(self.prompt)
+        self.prompt = []
         return self.prompt_build
 
     def __str__(self):

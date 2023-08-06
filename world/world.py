@@ -26,7 +26,7 @@ class BaseWorld(BaseThread):
     def run(self):
         while True:
             step, round_ = self.round_controller.next()
-            self.log(f"step: {step} round: {round_}")
+            self.log.info(f"step: {step} round: {round_}")
             for bot in self.bots.values():
-                self.log(f"wake bot: {bot.character.id} - {bot.character.name}")
+                self.log.info(f"wake bot: {bot.character.id} - {bot.character.name}")
                 self.wake_bot(bot, step, round_)
