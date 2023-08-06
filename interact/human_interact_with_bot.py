@@ -79,7 +79,7 @@ class HumanInteractWithBot(BaseInteractTool):
 
             # 控制回合制控制器往下走一步
             self.controller.move_to_next_step()
-            return f"动作：{ret.action}\n对话：{ret.message}"
+            return f"<span style='color:gray;'>*{ret.action}*</span>       {ret.message}"
 
         except:
             import traceback
