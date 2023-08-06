@@ -43,7 +43,7 @@ class SelfDriveBot(BaseBot, BaseThread):
         self.queue.put(QueueMessage(type="message", data=(message, input_character), return_queue=queue_message_return))
         ret = queue_message_return.get()
         if isinstance(ret, Exception):
-            raise ret
+            raise "发生了错误：%s" % ret
         else:
             return ret
 
@@ -66,4 +66,6 @@ class SelfDriveBot(BaseBot, BaseThread):
                     res = super().interact(ret.data[0], ret.data[1])
                     ret.return_queue.put(res)
                 except Exception as e:
+                    import traceback
+                    self.log.info(traceback.format_exc())
                     ret.return_queue.put(e)

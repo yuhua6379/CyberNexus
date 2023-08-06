@@ -1,6 +1,7 @@
 import time
 from uuid import uuid4
 
+from common import md5
 from datasource.config import vector_db_factory
 from datasource.vectordb.entities import Document
 from repo.character import Character
@@ -13,7 +14,7 @@ class LongTermMemory:
         self.character = character
 
     def _get_memory_collection_name(self):
-        return f'memory_of_{self.character.name}'
+        return f'memory_of_{md5(self.character.name)}'
 
     def save(self, memory: str):
         vector_db_instance = vector_db_factory.get_vector_db(self._get_memory_collection_name())

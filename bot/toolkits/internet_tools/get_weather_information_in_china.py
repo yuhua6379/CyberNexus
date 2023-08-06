@@ -1,9 +1,10 @@
-import logging
 from typing import Union
 
 import requests
 from langchain.tools import StructuredTool
 from pydantic import BaseModel
+
+from common.base_thread import get_logger
 
 
 class WeatherInfo(BaseModel):
@@ -31,7 +32,7 @@ def get_weather_info_in_china(location: str) -> Union[WeatherInfo, str]:
     secondly, you must make sure the location is a valid city
     """
     try:
-        logging.info(f"location of the request is {location}")
+        get_logger().info(f"location of the request is {location}")
         resp = requests.get(
             f'http://www.tianqiapi.com/api?version=v6&appid=23035354&appsecret=8YvlPNrz&city={location}')
         resp.encoding = 'utf-8'
@@ -47,10 +48,10 @@ def get_weather_info_in_china(location: str) -> Union[WeatherInfo, str]:
             temperature_lowest=content['tem2'],
             temperature_highest=content['tem1'])
 
-        logging.info(f"response {wi}")
+        get_logger().info(f"response {wi}")
         return wi
     except Exception as e:
-        logging.error(e)
+        get_logger().error(e)
         return "get_weather failed because of bad network, maybe tell the user to shutoff the proxy will be better"
 
 

@@ -2,8 +2,6 @@ from sqlalchemy import Column, String, Integer, Enum, Boolean
 
 from bot.config.base_conf import EMPTY_ACTION, EMPTY_MESSAGE
 from datasource.rdbms.base_entities import OrmBaseModel, Base
-from datasource.rdbms.sql import Pydantic
-from prompt.prompt_factory.virtual_character import VirtualCharacter
 
 
 class ChatLogModel(OrmBaseModel, Base):

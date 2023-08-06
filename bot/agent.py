@@ -1,18 +1,17 @@
-import logging
 import os
 from typing import List
 
-from langchain.agents import AgentExecutor, OpenAIFunctionsAgent
+import openai
 from langchain.chat_models.base import BaseChatModel
-from langchain.schema import SystemMessage
 from langchain.tools import BaseTool
 from pydantic import BaseModel
 
+from common.base_thread import get_logger
 from datasource.config import rdbms_instance
 from datasource.rdbms.entities import ChatLogModel
 from repo.character import Character
 
-import openai
+
 def complete(prompt):
     messages = [
         {"role": "user", "content": prompt},
@@ -27,6 +26,8 @@ def complete(prompt):
         return response['choices'][0]['message']['content'].strip()
     else:
         return ''
+
+
 class Agent(BaseModel):
     prompt: str
     llm: BaseChatModel
@@ -38,12 +39,12 @@ class Agent(BaseModel):
     def chat(self, message_in: str) -> str:
         message_in = self.on_chat(message_in)
         # message_out = self.agent_core.run(message_in)
-        final_message = self.prompt+"\n\n"+message_in
+        final_message = self.prompt + "\n\n" + message_in
 
         # message_out = self.llm.predict(final_message)
         openai.api_key = os.environ['open_ai_key']
         message_out = complete(final_message)
-        logging.debug(f"[[final message]]: {final_message}")
+        get_logger().debug(f"[[final message]]: {final_message}")
         self.after_chat(message_in, message_out)
 
         return message_out
@@ -52,7 +53,6 @@ class Agent(BaseModel):
         return input_
 
     def after_chat(self, message_in: str, message_out: str):
-
         log = ChatLogModel()
         log.character1_id = self.character1.id
         log.character2_id = self.character2.id

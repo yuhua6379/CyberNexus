@@ -1,15 +1,20 @@
-import logging
-from typing import List
-
 from pydantic import BaseModel
 
 from bot.agent import AgentBuilder
 from bot.brain.longterm_memory import LongTermMemory
 from bot.brain.shorterm_memory import ShortTermMemory
-from bot.config.base_conf import SHORT_TERM_PLAN_PROMPT_TEMPLATE, NANE_OF_SYSTEM, HISTORY_TEMPLATE, \
-    LONG_TERM_PLAN_PROMPT_TEMPLATE, HISTORY_FORMAT, PLAN_FORMAT
+from bot.config.base_conf import SHORT_TERM_PLAN_PROMPT_TEMPLATE, NANE_OF_SYSTEM, LONG_TERM_PLAN_PROMPT_TEMPLATE, \
+    PLAN_FORMAT
 from common.base_thread import get_logger
-from prompt.prompt_factory.core import PromptFactory
+from repo.character import Character
+from pydantic import BaseModel
+
+from bot.agent import AgentBuilder
+from bot.brain.longterm_memory import LongTermMemory
+from bot.brain.shorterm_memory import ShortTermMemory
+from bot.config.base_conf import SHORT_TERM_PLAN_PROMPT_TEMPLATE, NANE_OF_SYSTEM, LONG_TERM_PLAN_PROMPT_TEMPLATE, \
+    PLAN_FORMAT
+from common.base_thread import get_logger
 from repo.character import Character
 
 
@@ -30,12 +35,11 @@ class PlanAbility:
 
     def __init__(self, llm_agent_builder: AgentBuilder,
                  target_character: Character,
-                 factory: PromptFactory,
+
                  st_memory: ShortTermMemory,
                  lt_memory: LongTermMemory):
         self.llm_agent_builder = llm_agent_builder
         self.target_character = target_character
-        self.factory = factory
         self.st_memory = st_memory
         self.lt_memory = lt_memory
 
@@ -49,7 +53,7 @@ class PlanAbility:
 
         # 上帝模式，没有任何多余的prompt，例如角色设定等，仅仅使用原始Agent
         god = Character.get_by_name(NANE_OF_SYSTEM)
-        prompt = f'{self.factory.build()}\n\n'  # 基础人物设定
+        prompt = f'{self.target_character.character_prompt}\n\n'  # 基础人物设定
         agent = self.llm_agent_builder.build(prompt=prompt,
                                              character1=god,
                                              character2=self.target_character)

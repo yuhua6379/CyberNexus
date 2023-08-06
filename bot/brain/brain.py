@@ -5,11 +5,10 @@ from bot.brain.ablity.conclude import ConcludeAbility
 from bot.brain.ablity.plan import PlanAbility
 from bot.brain.longterm_memory import LongTermMemory
 from bot.brain.shorterm_memory import ShortTermMemory
-from bot.config.base_conf import MAX_SHORT_TERM_MEMORY, RELATIVE_MEMORY_TEMPLATE, HISTORY_TEMPLATE, \
+from bot.config.base_conf import MAX_SHORT_TERM_MEMORY, HISTORY_TEMPLATE, \
     REACT_TEMPLATE, HISTORY_FORMAT
 from bot.message import Message
 from common.base_thread import get_logger
-from prompt.prompt_factory.core import PromptFactory
 from repo.character import Character
 from repo.history import History
 
@@ -21,12 +20,11 @@ class Brain:
         self.lt_memory = LongTermMemory(character)
         self.st_memory = ShortTermMemory(max_length=MAX_SHORT_TERM_MEMORY, character=character)
         self.llm_agent_builder = llm_agent_builder
-        self.factory = PromptFactory()
-        self.factory.append(character.character_prompt)
         self.conclude_ability = ConcludeAbility(self.llm_agent_builder, self.character)
 
         self.latest_long_term_plan = None
-        self.plan_ability = PlanAbility(self.llm_agent_builder, self.character, self.factory, self.st_memory, self.lt_memory)
+        self.plan_ability = PlanAbility(self.llm_agent_builder, self.character, self.st_memory,
+                                        self.lt_memory)
 
         self.debug_prompt = ""
 
@@ -58,33 +56,18 @@ class Brain:
         4.记录历史到history，必要时转化为memory
         """
 
-        prompt = (f'{self.factory.build()}\n\n'  # 基础人物设定
+        prompt = (f'{self.character.character_prompt}\n\n'  # 基础人物设定
                   f'{self.get_debug_prompt()}'
                   )
         # c1做出行动，c1对c2说了话，假设llm是c2，等待llm的回应
         react_guide = (f'{HISTORY_FORMAT}\n\n'  # 通用prompt告诉llm用固定格式返回
                        + REACT_TEMPLATE.format(
-                    c1=self.character.name,
-                    message=f'{HISTORY_TEMPLATE.format(content=self.st_memory.to_prompt())}\n'
-                            + str(Message(from_character=input_character.name,
-                                    to_character=self.character.name,
-                                    action=input_.action,
-                                    message=input_.message))))
-
-        # prompt = (f'{self.factory.build()}\n\n'  # 基础人物设定
-        #           f'{self.get_debug_prompt()}'
-        #           f'{RELATIVE_MEMORY_TEMPLATE.format(content=self.associate(input_, input_character))}\n\n'  # 联想到的信息
-        #           f'{HISTORY_TEMPLATE.format(content=self.st_memory.to_prompt())}\n\n'  # 最近的对话
-        #           )
-        #
-        # # c1做出行动，c1对c2说了话，假设llm是c2，等待llm的回应
-        # react_guide = (f'{HISTORY_FORMAT}\n\n'  # 通用prompt告诉llm用固定格式返回
-        #                + REACT_TEMPLATE.format(
-        #             c2=self.character.name,
-        #             message=Message(from_character=input_character.name,
-        #                             to_character=self.character.name,
-        #                             action=input_.action,
-        #                             message=input_.message)))
+                    c2=self.character.name,  # 假设llm是c2，等待llm的回应
+                    message=f'{HISTORY_TEMPLATE.format(content=self.st_memory.to_prompt())}\n'  # c2的历史记录
+                            + str(Message(from_character=input_character.name,  # c1对c2的交互
+                                          to_character=self.character.name,
+                                          action=input_.action,
+                                          message=input_.message))))
 
         get_logger().debug(f"react prompt: \n{prompt}")
         get_logger().debug(f"react guide: \n{react_guide}")

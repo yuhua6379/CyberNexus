@@ -1,11 +1,9 @@
 from enum import Enum
-from typing import Optional
 
 from pydantic import BaseModel
 
 from datasource.config import rdbms_instance
 from datasource.rdbms.entities import CharacterModel
-from prompt.prompt_factory.virtual_character import VirtualCharacter
 
 
 class Character(BaseModel, orm_mode=True):

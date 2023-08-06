@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import Dict
 
 from bot.self_drive_bot import SelfDriveBot
 from common.base_thread import BaseThread

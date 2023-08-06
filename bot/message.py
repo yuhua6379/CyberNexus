@@ -15,4 +15,3 @@ class Message(BaseModel):
         import json
         return json.dumps(self.dict(), ensure_ascii=False)
         # return self.json()
-

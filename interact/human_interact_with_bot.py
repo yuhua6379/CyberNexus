@@ -1,4 +1,3 @@
-from bot.base_bot import SimpleChatBot
 from bot.message import Message
 from bot.self_drive_bot import SelfDriveBot
 from interact.base_interact_tool import BaseInteractTool
