@@ -41,7 +41,11 @@ class SelfDriveBot(BaseBot, BaseThread):
     def interact(self, message: Message, input_character: Character):
         queue_message_return = Queue()
         self.queue.put(QueueMessage(type="message", data=(message, input_character), return_queue=queue_message_return))
-        return queue_message_return.get()
+        ret = queue_message_return.get()
+        if isinstance(ret, Exception):
+            raise ret
+        else:
+            return ret
 
     def run(self):
         self.wait_for_awake()
@@ -62,4 +66,4 @@ class SelfDriveBot(BaseBot, BaseThread):
                     res = super().interact(ret.data[0], ret.data[1])
                     ret.return_queue.put(res)
                 except Exception as e:
-                    ret.return_queue.put(str(e))
+                    ret.return_queue.put(e)
