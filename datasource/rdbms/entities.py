@@ -37,7 +37,7 @@ class CharacterModel(OrmBaseModel, Base):
     __tablename__ = "vb_character"
     name = Column(String(100), nullable=False, unique=True)
     type = Column(Enum("bot", "user", "system"), nullable=False)
-    character_prompt = Column(Pydantic(base_model=VirtualCharacter), nullable=True, unique=False)
+    character_prompt = Column(String(10000), nullable=True, unique=False, default="")
 
 
 class MemoryModel(OrmBaseModel, Base):

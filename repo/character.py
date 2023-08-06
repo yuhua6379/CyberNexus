@@ -21,7 +21,7 @@ class Character(BaseModel, orm_mode=True):
     id: int
     name: str
     type: CharacterType
-    character_prompt: Optional[VirtualCharacter]
+    character_prompt: str
 
     @classmethod
     def get_by_name(cls, name: str):

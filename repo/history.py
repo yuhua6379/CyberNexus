@@ -36,11 +36,21 @@ class History(BaseModel):
                                        action=self.main_action,
                                        message=self.main_message)) + '\n\n'
 
-        else:
             history_str += str(Message(from_character=self.other_character.name,
                                        to_character=self.main_character.name,
                                        action=self.other_action,
                                        message=self.other_message)) + '\n\n'
+
+        if self.direction == Direction.to_main:
+            history_str += str(Message(from_character=self.other_character.name,
+                                       to_character=self.main_character.name,
+                                       action=self.other_action,
+                                       message=self.other_message)) + '\n\n'
+
+            history_str += str(Message(from_character=self.main_character.name,
+                                       to_character=self.other_character.name,
+                                       action=self.main_action,
+                                       message=self.main_message)) + '\n\n'
 
         return history_str
 

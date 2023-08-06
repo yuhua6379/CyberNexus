@@ -16,7 +16,7 @@ if __name__ == '__main__':
     llm = get_openai_llm(openai_api_key=os.environ['open_ai_key'])
 
     yuhua = Character.get_by_name('yuhua')
-    hero = Character.get_by_name('hero')
+    hero = Character.get_by_name('镇长先生')
     fun = HumanInteractWithBot(llm,
                                [get_weather_info_in_china, watch],
                                human=yuhua,

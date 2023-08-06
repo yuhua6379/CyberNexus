@@ -17,7 +17,7 @@ def initialize():
 
             chr_bot.name = "adam"
             chr_bot.type = "bot"
-            chr_bot.character_prompt = adam_virtual_character
+            chr_bot.character_prompt = ""#adam_virtual_character
 
             chr_sys.name = "god"
             chr_sys.type = "system"

@@ -27,3 +27,6 @@ class LongTermMemory:
         vector_db_instance = vector_db_factory.get_vector_db(self._get_memory_collection_name())
         res_list = vector_db_instance.query(key_word)
         return [res.document.content for res in res_list[:10]]
+
+    def latest_memory(self):
+        return "\n".join([memory.content for memory in Memory.get_latest_memory_by_character_id(self.character.id)])

@@ -61,7 +61,8 @@ class HumanInteractWithBot(BaseInteractTool):
                 return "请输入--bot={name}来设定对话机器人的角色"
 
             if self.bot_instance is None:
-                self.bot_instance = SelfDriveBot(llm=self.llm, tools=self.tools, character=self.bot)
+                self.bot_instance = SelfDriveBot(llm=self.llm, tools=self.tools, character=self.bot,
+                                                 steps_of_round=self.controller.steps_of_round)
                 self.bot_instance.start()
                 self.world.join(self.bot_instance)
 

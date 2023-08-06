@@ -23,7 +23,9 @@ class Agent(BaseModel):
     def chat(self, message_in: str) -> str:
         message_in = self.on_chat(message_in)
         # message_out = self.agent_core.run(message_in)
-        message_out = self.llm.predict(self.prompt+"\n"+message_in)
+        final_message = self.prompt+"\n\n"+message_in
+        message_out = self.llm.predict(final_message)
+        logging.debug(f"[[final message]]: {final_message}")
         self.after_chat(message_in, message_out)
 
         return message_out
@@ -32,8 +34,6 @@ class Agent(BaseModel):
         return input_
 
     def after_chat(self, message_in: str, message_out: str):
-        logging.debug(f"{self.character1.name} -> {self.character2.name}: {message_in}")
-        logging.debug(f"{self.character2.name} -> {self.character1.name}: {message_out}")
 
         log = ChatLogModel()
         log.character1_id = self.character1.id

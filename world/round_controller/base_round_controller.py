@@ -4,8 +4,8 @@ from typing import Tuple
 
 
 class BaseRoundController:
-    def __init__(self, steps_count_of_round):
-        self.steps_count_of_round = steps_count_of_round
+    def __init__(self, steps_of_round):
+        self.steps_of_round = steps_of_round
         self.rounds = 0
         self.steps = 0
 
@@ -17,7 +17,7 @@ class BaseRoundController:
         # 每次step + 1
         self.steps += 1
         # 重新计算第几round
-        self.rounds = math.ceil(self.steps / self.steps_count_of_round)
+        self.rounds = math.ceil(self.steps / self.steps_of_round)
 
         self.wait()
 
