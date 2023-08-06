@@ -27,30 +27,30 @@ class History(BaseModel):
 
     direction: Direction
 
-    def __str__(self):
+    def to_prompt(self, simple_string=False):
 
         history_str = ""
         if self.direction == Direction.to_other:
-            history_str += str(Message(from_character=self.main_character.name,
-                                       to_character=self.other_character.name,
-                                       action=self.main_action,
-                                       message=self.main_message)) + '\n\n'
+            history_str += Message(from_character=self.main_character.name,
+                                   to_character=self.other_character.name,
+                                   action=self.main_action,
+                                   message=self.main_message).to_prompt(simple_string) + '\n\n'
 
-            history_str += str(Message(from_character=self.other_character.name,
-                                       to_character=self.main_character.name,
-                                       action=self.other_action,
-                                       message=self.other_message)) + '\n\n'
+            history_str += Message(from_character=self.other_character.name,
+                                   to_character=self.main_character.name,
+                                   action=self.other_action,
+                                   message=self.other_message).to_prompt(simple_string) + '\n\n'
 
         if self.direction == Direction.to_main:
-            history_str += str(Message(from_character=self.other_character.name,
-                                       to_character=self.main_character.name,
-                                       action=self.other_action,
-                                       message=self.other_message)) + '\n\n'
+            history_str += Message(from_character=self.other_character.name,
+                                   to_character=self.main_character.name,
+                                   action=self.other_action,
+                                   message=self.other_message).to_prompt(simple_string) + '\n\n'
 
-            history_str += str(Message(from_character=self.main_character.name,
-                                       to_character=self.other_character.name,
-                                       action=self.main_action,
-                                       message=self.main_message)) + '\n\n'
+            history_str += Message(from_character=self.main_character.name,
+                                   to_character=self.other_character.name,
+                                   action=self.main_action,
+                                   message=self.main_message).to_prompt(simple_string) + '\n\n'
 
         return history_str
 

@@ -2,7 +2,7 @@ from typing import List
 
 from bot.agent import AgentBuilder
 from bot.brain.ablity.conclude import ConcludeAbility
-from bot.brain.ablity.plan import PlanAbility
+from bot.brain.ablity.schedule import ScheduleAbility
 from bot.brain.longterm_memory import LongTermMemory
 from bot.brain.shorterm_memory import ShortTermMemory
 from bot.config.base_conf import MAX_SHORT_TERM_MEMORY, HISTORY_TEMPLATE, \
@@ -22,11 +22,17 @@ class Brain:
         self.llm_agent_builder = llm_agent_builder
         self.conclude_ability = ConcludeAbility(self.llm_agent_builder, self.character)
 
-        self.latest_long_term_plan = None
-        self.plan_ability = PlanAbility(self.llm_agent_builder, self.character, self.st_memory,
-                                        self.lt_memory)
+        self.schedule_ability = ScheduleAbility(self.llm_agent_builder, self.character, self.st_memory,
+                                                self.lt_memory)
+
+        self.schedule_ = None
+        self.items_done = []
+        self.item_doing = None
 
         self.debug_prompt = ""
+
+    def has_schedule(self):
+        return self.schedule_ is not None
 
     def set_debug_prompt(self, prompt: str):
         self.debug_prompt = prompt.strip()
@@ -42,10 +48,16 @@ class Brain:
         # 联想的关键词，要包含input_character的名字，否则可能联想不出input_character的记忆
         kw1 = f'{input_character.name}: {input_.message}'
         kw2 = f'{input_character.name}: {input_.action}'
-        ret = (f"{self.get_relative_memory_prompt(key_word=kw1)}\n"
-               f"{self.get_relative_memory_prompt(key_word=kw2)}").strip()
+        ret = (f"{self.lt_memory.relative_memory_to_prompt(key_word=kw1, limit=2)}\n"
+               f"{self.lt_memory.relative_memory_to_prompt(key_word=kw2, limit=2)}").strip()
         if len(ret) == 0:
-            return "没有数据"
+            return ""
+
+        return ret
+
+    def recent_memory(self):
+        """机器人大脑回想起最近的信息"""
+        return self.lt_memory.latest_memory_to_prompt()
 
     def react(self, input_: Message, input_character: Character):
         """
@@ -54,20 +66,37 @@ class Brain:
         2.从输入associate一些memory
         3.使用llm处理，并作出反应
         4.记录历史到history，必要时转化为memory
+
+        输入的内容 = 基础人物设定 + (历史的交互 + 当前的交互) + (关联memory + 最近memory) + 正在进行的plan
         """
 
         prompt = (f'{self.character.character_prompt}\n\n'  # 基础人物设定
                   f'{self.get_debug_prompt()}'
                   )
+
+        # 短期记忆 = 历史的交互 + 当前的交互
+        history_prompt = f'{HISTORY_TEMPLATE.format(content=self.st_memory.history_to_prompt())}\n'
+        history_prompt += Message(from_character=input_character.name,  # c1对c2的交互
+                                  to_character=self.character.name,
+                                  action=input_.action,
+                                  message=input_.message).to_prompt() + "\n"
+
+        # associate到的长期记忆
+        relative_memory = self.associate(input_, input_character)
+
+        recent_memory = self.recent_memory()
+
+        # 引导llm回答的提示词
+        react_request = REACT_TEMPLATE.format(
+            c2=self.character.name,  # 假设llm是c2，等待llm的回应
+            relative_memory=relative_memory,
+            recent_memory=recent_memory,
+            item_doing=self.item_doing,  # 计划去做的事情
+            history=history_prompt)
+
         # c1做出行动，c1对c2说了话，假设llm是c2，等待llm的回应
         react_guide = (f'{HISTORY_FORMAT}\n\n'  # 通用prompt告诉llm用固定格式返回
-                       + REACT_TEMPLATE.format(
-                    c2=self.character.name,  # 假设llm是c2，等待llm的回应
-                    message=f'{HISTORY_TEMPLATE.format(content=self.st_memory.to_prompt())}\n'  # c2的历史记录
-                            + str(Message(from_character=input_character.name,  # c1对c2的交互
-                                          to_character=self.character.name,
-                                          action=input_.action,
-                                          message=input_.message))))
+                       + react_request)
 
         get_logger().debug(f"react prompt: \n{prompt}")
         get_logger().debug(f"react guide: \n{react_guide}")
@@ -84,24 +113,44 @@ class Brain:
 
         return message
 
-    def long_term_plan(self, steps_of_plan: int):
-        """机器人的大脑具备计划能力，他可以根据目前的情况规划出之后需要做的事情"""
-        self.latest_long_term_plan = self.plan_ability.long_term_ability(steps_of_plan)
-        return self.latest_long_term_plan
+    def _left_pop_item(self):
+        tmp = self.schedule_.schedule[0]
+        self.schedule_.schedule = self.schedule_.schedule[1:]
+        return tmp
 
-    def short_term_plan(self):
-        """机器人具备短期计划的能力，他可以根据目前的情况和长期计划规划出下一步需要做的事情"""
-        return self.plan_ability.short_term_ability(self.latest_long_term_plan)
+    def _record_done(self, item_doing: str):
+        self.items_done.append(item_doing)
+        self.item_doing = self._left_pop_item()
+
+    def schedule(self, steps: int):
+        """机器人的大脑具备计划能力，他可以根据目前的情况规划出之后需要做的事情"""
+        if self.item_doing is not None:
+            # 先判断真正做的是什么
+            item_doing = self.schedule_ability.really_done_item(self.item_doing,
+                                                                self.st_memory.get_history())
+
+            # 记录，并且释放
+            self._record_done(item_doing)
+
+        left_steps = steps - len(self.items_done)
+        if left_steps == 0:
+            # 事项已经全部完成了，把最近发生的事情统统总结
+            self.conclude(self.st_memory.shrink(shrink_all=True))
+
+            # 清空计划
+            self.items_done = []
+            self.item_doing = None
+            self.schedule_ = None
+            left_steps = steps
+
+        # 规划这个round剩下需要做的事情
+        self.schedule_ = self.schedule_ability.schedule(self.character, self.items_done, left_steps)
+        self.item_doing = self._left_pop_item()
+        return self.schedule_
 
     def record(self, character_input: Character, message_in: Message, message_out: Message):
         """机器人大脑记录信息"""
         self.feed_history(character_input, message_in, message_out)
-
-    def search_relative_memory(self, key_word):
-        return self.lt_memory.search(key_word)
-
-    def get_relative_memory_prompt(self, key_word):
-        return "\n".join(self.search_relative_memory(key_word))
 
     def conclude(self, history_list: List[History]):
         """机器人的大脑具备总结的能力，

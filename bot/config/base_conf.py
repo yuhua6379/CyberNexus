@@ -1,4 +1,3 @@
-
 HISTORY_FORMAT = '''
 你需要完成接下来的一系列对话，要求如下：
 """
@@ -19,13 +18,13 @@ HISTORY_FORMAT = '''
 """
 '''
 
-PLAN_FORMAT = '''
-你可以理解角色的计划，当且仅当需要理解角色计划时，使用以下格式:
+SCHEDULE_FORMAT = '''
+你可以理解角色的schedule，使用以下格式:
 你是构建json的能手，你可以精确地构建json，你在任何情况输出的都是json格式，且一定是可以解析的
 你必须用json格式表示角色的计划，如下：
-plan是你的计划，是一个有顺序的数组，包含了若干个字符串，每一个字符串都是一个步骤
+schedule是你的日程，是一个有顺序的数组，包含了若干个字符串，每一个字符串都是一个步骤
 例如：
-{"plan":["xxxx", "xxxxx"]}
+{"schedule":["xxxx", "xxxxx"]}
 '''
 
 CONCLUDE_PROMPT_TEMPLATE = '''
@@ -36,26 +35,28 @@ CONCLUDE_PROMPT_TEMPLATE = '''
 请你用一段长度适中的话总结一下这段交互，而且你只能输出这句话
 '''
 
-SHORT_TERM_PLAN_PROMPT_TEMPLATE = '''
+IF_ITEM_DONE_TEMPLATE = '''
 这是一些最近的记忆:
 {memory}
 
-{plan_format}
-这是你的长期计划:
-{long_term_plan}
+这是你计划做的事情，但这事情可能受到干扰未必会完成:
+{item}
 
-这是你最近执行了的计划，可能处于某些原因实际执行的结果会跟你的长期计划有冲突，以执行了的计划为准:
-{executed_plan}
+这是最近的交互:
+{history_string}
 
-请你回应1个计划，包含1个步骤，记住，仅仅只有1个步骤
+请你用一句话总结一下你最近真正做的事情
 '''
 
-LONG_TERM_PLAN_PROMPT_TEMPLATE = '''
+SCHEDULING_PROMPT_TEMPLATE = '''
 这是一些最近的记忆:
 {memory}
 
-{plan_format}
-请你回应1个计划，包含{steps_of_round}个步骤
+{schedule_format}
+
+这是你已完成的事项:
+{item_done}
+请你回应1个计划，包含{steps}个步骤
 '''
 
 RELATIVE_MEMORY_TEMPLATE = '''以下是相关的一些记忆:\n{content}'''
@@ -68,8 +69,17 @@ EMPTY_ACTION = ""
 EMPTY_MESSAGE = ""
 
 REACT_TEMPLATE = '''
-对话记录：
-{message}
+相关的记忆:
+{relative_memory}
+
+最近的记忆:
+{recent_memory}
+
+正在进行的计划:
+{item_doing}
+
+交互记录：
+{history}
 请生成{c2}的回复：<填写>
 '''
 

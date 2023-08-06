@@ -11,7 +11,8 @@ class Message(BaseModel):
     action: Optional[str] = EMPTY_ACTION
     message: Optional[str] = EMPTY_MESSAGE
 
-    def __str__(self):
+    def to_prompt(self, simple_string=False):
+        if simple_string:
+            return f'{self.from_character}的动作:{self.action}\n{self.from_character}对{self.to_character}说:{self.message}'
         import json
         return json.dumps(self.dict(), ensure_ascii=False)
-        # return self.json()

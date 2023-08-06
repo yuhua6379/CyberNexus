@@ -1,32 +1,40 @@
-from typing import Dict
+import math
+from typing import Dict, Tuple
 
 from bot.self_drive_bot import SelfDriveBot
-from common.base_thread import BaseThread
-from world.round_controller.time_base_controller import BaseRoundController
-from world.situation import BaseSituation
+from common.base_thread import get_logger
+from world.botbroker import SyncBotBroker
 
 
-class BaseWorld(BaseThread):
+class TurnBaseWorld:
 
-    def __init__(self, round_controller: BaseRoundController, logger_name):
-        super().__init__(logger_name)
-        self.bots: Dict[int, SelfDriveBot] = {}
-        self.round_controller = round_controller
+    def __init__(self, steps_of_round: int, broker: SyncBotBroker):
+        self.broker = broker
+
+        self.steps_of_round = steps_of_round
+        self.rounds = 0
+        self.steps = 0
+
+    def next(self) -> Tuple[int, int]:
+        # 每次step + 1
+        self.steps += 1
+        # 重新计算第几round
+        self.rounds = math.ceil(self.steps / self.steps_of_round)
+
+        return self.steps, self.rounds
 
     def join(self, bot: SelfDriveBot):
         """机器人通过这个方法加入到这个world内"""
-        if bot in self.bots:
-            return
-        self.bots[bot.character.id] = bot
+        bot.set_steps_of_round(self.steps_of_round)
+        self.broker.join(bot)
 
     # @abstractmethod
-    def wake_bot(self, bot: SelfDriveBot, step: int, round_: int):
-        bot.wake(BaseSituation(step=step, round=round_))
+    def _wake_bot(self, bot: SelfDriveBot, step: int, round_: int):
+        self.broker.wake_bot(bot, step, round_)
 
     def run(self):
-        while True:
-            step, round_ = self.round_controller.next()
-            self.log.info(f"step: {step} round: {round_}")
-            for bot in self.bots.values():
-                self.log.info(f"wake bot: {bot.character.id} - {bot.character.name}")
-                self.wake_bot(bot, step, round_)
+        step, round_ = self.next()
+        get_logger().info(f"step: {step} round: {round_}")
+        for bot in self.broker.bots.values():
+            get_logger().info(f"wake bot: {bot.character.id} - {bot.character.name}")
+            self._wake_bot(bot, step, round_)

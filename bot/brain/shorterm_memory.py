@@ -18,8 +18,13 @@ class ShortTermMemory:
                             direction=Direction.to_main
                             ))
 
-    def shrink(self):
+    def shrink(self, shrink_all=False):
         history_list = History.get_available_history_by_character_id(self.character.id)
+
+        if shrink_all is True:
+            # 全部shrink掉
+            return history_list
+
         if len(history_list) >= self.max_length:
             shrink_cnt = int(len(history_list) / 2)
             ret_list = history_list[0: shrink_cnt]
@@ -31,15 +36,18 @@ class ShortTermMemory:
     def batch_set_history_remembered(cls, ids: list[int]):
         History.batch_set_history_remembered(ids)
 
-    def to_prompt(self):
+    def get_history(self) -> list[History]:
+        return History.get_available_history_by_character_id(self.character.id)
+
+    def history_to_prompt(self):
         history_list = History.get_available_history_by_character_id(self.character.id)
         ret = ""
         for history in history_list:
-            dialog = str(history)
+            dialog = history.to_prompt()
 
             ret += dialog
         if len(ret) == 0:
-            return "没有数据"
+            return ""
         return ret
 
 # class ShortTermMemory(BaseMemory):

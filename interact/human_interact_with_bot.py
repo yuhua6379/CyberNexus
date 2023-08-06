@@ -3,8 +3,9 @@ from bot.self_drive_bot import SelfDriveBot
 from interact.base_interact_tool import BaseInteractTool
 
 from repo.character import Character
-from world.round_controller.turn_base_round_controller import TurnBaseController
-from world.world import BaseWorld
+
+from world.botbroker import SyncBotBroker
+from world.world import TurnBaseWorld
 
 
 class HumanInteractWithBot(BaseInteractTool):
@@ -14,11 +15,11 @@ class HumanInteractWithBot(BaseInteractTool):
         self.bot = bot
         self.llm = llm
         self.tools = tools
-        self.controller = TurnBaseController(10)
-        self.world = BaseWorld(round_controller=self.controller, logger_name="world")
-        self.world.start()
+        self.world = TurnBaseWorld(steps_of_round=5, broker=SyncBotBroker())
         self.bot_instance = None
         self.inject_prompt = ""
+
+        self.counting = 0
 
     def call(self, message: str):
         try:
@@ -60,16 +61,19 @@ class HumanInteractWithBot(BaseInteractTool):
                 return "请输入--bot={name}来设定对话机器人的角色"
 
             if self.bot_instance is None:
-                self.bot_instance = SelfDriveBot(llm=self.llm, tools=self.tools, character=self.bot,
-                                                 steps_of_round=self.controller.steps_of_round)
-                self.bot_instance.start()
+                self.bot_instance = SelfDriveBot(llm=self.llm, tools=self.tools, character=self.bot)
                 self.world.join(self.bot_instance)
+
 
             if message.find("||") != -1:
                 message = message.split("||")
             else:
                 message = ["", message]
 
+            if self.counting % 5 == 0:
+                # 设定交互5次就改变一次日程
+                self.world.run()
+            self.counting += 1
             self.bot_instance.set_debug_prompt(self.inject_prompt)
             ret = self.bot_instance.interact(Message(
                 from_character=self.human.name,
@@ -77,8 +81,6 @@ class HumanInteractWithBot(BaseInteractTool):
                 action=message[0],
                 message=message[1]), self.human)
 
-            # 控制回合制控制器往下走一步
-            self.controller.move_to_next_step()
             return f"动作：{ret.action}\n对话：{ret.message}"
 
         except:

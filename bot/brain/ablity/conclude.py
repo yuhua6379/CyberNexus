@@ -15,7 +15,7 @@ class ConcludeAbility:
         self.target_character = target_character
 
     def conclude(self, history_list: List[History]):
-        history_string = "\n".join([str(history) for history in history_list])
+        history_string = "\n".join([history.to_prompt() for history in history_list])
         get_logger().debug("concluding...\n" + history_string)
         conclude_prompt = CONCLUDE_PROMPT_TEMPLATE.format(history=history_string, history_format=HISTORY_FORMAT)
 
