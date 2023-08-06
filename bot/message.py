@@ -12,5 +12,7 @@ class Message(BaseModel):
     message: Optional[str] = EMPTY_MESSAGE
 
     def __str__(self):
-        return self.json()
+        import json
+        return json.dumps(self.dict(), ensure_ascii=False)
+        # return self.json()
 

@@ -25,5 +25,5 @@ if __name__ == '__main__':
     ret = bot.interact(Message(from_character=chr_me.name,
                                to_character=chr_bot.name,
                                action="",
-                               message="你是说"), chr_me)
-    print(ret)
+                               message="你有什么计划？"), chr_me)
+    print(ret.dict())
