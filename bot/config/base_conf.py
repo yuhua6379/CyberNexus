@@ -96,7 +96,7 @@ EMPTY_MESSAGE = ""
 REACT_TEMPLATE = '''
 对话记录：
 {message}
-你的回复：<填写>
+请生成{c1}的回复：<填写>
 '''
 
 NANE_OF_SYSTEM = "god"

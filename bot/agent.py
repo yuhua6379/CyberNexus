@@ -1,4 +1,5 @@
 import logging
+import os
 from typing import List
 
 from langchain.agents import AgentExecutor, OpenAIFunctionsAgent
@@ -40,7 +41,7 @@ class Agent(BaseModel):
         final_message = self.prompt+"\n\n"+message_in
 
         # message_out = self.llm.predict(final_message)
-        openai.api_key = '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'
+        openai.api_key = os.environ['open_ai_key']
         message_out = complete(final_message)
         logging.debug(f"[[final message]]: {final_message}")
         self.after_chat(message_in, message_out)

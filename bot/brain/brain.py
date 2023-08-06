@@ -64,6 +64,7 @@ class Brain:
         # c1做出行动，c1对c2说了话，假设llm是c2，等待llm的回应
         react_guide = (f'{HISTORY_FORMAT}\n\n'  # 通用prompt告诉llm用固定格式返回
                        + REACT_TEMPLATE.format(
+                    c1=self.character.name,
                     message=f'{HISTORY_TEMPLATE.format(content=self.st_memory.to_prompt())}\n'
                             + str(Message(from_character=input_character.name,
                                     to_character=self.character.name,
