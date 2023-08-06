@@ -81,7 +81,7 @@ class HumanInteractWithBot(BaseInteractTool):
                 action=message[0],
                 message=message[1]), self.human)
 
-            return f"动作：{ret.action}\n对话：{ret.message}"
+            return f"<span style='color:gray;'>*{ret.action}*</span>       {ret.message}"
 
         except:
             import traceback
