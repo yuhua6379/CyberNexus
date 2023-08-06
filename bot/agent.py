@@ -11,7 +11,21 @@ from datasource.config import rdbms_instance
 from datasource.rdbms.entities import ChatLogModel
 from repo.character import Character
 
+import openai
+def complete(prompt):
+    messages = [
+        {"role": "user", "content": prompt},
+    ]
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",  # 选择适当的引擎
+        messages=messages,
+        temperature=0
+    )
 
+    if response['choices'][0]['message']:
+        return response['choices'][0]['message']['content'].strip()
+    else:
+        return ''
 class Agent(BaseModel):
     prompt: str
     llm: BaseChatModel
@@ -24,7 +38,10 @@ class Agent(BaseModel):
         message_in = self.on_chat(message_in)
         # message_out = self.agent_core.run(message_in)
         final_message = self.prompt+"\n\n"+message_in
-        message_out = self.llm.predict(final_message)
+
+        # message_out = self.llm.predict(final_message)
+        openai.api_key = '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'
+        message_out = complete(final_message)
         logging.debug(f"[[final message]]: {final_message}")
         self.after_chat(message_in, message_out)
 
