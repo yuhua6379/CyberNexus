@@ -3,6 +3,7 @@ import os
 import initialize
 from bot.agent import Character
 from bot.base_bot import SimpleChatBot
+from bot.message import Message
 from bot.toolkits.internet_tools.get_weather_information_in_china import get_weather_info_in_china
 from bot.toolkits.system_tools.watch import watch
 from model.openai import get_openai_llm
@@ -17,8 +18,12 @@ if __name__ == '__main__':
 
     # 设置聊天对象，name是唯一的，会根据对象去加载历史聊天记录
     chr_me = Character.get_by_name("yuhua")
-    chr_bot = Character.get_by_name("wang")
+    chr_bot = Character.get_by_name("镇长先生")
 
     # 构建一个bot，用于聊天
     bot = SimpleChatBot(llm=llm, tools=[get_weather_info_in_china, watch], character=chr_bot)
-    bot.interact("你记得你第一次溜冰是什么时候吗？", chr_me)
+    ret = bot.interact(Message(from_character=chr_me.name,
+                               to_character=chr_bot.name,
+                               action="",
+                               message="你是说"), chr_me)
+    print(ret)
