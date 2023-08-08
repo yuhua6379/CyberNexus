@@ -2,6 +2,7 @@ from sqlalchemy import Column, String, Integer, Enum, Boolean
 
 from bot.config.base_conf import EMPTY_ACTION, EMPTY_MESSAGE
 from datasource.rdbms.base_entities import OrmBaseModel, Base
+from datasource.rdbms.sql import Json
 
 
 class ChatLogModel(OrmBaseModel, Base):
@@ -26,6 +27,9 @@ class HistoryModel(OrmBaseModel, Base):
     main_action = Column(String(10000), nullable=False, default=EMPTY_ACTION)
     other_action = Column(String(10000), nullable=False, default=EMPTY_MESSAGE)
 
+    main_stop = Column(Integer, nullable=False)
+    other_stop = Column(Integer, nullable=False)
+
     direction = Column(Enum("to_other", "to_main"), nullable=False)
 
     remembered = Column(Boolean, default=False, nullable=False)
@@ -43,3 +47,16 @@ class MemoryModel(OrmBaseModel, Base):
     character_id = Column(Integer, nullable=False)
     vector_db_id = Column(String(64), nullable=False, unique=True)
     content = Column(String(60000), nullable=False)
+
+
+class ScheduleModel(OrmBaseModel, Base):
+    __tablename__ = 'vb_schedule'
+    character_id = Column(Integer, nullable=False, unique=True)
+    items_to_do = Column(Json, nullable=False, default='[]')
+    item_doing = Column(String(1000), nullable=True)
+
+
+class ScheduleLogModel(OrmBaseModel, Base):
+    __tablename__ = 'vb_schedule_log'
+    character_id = Column(Integer, nullable=False, index=True)
+    item_done = Column(String(1000), nullable=False)

@@ -17,7 +17,7 @@ if __name__ == '__main__':
 
     yuhua = Character.get_by_name('yuhua')
 
-    bot = Character.get_by_name('镇长先生')
+    bot = Character.get_by_name('hero')
     fun = HumanInteractWithBot(llm,
                                [get_weather_info_in_china, watch],
                                human=yuhua,

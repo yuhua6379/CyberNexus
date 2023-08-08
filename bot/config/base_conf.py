@@ -7,13 +7,24 @@ HISTORY_FORMAT = '''
 - "action": 此参数为可选，表示角色做出的动作。此处不能使用‘我’，而应使用具体名字。若无动作，则不加入此参数。
 - "message": 此参数为可选，表示角色所说的话或者自言自语。不可用于陈述行动。若不需说话，则不加入此参数。
 - "message" 和 "action" 中至少要有一个"。
+- "stop": 此参数意味着from_character代表的角色是不是需要继续跟to_character代表的角色继续互动，如果继续互动就是0，否则是1
 
-示例：
+示例1：
 {
     "from_character": "lisa",
     "to_character": "tom",
     "action": "lisa 看了看天空，并对 tom 说道 ",
-    "message": " 今天天气真不错，你不觉得吗？"
+    "message": " 今天天气真不错，你不觉得吗？",
+    "stop": 0
+}
+
+示例2：
+{
+    "from_character": "tom",
+    "to_character": "jack",
+    "action": "tom 一脸焦躁",
+    "message": " 我必须走了，不然赶不上3点半的火车了",
+    "stop": 1
 }
 """
 '''
@@ -24,7 +35,9 @@ SCHEDULE_FORMAT = '''
 你必须用json格式表示角色的计划，如下：
 schedule是你的日程，是一个有顺序的数组，包含了若干个字符串，每一个字符串都是一个步骤
 例如：
-{"schedule":["xxxx", "xxxxx"]}
+{
+    "schedule": ["xxxx", "xxxxx"] 
+}
 '''
 
 CONCLUDE_PROMPT_TEMPLATE = '''

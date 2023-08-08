@@ -10,6 +10,7 @@ class Message(BaseModel):
     to_character: str
     action: Optional[str] = EMPTY_ACTION
     message: Optional[str] = EMPTY_MESSAGE
+    stop: int = 0
 
     def to_prompt(self, simple_string=False):
         if simple_string:

@@ -11,6 +11,7 @@ from bot.message import Message
 from common.base_thread import get_logger
 from repo.character import Character
 from repo.history import History
+from repo.scheudle import Schedule, SCHEDULE_COUNT
 
 
 class Brain:
@@ -25,14 +26,7 @@ class Brain:
         self.schedule_ability = ScheduleAbility(self.llm_agent_builder, self.character, self.st_memory,
                                                 self.lt_memory)
 
-        self.schedule_ = None
-        self.items_done = []
-        self.item_doing = None
-
         self.debug_prompt = ""
-
-    def has_schedule(self):
-        return self.schedule_ is not None
 
     def set_debug_prompt(self, prompt: str):
         self.debug_prompt = prompt.strip()
@@ -76,22 +70,23 @@ class Brain:
 
         # 短期记忆 = 历史的交互 + 当前的交互
         history_prompt = f'{HISTORY_TEMPLATE.format(content=self.st_memory.history_to_prompt())}\n'
-        history_prompt += Message(from_character=input_character.name,  # c1对c2的交互
-                                  to_character=self.character.name,
-                                  action=input_.action,
-                                  message=input_.message).to_prompt() + "\n"
+        history_prompt += input_.to_prompt() + "\n" # c1 对 c2的交互
 
         # associate到的长期记忆
         relative_memory = self.associate(input_, input_character)
 
         recent_memory = self.recent_memory()
 
+        item_doing = None
+        if Schedule.get_by_character(self.character.id) is not None:
+            item_doing = Schedule.get_by_character(self.character.id).item_doing
+
         # 引导llm回答的提示词
         react_request = REACT_TEMPLATE.format(
             c2=self.character.name,  # 假设llm是c2，等待llm的回应
             relative_memory=relative_memory,
             recent_memory=recent_memory,
-            item_doing=self.item_doing,  # 计划去做的事情
+            item_doing=item_doing,  # 计划去做的事情
             history=history_prompt)
 
         # c1做出行动，c1对c2说了话，假设llm是c2，等待llm的回应
@@ -113,40 +108,42 @@ class Brain:
 
         return message
 
-    def _left_pop_item(self):
-        tmp = self.schedule_.schedule[0]
-        self.schedule_.schedule = self.schedule_.schedule[1:]
-        return tmp
-
-    def _record_done(self, item_doing: str):
-        self.items_done.append(item_doing)
-        self.item_doing = self._left_pop_item()
-
-    def schedule(self, steps: int):
+    def schedule(self, step: int, round_: int, left_step: int):
         """机器人的大脑具备计划能力，他可以根据目前的情况规划出之后需要做的事情"""
-        if self.item_doing is not None:
-            # 先判断真正做的是什么
-            item_doing = self.schedule_ability.really_done_item(self.item_doing,
-                                                                self.st_memory.get_history())
+        schedule = Schedule.get_by_character(self.character.id)
 
-            # 记录，并且释放
-            self._record_done(item_doing)
+        if schedule is None:
+            # 冷启动，规划
+            llm_return = self.schedule_ability.schedule(self.character, [], SCHEDULE_COUNT)
 
-        left_steps = steps - len(self.items_done)
-        if left_steps == 0:
-            # 事项已经全部完成了，把最近发生的事情统统总结
-            self.conclude(self.st_memory.shrink(shrink_all=True))
+            # 安排一件正在做的item
+            item_to_do = llm_return.schedule
+            item_doing = llm_return.schedule[0]
+            schedule = Schedule(character_id=self.character.id,
+                                item_doing=item_doing,
+                                items_to_do=item_to_do)
+            schedule.renew(schedule)
+        else:
+            # 先判断真正做了的是什么
+            item_done = self.schedule_ability.really_done_item(schedule.item_doing,
+                                                               self.st_memory.get_history())
 
-            # 清空计划
-            self.items_done = []
-            self.item_doing = None
-            self.schedule_ = None
-            left_steps = steps
+            if left_step == 0:
+                # 这个round已经结束了，总结下最近的事情
+                self.conclude(self.st_memory.shrink(shrink_all=True))
 
-        # 规划这个round剩下需要做的事情
-        self.schedule_ = self.schedule_ability.schedule(self.character, self.items_done, left_steps)
-        self.item_doing = self._left_pop_item()
-        return self.schedule_
+            recent_done_item = Schedule.get_recent_done_items(self.character.id) + [item_done]
+            # 调整计划
+            llm_return = self.schedule_ability.schedule(self.character,
+                                                        recent_done_item,
+                                                        SCHEDULE_COUNT)
+
+            # 安排一件正在做的item
+            item_to_do = llm_return.schedule
+            item_doing = llm_return.schedule[0]
+
+            # 标记完成item，记录
+            schedule.finish_item(item_done=item_done, items_to_do=item_to_do, item_doing=item_doing)
 
     def record(self, character_input: Character, message_in: Message, message_out: Message):
         """机器人大脑记录信息"""

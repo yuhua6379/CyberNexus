@@ -11,7 +11,7 @@ from repo.character import Character
 from repo.history import History
 
 
-class Schedule(BaseModel):
+class LLMSchedule(BaseModel):
     schedule: list[str]
 
     def to_prompt(self):
@@ -81,6 +81,6 @@ class ScheduleAbility:
         schedule = agent.chat(plan_guide)
 
         get_logger().info(f"schedule return: \n{schedule}")
-        schedule = Schedule.parse_raw(schedule)
+        schedule = LLMSchedule.parse_raw(schedule)
 
         return schedule

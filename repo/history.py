@@ -25,6 +25,9 @@ class History(BaseModel):
     main_action: Optional[str] = EMPTY_ACTION
     other_action: Optional[str] = EMPTY_ACTION
 
+    main_stop: int
+    other_stop: int
+
     direction: Direction
 
     def to_prompt(self, simple_string=False):
@@ -34,23 +37,27 @@ class History(BaseModel):
             history_str += Message(from_character=self.main_character.name,
                                    to_character=self.other_character.name,
                                    action=self.main_action,
-                                   message=self.main_message).to_prompt(simple_string) + '\n\n'
+                                   message=self.main_message,
+                                   stop=self.main_stop).to_prompt(simple_string) + '\n\n'
 
             history_str += Message(from_character=self.other_character.name,
                                    to_character=self.main_character.name,
                                    action=self.other_action,
-                                   message=self.other_message).to_prompt(simple_string) + '\n\n'
+                                   message=self.other_message,
+                                   stop=self.other_stop).to_prompt(simple_string) + '\n\n'
 
         if self.direction == Direction.to_main:
             history_str += Message(from_character=self.other_character.name,
                                    to_character=self.main_character.name,
                                    action=self.other_action,
-                                   message=self.other_message).to_prompt(simple_string) + '\n\n'
+                                   message=self.other_message,
+                                   stop=self.other_stop).to_prompt(simple_string) + '\n\n'
 
             history_str += Message(from_character=self.main_character.name,
                                    to_character=self.other_character.name,
                                    action=self.main_action,
-                                   message=self.main_message).to_prompt(simple_string) + '\n\n'
+                                   message=self.main_message,
+                                   stop=self.main_stop).to_prompt(simple_string) + '\n\n'
 
         return history_str
 
@@ -64,7 +71,9 @@ class History(BaseModel):
                    other_message=model.other_message,
                    main_action=model.main_action,
                    other_action=model.other_action,
-                   direction=model.direction
+                   direction=model.direction,
+                   main_stop=model.main_stop,
+                   other_stop=model.other_stop
                    )
 
     @classmethod
@@ -77,6 +86,8 @@ class History(BaseModel):
         model.other_message = history.other_message
         model.main_action = history.main_action
         model.other_action = history.other_action
+        model.main_stop = history.main_stop
+        model.other_stop = history.other_stop
 
         model.direction = history.direction.value
 

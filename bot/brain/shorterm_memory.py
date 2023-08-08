@@ -15,7 +15,9 @@ class ShortTermMemory:
                             main_action=message_out.action,
                             other_message=message_in.message,
                             other_action=message_in.action,
-                            direction=Direction.to_main
+                            direction=Direction.to_main,
+                            main_stop=message_in.stop,
+                            other_stop=message_out.stop
                             ))
 
     def shrink(self, shrink_all=False):
