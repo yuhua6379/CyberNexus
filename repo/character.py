@@ -28,7 +28,7 @@ class Character(BaseModel, orm_mode=True):
             return Character.from_orm(result)
 
     @classmethod
-    def create_if_not_exists(cls, name: str, type_: CharacterType= 'user'):
+    def create_if_not_exists(cls, name: str, type_: CharacterType = 'user'):
         with rdbms_instance.get_session() as session:
             count = session.query(CharacterModel).filter(CharacterModel.name == name).count()
             if count == 0:

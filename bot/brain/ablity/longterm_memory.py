@@ -30,15 +30,3 @@ class LongTermMemory:
 
     def latest_memory(self):
         return [memory.content for memory in Memory.get_latest_memory_by_character_id(self.character.id)]
-
-    def relative_memory_to_prompt(self, key_word, limit):
-        ret = "\n".join(self.search(key_word, limit)).strip()
-        if len(ret) == 0:
-            return ""
-        return ret
-
-    def latest_memory_to_prompt(self):
-        ret = "\n".join(self.latest_memory()).strip()
-        if len(ret) == 0:
-            return ""
-        return ret

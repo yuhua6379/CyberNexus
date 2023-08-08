@@ -1,5 +1,5 @@
 import math
-from typing import Dict, Tuple
+from typing import Tuple
 
 from bot.self_drive_bot import SelfDriveBot
 from common.base_thread import get_logger

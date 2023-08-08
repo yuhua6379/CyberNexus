@@ -6,7 +6,6 @@ from langchain.chat_models.base import BaseChatModel
 from langchain.tools import BaseTool
 from pydantic import BaseModel
 
-from common.base_thread import get_logger
 from datasource.config import rdbms_instance
 from datasource.rdbms.entities import ChatLogModel
 from repo.character import Character

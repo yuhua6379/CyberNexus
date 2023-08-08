@@ -4,8 +4,6 @@ import initialize
 from bot.agent import Character
 from bot.base_bot import SimpleChatBot
 from bot.message import Message
-from bot.toolkits.internet_tools.get_weather_information_in_china import get_weather_info_in_china
-from bot.toolkits.system_tools.watch import watch
 from model.openai import get_openai_llm
 
 if __name__ == '__main__':
@@ -21,8 +19,8 @@ if __name__ == '__main__':
     chr_bot = Character.get_by_name("镇长先生")
 
     # 构建一个bot，用于聊天
-    bot1 = SimpleChatBot(llm=llm, tools= "", character=chr_bot)
-    bot2 = SimpleChatBot(llm=llm, tools= "", character=chr_me)
+    bot1 = SimpleChatBot(llm=llm, tools="", character=chr_bot)
+    bot2 = SimpleChatBot(llm=llm, tools="", character=chr_me)
 
     start = bot1.startInteract(chr_me)
 
@@ -49,7 +47,5 @@ if __name__ == '__main__':
         if stop > 0:
             break
         max_turn = max_turn - 1
-
-
 
     print(ret.dict())
