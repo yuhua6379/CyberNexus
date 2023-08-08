@@ -31,7 +31,9 @@ if __name__ == '__main__':
                                 action=start.action,
                                 message=start.message), chr_me)
 
-    while True:
+    max_turn = 8
+
+    while max_turn > 0:
         stop = 0
         ret = bot1.interact(Message(from_character=chr_me.name,
                                     to_character=chr_bot.name,
@@ -46,6 +48,7 @@ if __name__ == '__main__':
 
         if stop > 0:
             break
+        max_turn = max_turn - 1
 
 
 
