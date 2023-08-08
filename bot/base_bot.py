@@ -14,8 +14,13 @@ class BaseBot:
         self.character = character
         self.brain = Brain(character, AgentBuilder(llm=llm, tools=tools))
 
-    def interact(self, message: Message, input_character: Character):
-        return self.brain.react(message, input_character)
+    def interact(self, message: Message, input_character: Character, debug: bool = True):
+        return self.brain.react(message, input_character, debug)
+
+    def startInteract(self, input_character: Character):
+        return self.brain.startInteract(input_character)
+
+
 
     def set_debug_prompt(self, prompt: str):
         self.brain.set_debug_prompt(prompt)

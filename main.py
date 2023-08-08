@@ -14,7 +14,7 @@ if __name__ == '__main__':
     # print(f'your key is {os.environ["open_ai_key"]}')
 
     # 获取llm实例，用于后面predict
-    llm = get_openai_llm(openai_api_key=os.environ['open_ai_key'])
+    llm = get_openai_llm(openai_api_key=os.environ['openai_api_key'])
 
     # 设置聊天对象，name是唯一的，会根据对象去加载历史聊天记录
     chr_me = Character.get_by_name("yuhua")
