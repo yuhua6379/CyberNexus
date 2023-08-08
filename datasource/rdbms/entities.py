@@ -1,6 +1,5 @@
 from sqlalchemy import Column, String, Integer, Enum, Boolean
 
-from bot.config.base_conf import EMPTY_ACTION, EMPTY_MESSAGE
 from datasource.rdbms.base_entities import OrmBaseModel, Base
 from datasource.rdbms.sql import Json
 
@@ -21,11 +20,11 @@ class HistoryModel(OrmBaseModel, Base):
     main_character_id = Column(Integer, nullable=False, index=True)
     other_character_id = Column(Integer, nullable=False, index=True)
 
-    main_message = Column(String(10000), nullable=False, default=EMPTY_ACTION)
-    other_message = Column(String(10000), nullable=False, default=EMPTY_MESSAGE)
+    main_message = Column(String(10000), nullable=False, default="")
+    other_message = Column(String(10000), nullable=False, default="")
 
-    main_action = Column(String(10000), nullable=False, default=EMPTY_ACTION)
-    other_action = Column(String(10000), nullable=False, default=EMPTY_MESSAGE)
+    main_action = Column(String(10000), nullable=False, default="")
+    other_action = Column(String(10000), nullable=False, default="")
 
     main_stop = Column(Integer, nullable=False)
     other_stop = Column(Integer, nullable=False)

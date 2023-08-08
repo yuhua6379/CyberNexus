@@ -4,7 +4,6 @@ from typing import Optional
 from pydantic import BaseModel
 from sqlalchemy import and_
 
-from bot.config.base_conf import EMPTY_ACTION, EMPTY_MESSAGE
 from bot.message import Message
 from datasource.config import rdbms_instance
 from datasource.rdbms.entities import HistoryModel
@@ -20,10 +19,10 @@ class History(BaseModel):
     id: Optional[int]
     main_character: Character
     other_character: Character
-    main_message: Optional[str] = EMPTY_MESSAGE
-    other_message: Optional[str] = EMPTY_MESSAGE
-    main_action: Optional[str] = EMPTY_ACTION
-    other_action: Optional[str] = EMPTY_ACTION
+    main_message: Optional[str] = ""
+    other_message: Optional[str] = ""
+    main_action: Optional[str] = ""
+    other_action: Optional[str] = ""
 
     main_stop: int
     other_stop: int

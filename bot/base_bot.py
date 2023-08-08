@@ -14,8 +14,8 @@ class BaseBot:
         self.character = character
         self.brain = Brain(character, AgentBuilder(llm=llm, tools=tools))
 
-    def interact(self, message: Message, input_character: Character, debug: bool = True):
-        return self.brain.react(message, input_character, debug)
+    def interact(self, message: Message, input_character: Character):
+        return self.brain.react(message, input_character)
 
     def meet(self, input_character: Character):
         return self.brain.stimulus_of_character(input_character)

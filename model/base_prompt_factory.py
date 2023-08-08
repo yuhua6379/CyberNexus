@@ -165,10 +165,10 @@ class BasePromptFactory:
         return prompt
 
     def on_build_stimulus_of_character(self,
-                              input_character: Character,
-                              history_list: list[History],
-                              relative_memory: list[Document],
-                              recent_memory: list[Memory]):
+                                       input_character: Character,
+                                       history_list: list[History],
+                                       relative_memory: list[Document],
+                                       recent_memory: list[Memory]):
         # TODO: 实现碰到角色时被刺激到的prompt
         return ""
 

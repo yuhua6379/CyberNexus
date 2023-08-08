@@ -38,7 +38,7 @@ class PromptBroker:
                                              target_item: str,
                                              history_list: list[History],
                                              recent_memory: list[Memory]):
-        self.factory.on_build_determine_whether_item_finish_prompt(
+        return self.factory.on_build_determine_whether_item_finish_prompt(
             character, target_item, history_list, recent_memory)
 
     def react_prompt(self,
@@ -48,5 +48,5 @@ class PromptBroker:
                      history_list: list[History],
                      relative_memory: list[Document],
                      recent_memory: list[Memory]):
-        self.factory.on_build_react_prompt(
+        return self.factory.on_build_react_prompt(
             character, input_, item_doing, history_list, relative_memory, recent_memory)

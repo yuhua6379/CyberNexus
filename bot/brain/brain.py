@@ -77,7 +77,7 @@ class Brain:
 
         if schedule is None:
             # 冷启动，规划
-            llm_return = self.schedule_ability.schedule(self.character, [], SCHEDULE_COUNT)
+            llm_return = self.schedule_ability.schedule(self.character, [], SCHEDULE_COUNT, self.recent_memory())
 
             # 安排一件正在做的item
             item_to_do = llm_return.schedule
