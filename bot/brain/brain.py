@@ -6,7 +6,7 @@ from bot.brain.ablity.schedule import ScheduleAbility
 from bot.brain.longterm_memory import LongTermMemory
 from bot.brain.shorterm_memory import ShortTermMemory
 from bot.config.base_conf import MAX_SHORT_TERM_MEMORY, HISTORY_TEMPLATE, \
-    REACT_TEMPLATE, HISTORY_FORMAT
+    REACT_TEMPLATE, HISTORY_FORMAT, STARTCHAT_TEMPLATE
 from bot.message import Message
 from common.base_thread import get_logger
 from repo.character import Character
@@ -49,11 +49,21 @@ class Brain:
 
         return ret
 
+    def associateToCharacter(self, input_character: Character):
+        """机器人大脑对外部刺激联想到某些事情"""
+        # 联想的关键词，要包含input_character的名字，否则可能联想不出input_character的记忆
+        kw1 = f'{input_character.name}'
+        ret = (f"{self.lt_memory.relative_memory_to_prompt(key_word=kw1, limit=2)}\n").strip()
+        if len(ret) == 0:
+            return ""
+
+        return ret
+
     def recent_memory(self):
         """机器人大脑回想起最近的信息"""
         return self.lt_memory.latest_memory_to_prompt()
 
-    def react(self, input_: Message, input_character: Character):
+    def react(self, input_: Message, input_character: Character, debug=True):
         """
         机器人大脑对外部刺激做出反应:
         1.保证机器人基础设定
@@ -92,19 +102,72 @@ class Brain:
         # c1做出行动，c1对c2说了话，假设llm是c2，等待llm的回应
         react_guide = (f'{HISTORY_FORMAT}\n\n'  # 通用prompt告诉llm用固定格式返回
                        + react_request)
-
-        get_logger().debug(f"react prompt: \n{prompt}")
-        get_logger().debug(f"react guide: \n{react_guide}")
+        if debug:
+            get_logger().debug(f"react prompt: \n{prompt}")
+            get_logger().debug(f"react guide: \n{react_guide}")
 
         agent = self.llm_agent_builder.build(prompt=prompt,
                                              character1=input_character,
                                              character2=self.character)
         ret = agent.chat(react_guide)
 
-        get_logger().info(f'react return:{ret}\n')
+        if debug:
+            get_logger().info(f'react return:{ret}\n')
+
         message = Message.parse_raw(ret)
         # 记录到history
         self.record(input_character, input_, message)
+
+        return message
+
+    def startInteract(self, input_character: Character, debug=True):
+        """
+        机器人大脑对外部刺激做出反应:
+        1.保证机器人基础设定
+        2.从输入associate一些memory
+        3.使用llm处理，并作出反应
+        4.记录历史到history，必要时转化为memory
+
+        输入的内容 = 基础人物设定 + (历史的交互 + 当前的交互) + (关联memory + 最近memory) + 正在进行的plan
+        """
+
+        prompt = (f'{self.character.character_prompt}\n\n'  # 基础人物设定
+                  f'{self.get_debug_prompt()}'
+                  )
+
+        # associate到的长期记忆
+        relative_memory = self.associateToCharacter(input_character)
+        recent_memory = self.recent_memory()
+
+        item_doing = None
+        if Schedule.get_by_character(self.character.id) is not None:
+            item_doing = Schedule.get_by_character(self.character.id).item_doing
+
+        # 引导llm回答的提示词
+        react_request = STARTCHAT_TEMPLATE.format(
+            c2=self.character.name,  # 假设llm是c2，等待llm的回应
+            relative_memory=relative_memory,
+            recent_memory=recent_memory,
+            item_doing=item_doing,  # 计划去做的事情
+        )
+
+        # c1做出行动，c1对c2说了话，假设llm是c2，等待llm的回应
+        react_guide = (f'{HISTORY_FORMAT}\n\n'  # 通用prompt告诉llm用固定格式返回
+                       + react_request)
+
+        if debug:
+            get_logger().debug(f"react prompt: \n{prompt}")
+            get_logger()    .debug(f"react guide: \n{react_guide}")
+
+        agent = self.llm_agent_builder.build(prompt=prompt,
+                                             character1=input_character,
+                                             character2=self.character)
+        ret = agent.chat(react_guide)
+
+        if debug:
+            get_logger().info(f'react return:{ret}\n')
+
+        message = Message.parse_raw(ret)
 
         return message
 
