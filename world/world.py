@@ -12,16 +12,16 @@ class TurnBaseWorld:
         self.broker = broker
 
         self.steps_of_round = steps_of_round
-        self.rounds = 0
-        self.steps = 0
+        self.round = 0
+        self.step = 0
 
     def next(self) -> Tuple[int, int]:
         # 每次step + 1
-        self.steps += 1
+        self.step += 1
         # 重新计算第几round
-        self.rounds = math.ceil(self.steps / self.steps_of_round)
+        self.round = math.ceil(self.step / self.steps_of_round)
 
-        return self.steps, self.rounds
+        return self.step, self.round
 
     def join(self, bot: SelfDriveBot):
         """机器人通过这个方法加入到这个world内"""

@@ -27,4 +27,6 @@ class ConcludeAbility:
 
         # 把总结的history形成memory放到long term memory里面
         conclusion = agent.chat(conclude_prompt)
+
+        get_logger().info(f"conclusion return: {conclusion}")
         return conclusion

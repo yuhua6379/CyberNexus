@@ -153,6 +153,8 @@ class Brain:
         """机器人的大脑具备总结的能力，
         你给他一段交互历史，他可以用一段话总结出概要，
         并存储到长期记忆内"""
+        if len(history_list) == 0:
+            return
 
         conclusion = self.conclude_ability.conclude(history_list)
         self.lt_memory.save(conclusion)

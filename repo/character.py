@@ -28,6 +28,17 @@ class Character(BaseModel, orm_mode=True):
             return Character.from_orm(result)
 
     @classmethod
+    def create_if_not_exists(cls, name: str, type_: CharacterType= 'user'):
+        with rdbms_instance.get_session() as session:
+            count = session.query(CharacterModel).filter(CharacterModel.name == name).count()
+            if count == 0:
+                model = CharacterModel()
+                model.name = name
+                model.type = type_
+                session.add(model)
+            session.commit()
+
+    @classmethod
     def get(cls, id_: int):
         with rdbms_instance.get_session() as session:
             result = session.query(CharacterModel).get(id_)

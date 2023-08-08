@@ -17,6 +17,10 @@ class BaseBot:
     def interact(self, message: Message, input_character: Character):
         return self.brain.react(message, input_character)
 
+    def conclude_interact(self):
+        # 总结所有的交互
+        self.brain.conclude(self.brain.st_memory.shrink(shrink_all=True))
+
     def set_debug_prompt(self, prompt: str):
         self.brain.set_debug_prompt(prompt)
 
