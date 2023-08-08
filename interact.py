@@ -13,7 +13,7 @@ if __name__ == '__main__':
     initialize.initialize()
 
     # 获取llm实例，用于后面predict
-    llm = get_openai_llm(openai_api_key=os.environ['open_ai_key'])
+    llm = get_openai_llm(openai_api_key=os.environ['openai_api_key'])
 
     yuhua = Character.get_by_name('yuhua')
 

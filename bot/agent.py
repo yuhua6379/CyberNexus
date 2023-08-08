@@ -42,9 +42,9 @@ class Agent(BaseModel):
         final_message = self.prompt + "\n\n" + message_in
 
         # message_out = self.llm.predict(final_message)
-        openai.api_key = os.environ['open_ai_key']
+        openai.api_key = os.environ['openai_api_key']
         message_out = complete(final_message)
-        get_logger().debug(f"[[final message]]: {final_message}")
+        # get_logger().debug(f"[[final message]]: {final_message}")
         self.after_chat(message_in, message_out)
 
         return message_out

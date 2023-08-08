@@ -26,7 +26,7 @@ class Schedule(BaseModel, orm_mode=True):
             recent_done_items = session.query(
                 ScheduleLogModel
             ).filter(ScheduleLogModel.character_id == character_id
-                     ).order_by(ScheduleLogModel.create_time.desc()
+                     ).order_by(ScheduleLogModel.create_time.asc()
                                 ).limit(limit).all()
             return [_.item_done for _ in recent_done_items]
 

@@ -37,7 +37,7 @@ class ScheduleAbility:
         self.lt_memory = lt_memory
 
     def really_done_item(self, target_item: str, history_list: list[History]):
-        """输入内容 = 基础人物设定 + 最近的memory + 已经执行的plan + 长期的plan"""
+        """输入内容 = 基础人物设定 + 最近的memory + 最近的交互 + 正在计划做的事情"""
         guide = IF_ITEM_DONE_TEMPLATE.format(
             memory=self.lt_memory.latest_memory_to_prompt(),
             item=target_item,
@@ -65,7 +65,7 @@ class ScheduleAbility:
 
         plan_guide = SCHEDULING_PROMPT_TEMPLATE.format(
             memory=self.lt_memory.latest_memory_to_prompt(),  # 最近的memory
-            item_done=item_done,  # 已完成的事项
+            item_done='\n'.join(item_done),  # 已完成的事项
             schedule_format=SCHEDULE_FORMAT, steps=steps)  # 多少个step
 
         # 上帝模式，没有任何多余的prompt，例如角色设定等，仅仅使用原始Agent
