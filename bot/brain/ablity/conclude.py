@@ -16,7 +16,7 @@ class ConcludeAbility:
         self.broker = broker
 
     def conclude(self, history_list: List[History]):
-        prompt = self.broker.conclude_prompt(history_list)
+        prompt = self.broker.conclude_prompt(self.target_character, history_list)
         # 上帝模式，没有任何多余的prompt，例如角色设定等，仅仅使用原始Agent
         god = Character.get_by_name(self.broker.factory.get_name_of_system())
         agent = self.llm_agent_builder.build(prompt="",

@@ -51,10 +51,11 @@ class ScheduleAbility:
 
         return item
 
-    def schedule(self, character: Character, item_done: list[str], steps: int, recent_memory: list[Memory]):
+    def schedule(self, item_done: list[str], steps: int, recent_memory: list[Memory]):
         """输入内容 = 基础人物设定 + 最近的memory + 多少个step + 完成了的item"""
 
-        prompt = self.prompt_broker.schedule_prompt(character, item_done, steps, recent_memory)
+        prompt = self.prompt_broker.schedule_prompt(
+            self.target_character, item_done, steps, recent_memory)
 
         # 上帝模式，没有任何多余的prompt，例如角色设定等，仅仅使用原始Agent
         god = Character.get_by_name(self.prompt_broker.factory.get_name_of_system())

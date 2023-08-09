@@ -99,8 +99,17 @@ class History(BaseModel):
         with rdbms_instance.get_session() as session:
             results = session.query(HistoryModel).filter(
                 and_(
-                    HistoryModel.remembered == False,
+                    HistoryModel.remembered is False,
                     HistoryModel.main_character_id == character_id)).all()
+            return [cls.from_model(model) for model in results]
+
+    @classmethod
+    def get_available_history_by_couple_character_id(cls, main_character_id: int, other_character_id: int):
+        with rdbms_instance.get_session() as session:
+            filter_ = session.query(HistoryModel).filter(HistoryModel.remembered is False)
+            filter_ = filter_.filter(HistoryModel.main_character_id == main_character_id)
+            filter_ = filter_.filter(HistoryModel.other_character_id == other_character_id)
+            results = filter_.all()
             return [cls.from_model(model) for model in results]
 
     @classmethod

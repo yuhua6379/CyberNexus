@@ -40,3 +40,6 @@ class ShortTermMemory:
 
     def get_history(self) -> list[History]:
         return History.get_available_history_by_character_id(self.character.id)
+
+    def get_history_with_character(self, other_character: Character) -> list[History]:
+        return History.get_available_history_by_character_id()

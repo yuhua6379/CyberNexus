@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from bot.agent import AgentBuilder
 from bot.brain.ablity.conclude import ConcludeAbility
@@ -8,16 +8,17 @@ from bot.brain.ablity.schedule import ScheduleAbility
 from bot.brain.ablity.shorterm_memory import ShortTermMemory
 from bot.message import Message
 from model.base_prompt_factory import BasePromptFactory
+from model.sample_prompt_factory import SamplePromptFactory
 from model.prompt_broker import PromptBroker
 from repo.character import Character
 from repo.history import History
-from repo.scheudle import Schedule, SCHEDULE_COUNT
+from repo.scheudle import Schedule
 
 
 class Brain:
 
     def __init__(self, character: Character, llm_agent_builder: AgentBuilder,
-                 factory: BasePromptFactory = BasePromptFactory()):
+                 factory: BasePromptFactory = SamplePromptFactory()):
         self.broker = PromptBroker(factory)
         self.character = character
         self.llm_agent_builder = llm_agent_builder
@@ -73,13 +74,13 @@ class Brain:
         if Schedule.get_by_character(self.character.id) is not None:
             item_doing = Schedule.get_by_character(self.character.id).item_doing
 
-        history_list = self.interact_history()
+        history_list = self.interact_history_with(input_character)
         relative_memory = self.associate(None, input_character)
         recent_memory = self.recent_memory()
         message = self.react_ability.stimulus_of_character(input_character,
-            history_list,
-            relative_memory,
-            recent_memory)
+                                                           history_list,
+                                                           relative_memory,
+                                                           recent_memory)
         return message
 
     def schedule(self, step: int, round_: int, left_step: int):
@@ -88,7 +89,7 @@ class Brain:
 
         if schedule is None:
             # 冷启动，规划
-            llm_return = self.schedule_ability.schedule(self.character, [], SCHEDULE_COUNT, self.recent_memory())
+            llm_return = self.schedule_ability.schedule([], self.broker.factory.get_max_schedule(), self.recent_memory())
 
             # 安排一件正在做的item
             item_to_do = llm_return.schedule
@@ -109,9 +110,8 @@ class Brain:
 
             recent_done_item = Schedule.get_recent_done_items(self.character.id) + [item_done]
             # 调整计划
-            llm_return = self.schedule_ability.schedule(self.character,
-                                                        recent_done_item,
-                                                        SCHEDULE_COUNT,
+            llm_return = self.schedule_ability.schedule(recent_done_item,
+                                                        self.broker.factory.get_max_schedule(),
                                                         self.recent_memory())
 
             # 安排一件正在做的item
@@ -150,19 +150,24 @@ class Brain:
         else:
             return self.debug_prompt + "\n\n"
 
-    def associate(self, input_: Message, input_character: Character):
+    def associate(self, input_: Optional[Message], input_character: Character):
         """机器人大脑对外部刺激联想到某些事情"""
         if input_ is None:
             kw = f'{input_character.name}'
             return self.lt_memory.search(key_word=kw,
-                                         limit=self.broker.factory.MAX_RELATIVE_MEMORY)
+                                         limit=self.broker.factory.get_max_relative_memory())
         else:
             kw = f'{input_character.name}: {input_.action}: {input_.message}'
             return self.lt_memory.search(key_word=kw,
-                                         limit=self.broker.factory.MAX_RELATIVE_MEMORY)
+                                         limit=self.broker.factory.get_max_relative_memory())
 
     def interact_history(self):
+        # 角色个人的所有history
         return self.st_memory.get_history()
+
+    def interact_history_with(self, target_character: Character):
+        # 角色与特定角色的history
+        return self.st_memory.get_history_with_character(target_character)
 
     def recent_memory(self):
         """机器人大脑回想起最近的信息"""

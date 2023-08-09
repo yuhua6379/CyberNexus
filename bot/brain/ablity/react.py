@@ -23,6 +23,7 @@ class ReactAbility:
                               relative_memory: list[Document],
                               recent_memory: list[Memory]):
         prompt = self.prompt_broker.stimulus_of_character(
+            self.character,
             input_character,
             history_list,
             relative_memory,
@@ -48,6 +49,7 @@ class ReactAbility:
               recent_memory: list[Memory]):
         prompt = self.prompt_broker.react_prompt(
             self.character,
+            input_character,
             input_,
             item_doing,
             history_list,
