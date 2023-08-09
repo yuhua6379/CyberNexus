@@ -69,7 +69,18 @@ class Brain:
 
     def stimulus_of_character(self, input_character: Character):
         """机器人大脑受到了外部刺激，刺激对象是一个character"""
-        pass
+        item_doing = None
+        if Schedule.get_by_character(self.character.id) is not None:
+            item_doing = Schedule.get_by_character(self.character.id).item_doing
+
+        history_list = self.interact_history()
+        relative_memory = self.associate(None, input_character)
+        recent_memory = self.recent_memory()
+        message = self.react_ability.stimulus_of_character(input_character,
+            history_list,
+            relative_memory,
+            recent_memory)
+        return message
 
     def schedule(self, step: int, round_: int, left_step: int):
         """机器人的大脑具备计划能力，他可以根据目前的情况规划出之后需要做的事情"""
@@ -141,9 +152,14 @@ class Brain:
 
     def associate(self, input_: Message, input_character: Character):
         """机器人大脑对外部刺激联想到某些事情"""
-        kw = f'{input_character.name}: {input_.action}: {input_.message}'
-        return self.lt_memory.search(key_word=kw,
-                                     limit=self.broker.factory.MAX_RELATIVE_MEMORY)
+        if input_ is None:
+            kw = f'{input_character.name}'
+            return self.lt_memory.search(key_word=kw,
+                                         limit=self.broker.factory.MAX_RELATIVE_MEMORY)
+        else:
+            kw = f'{input_character.name}: {input_.action}: {input_.message}'
+            return self.lt_memory.search(key_word=kw,
+                                         limit=self.broker.factory.MAX_RELATIVE_MEMORY)
 
     def interact_history(self):
         return self.st_memory.get_history()

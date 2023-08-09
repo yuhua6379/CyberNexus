@@ -1,5 +1,5 @@
 import os
-
+import json
 import initialize
 from bot.agent import Character
 from bot.base_bot import SimpleChatBot
@@ -15,19 +15,19 @@ if __name__ == '__main__':
     llm = get_openai_llm(openai_api_key=os.environ['openai_api_key'])
 
     # 设置聊天对象，name是唯一的，会根据对象去加载历史聊天记录
-    chr_me = Character.get_by_name("hero")
+    chr_me = Character.get_by_name("李华")
     chr_bot = Character.get_by_name("镇长先生")
 
     # 构建一个bot，用于聊天
     bot1 = SimpleChatBot(llm=llm, tools="", character=chr_bot)
     bot2 = SimpleChatBot(llm=llm, tools="", character=chr_me)
 
-    start = bot1.startInteract(chr_me)
+    start = bot1.meet(chr_me)
 
-    ret = bot2.interact(Message(from_character=chr_me.name,
-                                to_character=chr_bot.name,
+    ret = bot2.interact(Message(from_character=chr_bot.name,
+                                to_character=chr_me.name,
                                 action=start.action,
-                                message=start.message), chr_me)
+                                message=start.message), chr_bot)
 
     max_turn = 8
 
@@ -46,6 +46,7 @@ if __name__ == '__main__':
 
         if stop > 0:
             break
+
         max_turn = max_turn - 1
 
     print(ret.dict())

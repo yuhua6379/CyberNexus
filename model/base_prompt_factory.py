@@ -115,6 +115,18 @@ class BasePromptFactory:
     请生成{c2}的回复：<填写>
     '''
 
+    STIMULUS_OF_CHARACTER_TEMPLATE = '''
+    相关的记忆:
+    {relative_memory}
+
+    最近的记忆:
+    {recent_memory}
+
+    交互记录：
+    {history}
+    请生成你想对{c2}说的话：<填写>
+    '''
+
     def get_max_short_item_memory(self):
         return 10
 
@@ -165,12 +177,33 @@ class BasePromptFactory:
         return prompt
 
     def on_build_stimulus_of_character(self,
-                                       input_character: Character,
+                                       character: Character,
                                        history_list: list[History],
                                        relative_memory: list[Document],
                                        recent_memory: list[Memory]):
-        # TODO: 实现碰到角色时被刺激到的prompt
-        return ""
+        history_string = "\n".join([history.to_prompt() for history in history_list])
+        # 短期记忆 = 历史的交互 + 当前的交互
+        history_prompt = f'{self.HISTORY_TEMPLATE.format(content=history_string)}\n'
+
+        relative_memory = "\n".join([doc.content for doc in relative_memory]).strip()
+
+        recent_memory = "\n".join([memory.content for memory in recent_memory]).strip()
+
+        # 引导llm回答的提示词
+        react_request = self.STIMULUS_OF_CHARACTER_TEMPLATE.format(
+            c2=character.name,  # 假设llm是c2，等待llm的回应
+            relative_memory=relative_memory,
+            recent_memory=recent_memory,
+            history=history_prompt)
+
+        # c1做出行动，c1对c2说了话，假设llm是c2，等待llm的回应
+        prompt = (character.character_prompt
+                  + f'{self.HISTORY_FORMAT}\n\n'  # 通用prompt告诉llm用固定格式返回
+                  + react_request)
+
+        get_logger().debug(f"react prompt: \n{prompt}")
+
+        return prompt
 
     def on_build_react_prompt(self,
                               character: Character,
