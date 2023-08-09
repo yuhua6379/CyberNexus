@@ -1,7 +1,7 @@
 from bot.agent import AgentBuilder
 from bot.message import Message
 from common.base_thread import get_logger
-from datasource.vectordb.entities import Document
+from datasource.vectordb.entities import Response
 from model.prompt_broker import PromptBroker
 from repo.character import Character
 from repo.history import History
@@ -20,7 +20,7 @@ class ReactAbility:
     def stimulus_of_character(self,
                               input_character: Character,
                               history_list: list[History],
-                              relative_memory: list[Document],
+                              relative_memory: list[Response],
                               recent_memory: list[Memory]):
         prompt = self.prompt_broker.stimulus_of_character(
             self.character,
@@ -45,7 +45,7 @@ class ReactAbility:
               input_character: Character,
               item_doing: str,
               history_list: list[History],
-              relative_memory: list[Document],
+              relative_memory: list[Response],
               recent_memory: list[Memory]):
         prompt = self.prompt_broker.react_prompt(
             self.character,

@@ -1,5 +1,7 @@
+from abc import abstractmethod
+
 from bot.message import Message
-from datasource.vectordb.entities import Document
+from datasource.vectordb.entities import Response
 from repo.character import Character
 from repo.history import History
 from repo.memory import Memory
@@ -33,6 +35,7 @@ class BasePromptFactory:
         """单次规划最多的item数"""
         return 8
 
+    @abstractmethod
     def on_build_schedule_prompt(self, main_character: Character,
                                  item_done: list[str],
                                  steps: int,
@@ -46,6 +49,7 @@ class BasePromptFactory:
         """
         pass
 
+    @abstractmethod
     def on_build_conclude_prompt(self,
                                  main_character: Character,
                                  history_list: list[History]):
@@ -56,6 +60,7 @@ class BasePromptFactory:
         """
         pass
 
+    @abstractmethod
     def on_build_determine_whether_item_finish_prompt(self,
                                                       main_character: Character,
                                                       target_item: str,
@@ -70,11 +75,12 @@ class BasePromptFactory:
         """
         pass
 
+    @abstractmethod
     def on_build_stimulus_of_character(self,
                                        main_character: Character,
                                        other_character: Character,
                                        history_list: list[History],
-                                       relative_memory: list[Document],
+                                       relative_memory: list[Response],
                                        recent_memory: list[Memory]):
         """
         :param main_character: mian角色
@@ -86,13 +92,14 @@ class BasePromptFactory:
         """
         pass
 
+    @abstractmethod
     def on_build_react_prompt(self,
                               main_character: Character,
                               other_character: Character,
                               input_: Message,
                               item_doing: str,
                               history_list: list[History],
-                              relative_memory: list[Document],
+                              relative_memory: list[Response],
                               recent_memory: list[Memory]):
         """
         :param main_character: main角色

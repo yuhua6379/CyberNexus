@@ -99,7 +99,7 @@ class History(BaseModel):
         with rdbms_instance.get_session() as session:
             results = session.query(HistoryModel).filter(
                 and_(
-                    HistoryModel.remembered is False,
+                    HistoryModel.remembered == False,
                     HistoryModel.main_character_id == character_id)).all()
             return [cls.from_model(model) for model in results]
 

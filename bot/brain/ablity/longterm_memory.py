@@ -26,7 +26,7 @@ class LongTermMemory:
     def search(self, key_word, limit):
         vector_db_instance = vector_db_factory.get_vector_db(self._get_memory_collection_name())
         res_list = vector_db_instance.query(key_word)
-        return [res.document.content for res in res_list[:limit]]
+        return res_list[:limit]
 
     def latest_memory(self):
-        return [memory.content for memory in Memory.get_latest_memory_by_character_id(self.character.id)]
+        return Memory.get_latest_memory_by_character_id(self.character.id)

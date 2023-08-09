@@ -1,6 +1,6 @@
 from bot.message import Message
 from common.base_thread import get_logger
-from datasource.vectordb.entities import Document
+from datasource.vectordb.entities import Response
 from model.base_prompt_factory import BasePromptFactory
 from repo.character import Character
 from repo.history import History
@@ -173,13 +173,13 @@ class SamplePromptFactory(BasePromptFactory):
                                        main_character: Character,
                                        other_character: Character,
                                        history_list: list[History],
-                                       relative_memory: list[Document],
+                                       relative_memory: list[Response],
                                        recent_memory: list[Memory]):
         history_string = "\n".join([history.to_prompt() for history in history_list])
         # 短期记忆 = 历史的交互 + 当前的交互
         history_prompt = f'{self.HISTORY_TEMPLATE.format(content=history_string)}\n'
 
-        relative_memory = "\n".join([doc.content for doc in relative_memory]).strip()
+        relative_memory = "\n".join([doc.document.content for doc in relative_memory]).strip()
 
         recent_memory = "\n".join([memory.content for memory in recent_memory]).strip()
 
@@ -205,14 +205,14 @@ class SamplePromptFactory(BasePromptFactory):
                               input_: Message,
                               item_doing: str,
                               history_list: list[History],
-                              relative_memory: list[Document],
+                              relative_memory: list[Response],
                               recent_memory: list[Memory]):
         history_string = "\n".join([history.to_prompt() for history in history_list])
         # 短期记忆 = 历史的交互 + 当前的交互
         history_prompt = f'{self.HISTORY_TEMPLATE.format(content=history_string)}\n'
         history_prompt += input_.to_prompt() + "\n"  # c1 对 c2的交互
 
-        relative_memory = "\n".join([doc.content for doc in relative_memory]).strip()
+        relative_memory = "\n".join([doc.document.content for doc in relative_memory]).strip()
 
         recent_memory = "\n".join([memory.content for memory in recent_memory]).strip()
 

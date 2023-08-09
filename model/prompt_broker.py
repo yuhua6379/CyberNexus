@@ -1,5 +1,5 @@
 from bot.message import Message
-from datasource.vectordb.entities import Document
+from datasource.vectordb.entities import Response
 from model.base_prompt_factory import BasePromptFactory
 from repo.character import Character
 from repo.history import History
@@ -14,7 +14,7 @@ class PromptBroker:
                               main_character: Character,
                               other_character: Character,
                               history_list: list[History],
-                              relative_memory: list[Document],
+                              relative_memory: list[Response],
                               recent_memory: list[Memory]):
         return self.factory.on_build_stimulus_of_character(
             main_character,
@@ -49,7 +49,7 @@ class PromptBroker:
                      input_: Message,
                      item_doing: str,
                      history_list: list[History],
-                     relative_memory: list[Document],
+                     relative_memory: list[Response],
                      recent_memory: list[Memory]):
         return self.factory.on_build_react_prompt(
             main_character, other_character,
