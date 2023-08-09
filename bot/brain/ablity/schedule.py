@@ -62,7 +62,7 @@ class ScheduleAbility:
 
         agent = self.llm_agent_builder.build(prompt="",
                                              character1=god,
-                                             character2=character)
+                                             character2=self.target_character)
 
         # 把总结的history形成memory放到long term memory里面
         schedule = agent.chat(prompt)
