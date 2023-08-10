@@ -1,5 +1,5 @@
-from bot.agent import AgentBuilder
-from bot.message import Message
+from model.agent import AgentBuilder
+from model.entities.message import Message
 from common.base_thread import get_logger
 from datasource.vectordb.entities import Response
 from model.prompt_broker import PromptBroker
@@ -19,26 +19,25 @@ class ReactAbility:
 
     def stimulus_of_character(self,
                               input_character: Character,
+                              item_doing: str,
                               history_list: list[History],
                               relative_memory: list[Response],
                               recent_memory: list[Memory]):
-        prompt = self.prompt_broker.stimulus_of_character(
+        session = self.prompt_broker.stimulus_of_character(
             self.character,
             input_character,
+            item_doing,
             history_list,
             relative_memory,
             recent_memory)
 
-        agent = self.llm_agent_builder.build(prompt="",
-                                             character1=input_character,
+        agent = self.llm_agent_builder.build(character1=input_character,
                                              character2=self.character)
-        ret = agent.chat(prompt)
+        session = agent.chat(session)
 
-        get_logger().info(f'stimulus_of_character return:{ret}\n')
+        get_logger().info(f'stimulus_of_character return:{session}\n')
 
-        message = Message.parse_raw(ret)
-
-        return message
+        return session.get_result()
 
     def react(self,
               input_: Message,
@@ -47,7 +46,7 @@ class ReactAbility:
               history_list: list[History],
               relative_memory: list[Response],
               recent_memory: list[Memory]):
-        prompt = self.prompt_broker.react_prompt(
+        session = self.prompt_broker.react_prompt(
             self.character,
             input_character,
             input_,
@@ -56,13 +55,10 @@ class ReactAbility:
             relative_memory,
             recent_memory)
 
-        agent = self.llm_agent_builder.build(prompt="",
-                                             character1=input_character,
+        agent = self.llm_agent_builder.build(character1=input_character,
                                              character2=self.character)
-        ret = agent.chat(prompt)
+        session = agent.chat(session)
 
-        get_logger().info(f'react return:{ret}\n')
+        get_logger().info(f'react return:{session}\n')
 
-        message = Message.parse_raw(ret)
-
-        return message
+        return session.get_result()

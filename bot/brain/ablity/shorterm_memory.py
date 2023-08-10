@@ -1,4 +1,4 @@
-from bot.message import Message
+from model.entities.message import Message
 from repo.character import Character
 from repo.history import History, Direction
 

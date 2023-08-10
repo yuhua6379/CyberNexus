@@ -3,9 +3,9 @@ from typing import List
 from langchain.chat_models.base import BaseChatModel
 from langchain.tools import BaseTool
 
-from bot.agent import AgentBuilder
+from model.agent import AgentBuilder
 from bot.brain.brain import Brain
-from bot.message import Message
+from model.entities.message import Message
 from repo.character import Character
 
 

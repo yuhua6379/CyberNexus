@@ -1,7 +1,8 @@
 from abc import abstractmethod
-
-from bot.message import Message
+from model.entities.message import Message
 from datasource.vectordb.entities import Response
+from model.entities.schedule import Schedule
+from model.llm_session import return_type, PromptReturn
 from repo.character import Character
 from repo.history import History
 from repo.memory import Memory
@@ -35,11 +36,12 @@ class BasePromptFactory:
         """单次规划最多的item数"""
         return 8
 
+    @return_type(Schedule)
     @abstractmethod
     def on_build_schedule_prompt(self, main_character: Character,
                                  item_done: list[str],
                                  steps: int,
-                                 recent_memory: list[Memory]):
+                                 recent_memory: list[Memory]) -> PromptReturn:
         """
         :param main_character: main角色
         :param item_done: main角色当前完成的item
@@ -49,10 +51,11 @@ class BasePromptFactory:
         """
         pass
 
+    @return_type(str)
     @abstractmethod
     def on_build_conclude_prompt(self,
                                  main_character: Character,
-                                 history_list: list[History]):
+                                 history_list: list[History]) -> PromptReturn:
         """
         :param main_character: main角色
         :param history_list: main角色未形成memory的与所有交互过角色的history
@@ -60,12 +63,13 @@ class BasePromptFactory:
         """
         pass
 
+    @return_type(str)
     @abstractmethod
     def on_build_determine_whether_item_finish_prompt(self,
                                                       main_character: Character,
                                                       target_item: str,
                                                       history_list: list[History],
-                                                      recent_memory: list[Memory]):
+                                                      recent_memory: list[Memory]) -> PromptReturn:
         """
         :param main_character: main角色
         :param target_item: 一个item，需要确定这个item是不是真正被完成了亦或是被干扰了
@@ -75,14 +79,17 @@ class BasePromptFactory:
         """
         pass
 
+    @return_type(Message)
     @abstractmethod
     def on_build_stimulus_of_character(self,
                                        main_character: Character,
                                        other_character: Character,
+                                       item_doing: str,
                                        history_list: list[History],
                                        relative_memory: list[Response],
-                                       recent_memory: list[Memory]):
+                                       recent_memory: list[Memory]) -> PromptReturn:
         """
+        :param item_doing: main角色正在计划做的事情
         :param main_character: mian角色
         :param other_character: other角色
         :param history_list: mian角色与other角色未形成memory的history
@@ -92,6 +99,7 @@ class BasePromptFactory:
         """
         pass
 
+    @return_type(Message)
     @abstractmethod
     def on_build_react_prompt(self,
                               main_character: Character,
@@ -100,7 +108,7 @@ class BasePromptFactory:
                               item_doing: str,
                               history_list: list[History],
                               relative_memory: list[Response],
-                              recent_memory: list[Memory]):
+                              recent_memory: list[Memory]) -> PromptReturn:
         """
         :param main_character: main角色
         :param other_character: other角色

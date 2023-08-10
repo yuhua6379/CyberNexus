@@ -1,7 +1,7 @@
 import os
 
 import initialize
-from bot.agent import Character
+from model.agent import Character
 from bot.self_drive_bot import SelfDriveBot
 from model.openai import get_openai_llm
 from world.botbroker import SyncBotBroker

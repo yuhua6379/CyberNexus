@@ -8,6 +8,7 @@ from pydantic import BaseModel
 
 from datasource.config import rdbms_instance
 from datasource.rdbms.entities import ChatLogModel
+from model.llm_session import LLMSession
 from repo.character import Character
 
 
@@ -28,25 +29,22 @@ def complete(prompt):
 
 
 class Agent(BaseModel):
-    prompt: str
     llm: BaseChatModel
     # agent_core: AgentExecutor
     character1: Character
     character2: Character
     version: str = '0.0.1'
 
-    def chat(self, message_in: str) -> str:
-        message_in = self.on_chat(message_in)
-        # message_out = self.agent_core.run(message_in)
-        final_message = self.prompt + "\n\n" + message_in
-
-        # message_out = self.llm.predict(final_message)
+    def chat(self, session: LLMSession) -> LLMSession:
+        prompt = session.prompt
+        message_in = self.on_chat(prompt)
         openai.api_key = os.environ['openai_api_key']
-        message_out = complete(final_message)
+        message_out = complete(message_in)
         # get_logger().debug(f"[[final message]]: {final_message}")
         self.after_chat(message_in, message_out)
 
-        return message_out
+        session.set_result(message_out)
+        return session
 
     def on_chat(self, input_: str) -> str:
         return input_
@@ -73,11 +71,10 @@ class AgentBuilder:
         self.llm = llm
         self.tools = tools
 
-    def build(self, prompt: str, character1: Character, character2: Character) -> Agent:
+    def build(self, character1: Character, character2: Character) -> Agent:
         # prompt = OpenAIFunctionsAgent.create_prompt(system_message=SystemMessage(content=prompt))
         # langchain_agent = OpenAIFunctionsAgent(llm=self.llm, tools=self.tools, prompt=prompt)
 
         return Agent(llm=self.llm,
-                     prompt=prompt,
                      character1=character1,
                      character2=character2)

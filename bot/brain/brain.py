@@ -1,12 +1,12 @@
 from typing import List, Optional
 
-from bot.agent import AgentBuilder
+from model.agent import AgentBuilder
 from bot.brain.ablity.conclude import ConcludeAbility
 from bot.brain.ablity.longterm_memory import LongTermMemory
 from bot.brain.ablity.react import ReactAbility
 from bot.brain.ablity.schedule import ScheduleAbility
 from bot.brain.ablity.shorterm_memory import ShortTermMemory
-from bot.message import Message
+from model.entities.message import Message
 from model.base_prompt_factory import BasePromptFactory
 from model.sample_prompt_factory import SamplePromptFactory
 from model.prompt_broker import PromptBroker
@@ -78,6 +78,7 @@ class Brain:
         relative_memory = self.associate(None, input_character)
         recent_memory = self.recent_memory()
         message = self.react_ability.stimulus_of_character(input_character,
+                                                           item_doing,
                                                            history_list,
                                                            relative_memory,
                                                            recent_memory)

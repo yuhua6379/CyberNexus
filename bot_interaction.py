@@ -1,9 +1,8 @@
 import os
-import json
 import initialize
-from bot.agent import Character
+from model.agent import Character
 from bot.base_bot import SimpleChatBot
-from bot.message import Message
+from model.entities.message import Message
 from model.openai import get_openai_llm
 
 if __name__ == '__main__':

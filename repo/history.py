@@ -4,7 +4,7 @@ from typing import Optional
 from pydantic import BaseModel
 from sqlalchemy import and_
 
-from bot.message import Message
+from model.entities.message import Message
 from datasource.config import rdbms_instance
 from datasource.rdbms.entities import HistoryModel
 from repo.character import Character

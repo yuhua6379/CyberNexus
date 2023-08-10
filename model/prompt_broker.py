@@ -1,4 +1,4 @@
-from bot.message import Message
+from model.entities.message import Message
 from datasource.vectordb.entities import Response
 from model.base_prompt_factory import BasePromptFactory
 from repo.character import Character
@@ -13,12 +13,14 @@ class PromptBroker:
     def stimulus_of_character(self,
                               main_character: Character,
                               other_character: Character,
+                              item_doing: str,
                               history_list: list[History],
                               relative_memory: list[Response],
                               recent_memory: list[Memory]):
         return self.factory.on_build_stimulus_of_character(
             main_character,
             other_character,
+            item_doing,
             history_list,
             relative_memory,
             recent_memory)

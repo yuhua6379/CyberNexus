@@ -1,4 +1,4 @@
-from bot.message import Message
+from model.entities.message import Message
 from bot.self_drive_bot import SelfDriveBot
 from interact.base_interact_tool import BaseInteractTool
 

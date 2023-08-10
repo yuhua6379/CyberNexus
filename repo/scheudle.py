@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from datasource.config import rdbms_instance
 from datasource.rdbms.entities import ScheduleModel, ScheduleLogModel
 
+
 class Schedule(BaseModel, orm_mode=True):
     character_id: int
     items_to_do: list[str]
