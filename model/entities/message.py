@@ -18,7 +18,7 @@ class Message(BaseModel):
                                                "message 和 action 中至少要有一个。")
 
     stop: int = Field(description="此参数意味着from_character代表的角色觉得对话已经结束，无需再进行回复。"
-                                  "若无此参数，则默认为0，即对话未结束。")
+                                  "若无此参数，则默认为0，即对话未结束。", default=0)
 
     def to_prompt(self, simple_string=False):
         if simple_string:
