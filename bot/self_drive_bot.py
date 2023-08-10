@@ -27,13 +27,6 @@ class SelfDriveBot(BaseBot):
         self.lasted_situation = situation
 
     def self_drive(self, situation):
-        # # 进入了下一个round，则做一次schedule规划
-        # if (self.lasted_situation is not None
-        #         and self.lasted_situation.round < situation.round):
-        #     self.brain.schedule(self.steps_of_round)
-
-        # # 没有schedule则规划一次
-        # if self.brain.has_schedule() is False:
         left_step = self.steps_of_round - situation.step
         get_logger().info(f"self_drive situation={situation} left_step={left_step}")
         self.brain.schedule(situation.step, situation.round, left_step)
