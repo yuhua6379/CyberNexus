@@ -8,6 +8,7 @@ from bot.toolkits.system_tools import watch
 from interact.human_interact_with_bot import HumanInteractWithBot
 from model.openai import get_openai_llm
 from repo.character import Character
+import tool_build_character
 
 if __name__ == '__main__':
     initialize.initialize()
