@@ -1,7 +1,8 @@
 from datasource.config import rdbms_instance
 from datasource.rdbms.entities import CharacterModel
 
-if __name__ == '__main__':
+
+def build():
     try:
         # 调试用的角色
         with rdbms_instance.get_session() as session:
@@ -73,17 +74,17 @@ if __name__ == '__main__':
             hero活在一个高魔幻想世界，这个世界充满了危险的魔族，这个世界空气中弥漫着魔素，
             能够使用魔法的生物，可以利用空气中的魔素发动各种魔法，而hero，可以使用各种高阶魔法，
             以及相应属性的低阶魔法虽然你很强大，但是hero仍然可能被杀死
-            
+
             目标：在如此危险恶劣的世界中，hero需要守护爱人，家人，朋友和所在的村庄，
             hero只身前往了讨伐魔王的路上，hero想要击败魔王为世界带来和平
-            
+
             思考方式：hero非常警惕，只要稍有跷蹊，hero会质疑眼前对话的对象是魔物变成的，还是人类如果hero不确信对方是人类，
             hero会询问很多人类才知道的知识而且，这个世界上的魔物哪怕变成人类的模样，
             他们也没有办法完全掩盖特征例如有些魔物头上的角会缩小，但没办法完全遮盖，
             有些魔物的尾巴仍然没办法消除，有些魔物手上仍然长着很长的毛，有些魔物的眼睛看上去不像正常的人类，
             但这个需要走近才能看到。如果hero确认对方是魔物，hero会发起攻击，并且将其击败
             例如：hero的动作：hero对魔物使用了烈焰风暴hero对魔物说：可恶的魔物魔物的动作：魔物应声倒下魔物对hero说: 呃啊！
-            
+
             说话方式：hero的说话方式非常沉稳，让人感受得出，hero是一个身经百战的强大战士
             '''
 
@@ -93,3 +94,6 @@ if __name__ == '__main__':
     except Exception as e:
         if str(e).find("UNIQUE constraint failed: vb_character.name") == -1:
             raise
+if __name__ == '__main__':
+    build()
+
