@@ -122,15 +122,26 @@ class Brain:
             # 标记完成item，记录
             schedule.finish_item(item_done=item_done, items_to_do=item_to_do, item_doing=item_doing)
 
-    def conclude(self, history_list: List[History]):
+    def remember_deeply(self, memory: str):
+        """
+        机器人大脑具备长期记忆能力，但是，不是所有记忆都会记录，只能记录深刻的记忆
+        :param memory:
+        :return:
+        """
+        rank = self.conclude_ability.rank(memory)
+        if rank >= self.broker.factory.get_threshold_of_rank_to_remember():
+            self.lt_memory.save(memory)
+
+
+    def conclude(self, history_list: List[History], other_character: Character):
         """机器人的大脑具备总结的能力，
         你给他一段交互历史，他可以用一段话总结出概要，
         并存储到长期记忆内"""
         if len(history_list) == 0:
             return
 
-        conclusion = self.conclude_ability.conclude(history_list)
-        self.lt_memory.save(conclusion)
+        conclusion = self.conclude_ability.conclude(history_list, other_character)
+        self.remember_deeply(conclusion)
 
         # 标记已经被总结过的history，这里没法做成事务，但是无所谓，long term memory可以接受低概率的重复
         self.st_memory.batch_set_history_remembered([history.id for history in history_list])

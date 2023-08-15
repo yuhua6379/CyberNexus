@@ -43,3 +43,6 @@ class Character(BaseModel, orm_mode=True):
         with rdbms_instance.get_session() as session:
             result = session.query(CharacterModel).get(id_)
             return cls.from_orm(result)
+
+    def __hash__(self):
+        return self.id

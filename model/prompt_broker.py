@@ -25,8 +25,11 @@ class PromptBroker:
             relative_memory,
             recent_memory)
 
-    def conclude_prompt(self, main_character: Character, history_list: list[History]):
-        return self.factory.on_build_conclude_prompt(main_character, history_list)
+    def conclude_prompt(self, main_character: Character, other_character: Character, history_list: list[History]):
+        return self.factory.on_build_conclude_prompt(main_character, other_character, history_list)
+
+    def rank_prompt(self, memory: str):
+        return self.factory.on_build_rank_prompt(memory)
 
     def schedule_prompt(self, main_character: Character,
                         item_done: list[str],

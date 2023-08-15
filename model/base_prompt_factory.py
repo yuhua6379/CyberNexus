@@ -24,6 +24,10 @@ class BasePromptFactory:
         """定义短期记忆最长多少条后会被自动conclude压缩"""
         return 10
 
+    def get_threshold_of_rank_to_remember(self):
+        """定义什么深度的记忆才去记录"""
+        return 5
+
     def get_name_of_system(self):
         """定义系统角色，用于驱动角色，例如schedule、conclude"""
         return "god"
@@ -51,15 +55,24 @@ class BasePromptFactory:
         """
         pass
 
-    @return_type(str)
     @abstractmethod
     def on_build_conclude_prompt(self,
                                  main_character: Character,
+                                 other_character: Character,
                                  history_list: list[History]) -> PromptReturn:
         """
+        :param other_character: other角色
         :param main_character: main角色
         :param history_list: main角色未形成memory的与所有交互过角色的history
         :return:
+        """
+        pass
+
+    @return_type(int)
+    @abstractmethod
+    def on_build_rank_prompt(self, memory: str):
+        """
+        :type memory: 某角色的记忆
         """
         pass
 

@@ -10,11 +10,12 @@ from repo.memory import Memory
 
 
 class SamplePromptFactory(BasePromptFactory):
+
     schedule_definition = {
         "type_": Schedule,
         "title": "你需要完成接下来的一系列对话，要求如下： "
                  "你必须用 JSON 格式表示角色之间的交互，具体要求如下：",
-        "examples": [Schedule(schedule=["吃早餐", "出门", "上班"])]
+        "examples": [Schedule(schedule=["吃早餐", "去上班", "开始工作", "完成工作", "下班回家"])]
     }
 
     message_definition = {
@@ -47,6 +48,7 @@ class SamplePromptFactory(BasePromptFactory):
             这是你已完成的事项:
             {item_done}
             请你回应1个计划，包含{steps}个步骤
+            你回应的计划，必须符合角色设定
             '''
 
         memory_string = "\n".join([memory.content for memory in recent_memory])
@@ -62,9 +64,25 @@ class SamplePromptFactory(BasePromptFactory):
                             kwargs=kwargs,
                             position="schedule_format")
 
+    @return_type(int)
+    def on_build_rank_prompt(self, memory: str):
+        rank_template = '''
+        请在1至10的刻度上，对下述记忆的重要性进行评估。其中，1代表日常琐事（如刷牙，铺床），而10则代表深远影响（如分手，大学录取）。
+        记忆描述：{记忆内容}
+        请评定此记忆的深度(rank)，输出一个整数
+        '''
+
+        kwargs = {
+            "memory": memory,
+        }
+
+        return PromptReturn(prompt_template=rank_template,
+                            kwargs=kwargs)
+
     @return_type(str)
     def on_build_conclude_prompt(self,
                                  main_character: Character,
+                                 other_character: Character,  # 对应的交互角色
                                  history_list: list[History]):
         conclude_template = '''
             {history_format}
@@ -141,6 +159,7 @@ class SamplePromptFactory(BasePromptFactory):
 
                     交互记录：
                     {history}
+                    现在，假设你是{main_character}
                     请生成{other_character}的回复：<填写>
                     '''
 
@@ -150,6 +169,7 @@ class SamplePromptFactory(BasePromptFactory):
             "relative_memory": "\n".join([doc.document.content for doc in relative_memory]).strip(),
             "recent_memory": "\n".join([memory.content for memory in recent_memory]).strip(),
             "history": "\n".join([history.to_prompt() for history in history_list]),
+            "main_character": main_character.name,
             "other_character": other_character.name
         }
 
