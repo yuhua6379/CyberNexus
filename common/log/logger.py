@@ -76,8 +76,7 @@ def create_file_logger(name: str):
 
 def initialize():
     dict_conf = get_log_dict_config(os.environ.get("log_level", "INFO").upper())
-    if config.environment != "local":
-        os.makedirs(config.log_path, exist_ok=True)
-        dict_conf['loggers']["root"]['handlers'] = ['console']
+    os.makedirs(config.log_path, exist_ok=True)
+    dict_conf['loggers']["root"]['handlers'] = ['console']
 
     logging.config.dictConfig(dict_conf)
