@@ -156,7 +156,7 @@ class Brain:
         self.lt_memory.make_impression_about(other_character, impression_now)
 
         # 标记印象已经形成
-        self.st_memory.batch_set_history_remembered([history.id for history in history_list])
+        self.st_memory.batch_set_history_impressed([history.id for history in history_list])
 
     def conclude(self, history_list: List[History], other_character: Character):
         """机器人的大脑具备总结的能力，

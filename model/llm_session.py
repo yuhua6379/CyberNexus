@@ -21,6 +21,8 @@ class LLMSession:
     def get_result(self):
         if issubclass(self.result_type, BaseModel):
             return self.result_type.parse_raw(self.result)
+        elif self.result_type == int:
+            return int(self.result)
         else:
             return self.result
 
