@@ -68,6 +68,7 @@ class BasePromptFactory:
         """
         pass
 
+    @return_type(str)
     @abstractmethod
     def on_build_impress_prompt(self,
                                 main_character: Character,

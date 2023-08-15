@@ -10,7 +10,6 @@ from repo.memory import Memory
 
 
 class SamplePromptFactory(BasePromptFactory):
-
     schedule_definition = {
         "type_": Schedule,
         "title": "你需要完成接下来的一系列对话，要求如下： "
@@ -101,6 +100,29 @@ class SamplePromptFactory(BasePromptFactory):
                             kwargs=kwargs)
 
     @return_type(str)
+    def on_build_impress_prompt(self, main_character: Character, other_character: Character,
+                                history_list: list[History], impression_before: str) -> PromptReturn:
+        conclude_template = '''
+                    {history_format}
+                    这是你和{other_character}的之前的互动记录： 
+
+                    ---
+                    {history}
+                    ---
+                    
+                    总结一下你对{other_character}的印象(impression)，输出一个100个字以内的字符串
+                    '''
+
+        kwargs = {
+            "history": "\n".join([history.to_prompt() for history in history_list]),
+            "other_character": other_character.name,
+            "history_format": pydantic2prompt(**self.message_definition)
+        }
+
+        return PromptReturn(prompt_template=conclude_template,
+                            kwargs=kwargs)
+
+    @return_type(str)
     def on_build_determine_whether_item_finish_prompt(self,
                                                       main_character: Character,
                                                       target_item: str,
@@ -136,33 +158,13 @@ class SamplePromptFactory(BasePromptFactory):
 
     @classmethod
     def common_react(cls,
+                     react_template: str,
                      main_character: Character,
                      other_character: Character,
                      item_doing: str,
                      history_list: list[History],
                      relative_memory: list[Response],
                      recent_memory: list[Memory]):
-        react_template = '''
-                    角色设定:
-                    {character_setting}
-
-                    {history_format}
-
-                    相关的记忆:
-                    {relative_memory}
-
-                    最近的记忆:
-                    {recent_memory}
-
-                    正在进行的计划:
-                    {item_doing}
-
-                    交互记录：
-                    {history}
-                    现在，假设你是{main_character}
-                    请生成{other_character}的回复：<填写>
-                    '''
-
         kwargs = {
             "item_doing": item_doing,
             "character_setting": main_character.character_prompt,
@@ -185,7 +187,29 @@ class SamplePromptFactory(BasePromptFactory):
                                        history_list: list[History],
                                        relative_memory: list[Response],
                                        recent_memory: list[Memory]):
+        react_template = '''
+                            角色设定:
+                            {character_setting}
+
+                            {history_format}
+
+                            相关的记忆:
+                            {relative_memory}
+
+                            最近的记忆:
+                            {recent_memory}
+
+                            正在进行的计划:
+                            {item_doing}
+
+                            交互记录：
+                            {history}
+                            现在，假设你是{main_character}
+                            假设你现在遇见{other_character}，请生成对{other_character}的回复：<填写>
+                            '''
+
         return self.common_react(
+            react_template,
             main_character,
             other_character,
             item_doing,
@@ -202,7 +226,28 @@ class SamplePromptFactory(BasePromptFactory):
                               history_list: list[History],
                               relative_memory: list[Response],
                               recent_memory: list[Memory]):
+        react_template = '''
+                                    角色设定:
+                                    {character_setting}
+
+                                    {history_format}
+
+                                    相关的记忆:
+                                    {relative_memory}
+
+                                    最近的记忆:
+                                    {recent_memory}
+
+                                    正在进行的计划:
+                                    {item_doing}
+
+                                    交互记录：
+                                    {history}
+                                    现在，假设你是{main_character}
+                                    请生成对{other_character}的回复：<填写>
+                                    '''
         return self.common_react(
+            react_template,
             main_character,
             other_character,
             item_doing,

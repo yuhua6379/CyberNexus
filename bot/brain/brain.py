@@ -83,6 +83,9 @@ class Brain:
                                                            history_list,
                                                            relative_memory,
                                                            recent_memory)
+
+        # 记录到history
+        self.record(input_character, Message(from_character=input_character.name, to_character=input_character.name, stop=0), message)
         return message
 
     def schedule(self, step: int, round_: int, left_step: int):
