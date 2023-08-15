@@ -7,6 +7,7 @@ from bot.brain.ablity.longterm_memory import LongTermMemory
 from bot.brain.ablity.react import ReactAbility
 from bot.brain.ablity.schedule import ScheduleAbility
 from bot.brain.ablity.shorterm_memory import ShortTermMemory
+from model.charlie_prompt_factory import CharliePromptFactory
 from model.entities.message import Message
 from model.base_prompt_factory import BasePromptFactory
 from model.sample_prompt_factory import SamplePromptFactory
@@ -19,7 +20,7 @@ from repo.scheudle import Schedule
 class Brain:
 
     def __init__(self, character: Character, llm_agent_builder: AgentBuilder,
-                 factory: BasePromptFactory = SamplePromptFactory()):
+                 factory: BasePromptFactory = CharliePromptFactory()):
         self.broker = PromptBroker(factory)
         self.character = character
         self.llm_agent_builder = llm_agent_builder
