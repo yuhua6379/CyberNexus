@@ -58,6 +58,9 @@ if __name__ == '__main__':
         bot1.make_impression(chr2)
         bot2.make_impression(chr1)
 
+        bot1.conclude_interact()
+        bot2.conclude_interact()
+
         # 角色决定stop了，跑完整个round
         while current_turn >= world.round:
             # 跑到下一个round位置

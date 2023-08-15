@@ -65,7 +65,7 @@ class SamplePromptFactory(BasePromptFactory):
     def on_build_rank_prompt(self, memory: str):
         rank_template = '''
         请在1至10的刻度上，对下述记忆的重要性进行评估。其中，1代表日常琐事（如刷牙，铺床），而10则代表深远影响（如分手，大学录取）。
-        记忆描述：{记忆内容}
+        记忆描述：{memory}
         请评定此记忆的深度(rank)，输出一个整数
         '''
 
