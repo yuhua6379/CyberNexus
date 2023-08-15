@@ -102,6 +102,8 @@ class HumanInteractWithBot(BaseInteractTool):
                 self.run_left_step = True
                 # 总结所有的东西
                 self.bot_instance.conclude_interact()
+                # 总结印象
+                self.bot_instance.make_impression(self.human)
 
             if message_out.action is not None and message_out.action.strip():
                 return f"<span style='color:gray;'>*{message_out.action}*</span>       {message_out.message}"

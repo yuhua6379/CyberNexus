@@ -28,6 +28,19 @@ class ConcludeAbility:
         get_logger().info(f"rank return: {session}")
         return session.get_result()
 
+    def impress(self, history_list: List[History], other_character: Character, impression_before: str):
+        session = self.broker.impress_prompt(self.target_character, other_character, history_list, impression_before)
+        # 上帝模式，没有任何多余的prompt，例如角色设定等，仅仅使用原始Agent
+        god = Character.get_by_name(self.broker.factory.get_name_of_system())
+        agent = self.llm_agent_builder.build(character1=god,
+                                             character2=self.target_character)
+
+        # 把总结的history形成impress放到long term memory里面
+        session = agent.chat(session)
+
+        get_logger().info(f"impress return: {session}")
+        return session.get_result()
+
     def conclude(self, history_list: List[History], other_character: Character):
         session = self.broker.conclude_prompt(self.target_character, other_character, history_list)
         # 上帝模式，没有任何多余的prompt，例如角色设定等，仅仅使用原始Agent

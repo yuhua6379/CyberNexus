@@ -1,3 +1,4 @@
+from collections import defaultdict
 from typing import List
 
 from langchain.chat_models.base import BaseChatModel
@@ -5,6 +6,7 @@ from langchain.tools import BaseTool
 
 from bot.base_bot import BaseBot
 from common.base_thread import get_logger
+from model.entities.message import Message
 from repo.character import Character
 
 
@@ -30,3 +32,7 @@ class SelfDriveBot(BaseBot):
         left_step = self.steps_of_round - situation.step
         get_logger().info(f"self_drive situation={situation} left_step={left_step}")
         self.brain.schedule(situation.step, situation.round, left_step)
+
+    def make_impression(self, character: Character):
+        self.brain.impress(character)
+

@@ -1,3 +1,4 @@
+from collections import defaultdict
 from typing import List, Optional
 
 from model.agent import AgentBuilder
@@ -11,7 +12,7 @@ from model.base_prompt_factory import BasePromptFactory
 from model.sample_prompt_factory import SamplePromptFactory
 from model.prompt_broker import PromptBroker
 from repo.character import Character
-from repo.history import History
+from repo.history import History, Direction
 from repo.scheudle import Schedule
 
 
@@ -90,7 +91,8 @@ class Brain:
 
         if schedule is None:
             # 冷启动，规划
-            llm_return = self.schedule_ability.schedule([], self.broker.factory.get_max_schedule(), self.recent_memory())
+            llm_return = self.schedule_ability.schedule([], self.broker.factory.get_max_schedule(),
+                                                        self.recent_memory())
 
             # 安排一件正在做的item
             item_to_do = llm_return.schedule
@@ -107,7 +109,7 @@ class Brain:
 
             if left_step == 0:
                 # 这个round已经结束了，总结下最近的事情
-                self.conclude(self.st_memory.shrink(shrink_all=True))
+                self.conclude_all(self.st_memory.shrink(shrink_all=True))
 
             recent_done_item = Schedule.get_recent_done_items(self.character.id) + [item_done]
             # 调整计划
@@ -122,16 +124,36 @@ class Brain:
             # 标记完成item，记录
             schedule.finish_item(item_done=item_done, items_to_do=item_to_do, item_doing=item_doing)
 
-    def remember_deeply(self, memory: str):
+    def remember_deeply(self, memory: str, force_to_remember=False):
         """
         机器人大脑具备长期记忆能力，但是，不是所有记忆都会记录，只能记录深刻的记忆
+        :param force_to_remember: 强制去记忆，不需要rank
         :param memory:
         :return:
         """
+
+        if force_to_remember:
+            self.lt_memory.save(memory)
+            return
+
         rank = self.conclude_ability.rank(memory)
         if rank >= self.broker.factory.get_threshold_of_rank_to_remember():
             self.lt_memory.save(memory)
 
+    def impress(self, other_character: Character):
+        """
+        机器人的大脑具备总结的能力，
+        你给他一段交互历史，他可以用一段话总结出他对other_character的印象，
+        并存储到长期记忆内"""
+
+        history_list = self.st_memory.get_not_impressed_history_with_character(other_character)
+
+        impression_before = self.lt_memory.get_impression_about(other_character)
+        impression_now = self.conclude_ability.impress(history_list, other_character, impression_before)
+        self.lt_memory.make_impression_about(other_character, impression_now)
+
+        # 标记印象已经形成
+        self.st_memory.batch_set_history_remembered([history.id for history in history_list])
 
     def conclude(self, history_list: List[History], other_character: Character):
         """机器人的大脑具备总结的能力，
@@ -149,6 +171,18 @@ class Brain:
     # ---------------------------------场景--------------------------------- #
 
     # ---------------------------------方法--------------------------------- #
+
+    def conclude_all(self, history_list: List[History]):
+        # 总结交互
+        character_history_list_dict = defaultdict(list)
+        for history in history_list:
+            character_history_list_dict[(history.other_character.id, history.other_character)].append(history)
+        for tp, item in character_history_list_dict.items():
+            history_list = item
+            other_character = tp[1]
+
+            self.conclude(history_list, other_character)
+
     def record(self, character_input: Character, message_in: Message, message_out: Message):
         """机器人大脑记录信息"""
         self.feed_history(character_input, message_in, message_out)
@@ -185,9 +219,24 @@ class Brain:
         """机器人大脑回想起最近的信息"""
         return self.lt_memory.latest_memory()
 
+    @classmethod
+    def make_history(cls, direction: Direction, main_character: Character, other_character: Character,
+                     message_in: Message, message_out: Message):
+        return History(main_character=main_character,
+                       other_character=other_character,
+                       main_message=message_out.message,
+                       main_action=message_out.action,
+                       other_message=message_in.message,
+                       other_action=message_in.action,
+                       direction=direction,
+                       main_stop=message_in.stop,
+                       other_stop=message_out.stop
+                       )
+
     def feed_history(self, character_input: Character, message_in: Message, message_out: Message):
-        self.st_memory.add(character_input, message_in, message_out)
+        history = self.make_history(Direction.to_main, self.character, character_input, message_in, message_out)
+        self.st_memory.add(history)
         history_list = self.st_memory.shrink()
         if len(history_list) > 0:
-            self.conclude(history_list)
+            self.conclude_all(history_list)
     # ---------------------------------方法--------------------------------- #

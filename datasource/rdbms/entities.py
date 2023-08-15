@@ -32,6 +32,7 @@ class HistoryModel(OrmBaseModel, Base):
     direction = Column(Enum("to_other", "to_main"), nullable=False)
 
     remembered = Column(Boolean, default=False, nullable=False)
+    impressed = Column(Boolean, default=False, nullable=False)
 
 
 class CharacterModel(OrmBaseModel, Base):
@@ -59,3 +60,10 @@ class ScheduleLogModel(OrmBaseModel, Base):
     __tablename__ = 'vb_schedule_log'
     character_id = Column(Integer, nullable=False, index=True)
     item_done = Column(String(1000), nullable=False)
+
+
+class ImpressionModel(OrmBaseModel, Base):
+    __tablename__ = "vb_impression"
+    main_character_id = Column(Integer, nullable=False, index=True)
+    other_character_id = Column(Integer, nullable=False, index=True)
+    impression = Column(String(1000), nullable=False)

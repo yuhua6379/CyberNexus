@@ -23,15 +23,7 @@ class BaseBot:
 
     def conclude_interact(self):
         # 总结所有的交互
-        history_list = self.brain.st_memory.shrink(shrink_all=True)
-        character_history_list_dict = defaultdict(list)
-        for history in history_list:
-            character_history_list_dict[(history.other_character.id, history.other_character)].append(history)
-        for tp, item in character_history_list_dict.items():
-            history_list = item
-            other_character = tp[1]
-
-            self.brain.conclude(history_list, other_character)
+        self.brain.conclude_all(self.brain.st_memory.shrink(shrink_all=True))
 
     def set_debug_prompt(self, prompt: str):
         self.brain.set_debug_prompt(prompt)

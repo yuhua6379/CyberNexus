@@ -5,6 +5,7 @@ from common import md5
 from datasource.config import vector_db_factory
 from datasource.vectordb.entities import Document
 from repo.character import Character
+from repo.impression import Impression
 from repo.memory import Memory
 
 
@@ -30,3 +31,9 @@ class LongTermMemory:
 
     def latest_memory(self):
         return Memory.get_latest_memory_by_character_id(self.character.id)
+
+    def make_impression_about(self, other_character: Character, impression: str):
+        Impression.renew_impression(self.character.id, other_character.id, impression)
+
+    def get_impression_about(self, other_character: Character):
+        return Impression.get_impression_about(self.character.id, other_character.id)

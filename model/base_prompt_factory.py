@@ -68,6 +68,21 @@ class BasePromptFactory:
         """
         pass
 
+    @abstractmethod
+    def on_build_impress_prompt(self,
+                                main_character: Character,
+                                other_character: Character,
+                                history_list: list[History],
+                                impression_before: str) -> PromptReturn:
+        """
+        :param impression_before: main角色对other角色之前的impression
+        :param other_character: other角色
+        :param main_character: main角色
+        :param history_list: main角色未形成memory的与所有交互过角色的history
+        :return:
+        """
+        pass
+
     @return_type(int)
     @abstractmethod
     def on_build_rank_prompt(self, memory: str):
