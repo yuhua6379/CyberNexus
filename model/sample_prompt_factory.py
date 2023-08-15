@@ -1,9 +1,8 @@
-from model.entities.message import Message
-from common.base_thread import get_logger
 from datasource.vectordb.entities import Response
 from model.base_prompt_factory import BasePromptFactory
+from model.entities.message import Message
 from model.entities.schedule import Schedule
-from model.llm_session import return_type, pydantic2prompt, PromptReturn
+from model.llm_session import return_type, PromptReturn
 from repo.character import Character
 from repo.history import History
 from repo.memory import Memory
@@ -17,17 +16,17 @@ class SamplePromptFactory(BasePromptFactory):
     }
 
     message_definition = {
-        "type_": Message,
         "title": "你必须用 JSON 格式表示角色之间的交互，具体要求如下：",
+        "type_": Message,
+        "example_title": "let's think step by step:"
+                         "1. 生成一个json格式的对话；"
+                         "2. 核实 json 格式，确保格式合法。",
         "examples": [
             Message(from_character="lisa", to_character="tom", action="看了看天空，并对 tom 说道",
                     message="今天天气真不错，你不觉得吗？", stop=0),
             Message(from_character="tom", to_character="jack", action="一脸焦躁",
                     message="我必须走了，不然赶不上3点半的火车了", stop=1)
-        ],
-        "example_title": "let's think step by step:"
-                         "1. 生成一个json格式的对话；"
-                         "2. 核实 json 格式，确保格式合法。"
+        ]
     }
 
     @return_type(**schedule_definition)

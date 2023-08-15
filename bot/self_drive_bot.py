@@ -1,4 +1,3 @@
-from collections import defaultdict
 from typing import List
 
 from langchain.chat_models.base import BaseChatModel
@@ -6,15 +5,15 @@ from langchain.tools import BaseTool
 
 from bot.base_bot import BaseBot
 from common.base_thread import get_logger
-from model.entities.message import Message
+from model.base_prompt_factory import BasePromptFactory
 from repo.character import Character
 
 
 class SelfDriveBot(BaseBot):
     """自驱动bot，会在一个后台线程里面启动"""
 
-    def __init__(self, llm: BaseChatModel, tools: List[BaseTool], character: Character):
-        BaseBot.__init__(self, llm, tools, character)
+    def __init__(self, llm: BaseChatModel, tools: List[BaseTool], character: Character, factory: BasePromptFactory):
+        BaseBot.__init__(self, llm, tools, character, factory)
         self.lasted_situation = None
         self.steps_of_round = None
 
@@ -35,4 +34,3 @@ class SelfDriveBot(BaseBot):
 
     def make_impression(self, character: Character):
         self.brain.impress(character)
-

@@ -1,11 +1,11 @@
 import os
+
 import initialize
+import tool_build_character
 from bot.self_drive_bot import SelfDriveBot
 from model.agent import Character
-
-from model.entities.message import Message
 from model.openai import get_openai_llm
-import tool_build_character
+from model.sample_prompt_factory import SamplePromptFactory
 from world.botbroker import SyncBotBroker
 from world.world import TurnBaseWorld
 
@@ -25,8 +25,8 @@ if __name__ == '__main__':
     chr2 = Character.get_by_name("李华")
 
     # 构建一个bot，用于聊天
-    bot1 = SelfDriveBot(llm=llm, tools=[], character=chr1)
-    bot2 = SelfDriveBot(llm=llm, tools=[], character=chr2)
+    bot1 = SelfDriveBot(llm=llm, tools=[], character=chr1, factory=SamplePromptFactory())
+    bot2 = SelfDriveBot(llm=llm, tools=[], character=chr2, factory=SamplePromptFactory())
 
     world = TurnBaseWorld(steps_of_round=2, broker=SyncBotBroker())
     world.join(bot1)

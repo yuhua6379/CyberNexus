@@ -1,6 +1,7 @@
 from abc import abstractmethod
-from model.entities.message import Message
+
 from datasource.vectordb.entities import Response
+from model.entities.message import Message
 from model.entities.schedule import Schedule
 from model.llm_session import return_type, PromptReturn
 from repo.character import Character
@@ -55,6 +56,7 @@ class BasePromptFactory:
         """
         pass
 
+    @return_type(str)
     @abstractmethod
     def on_build_conclude_prompt(self,
                                  main_character: Character,

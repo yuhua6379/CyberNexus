@@ -1,7 +1,7 @@
 from typing import List
 
-from model.agent import AgentBuilder
 from common.base_thread import get_logger
+from model.agent import AgentBuilder
 from model.prompt_broker import PromptBroker
 from repo.character import Character
 from repo.history import History

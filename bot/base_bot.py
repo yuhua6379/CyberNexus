@@ -1,22 +1,21 @@
-from collections import defaultdict
-from typing import List, Tuple, Any
+from typing import List
 
 from langchain.chat_models.base import BaseChatModel
 from langchain.tools import BaseTool
 
-from model.agent import AgentBuilder
 from bot.brain.brain import Brain
+from model.agent import AgentBuilder
+from model.base_prompt_factory import BasePromptFactory
 from model.entities.message import Message
 from repo.character import Character
 
 
 class BaseBot:
-    def __init__(self, llm: BaseChatModel, tools: List[BaseTool], character: Character):
+    def __init__(self, llm: BaseChatModel, tools: List[BaseTool], character: Character, factory: BasePromptFactory):
         self.character = character
-        self.brain = Brain(character, AgentBuilder(llm=llm, tools=tools))
+        self.brain = Brain(character, AgentBuilder(llm=llm, tools=tools), factory=factory)
 
     def interact(self, message: Message):
-
         return self.brain.react(message, Character.get_by_name(message.from_character))
 
     def meet(self, input_character: Character):

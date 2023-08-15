@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 from datasource.config import rdbms_instance
-from datasource.rdbms.entities import CharacterModel, ImpressionModel
+from datasource.rdbms.entities import ImpressionModel
 
 
 class Impression(BaseModel, orm_mode=True):

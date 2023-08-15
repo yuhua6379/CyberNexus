@@ -1,7 +1,5 @@
-from pydantic import BaseModel
-
-from model.agent import AgentBuilder
 from common.base_thread import get_logger
+from model.agent import AgentBuilder
 from model.prompt_broker import PromptBroker
 from repo.character import Character
 from repo.history import History
@@ -22,8 +20,8 @@ class ScheduleAbility:
         """输入内容 = 基础人物设定 + 最近的memory + 最近的交互 + 可能正在做的事情"""
 
         session = self.prompt_broker.determine_whether_item_finish_prompt(self.target_character, target_item,
-                                                                         history_list,
-                                                                         recent_memory)
+                                                                          history_list,
+                                                                          recent_memory)
 
         # 上帝模式，没有任何多余的prompt，例如角色设定等，仅仅使用原始Agent
         god = Character.get_by_name(self.prompt_broker.factory.get_name_of_system())

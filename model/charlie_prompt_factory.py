@@ -1,7 +1,6 @@
-from model.entities.message import Message
-from common.base_thread import get_logger
 from datasource.vectordb.entities import Response
 from model.base_prompt_factory import BasePromptFactory
+from model.entities.message import Message
 from model.entities.schedule import Schedule
 from model.llm_session import return_type, pydantic2prompt, PromptReturn
 from repo.character import Character

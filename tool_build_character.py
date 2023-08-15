@@ -89,6 +89,7 @@ def build():
     except Exception as e:
         if str(e).find("UNIQUE constraint failed: vb_character.name") == -1:
             raise
+
+
 if __name__ == '__main__':
     build()
-

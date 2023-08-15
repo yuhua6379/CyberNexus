@@ -1,11 +1,11 @@
 import os
 
 import initialize
-from model.agent import Character
 from bot.base_bot import SimpleChatBot
-from model.entities.message import Message
 from bot.toolkits.internet_tools.get_weather_information_in_china import get_weather_info_in_china
 from bot.toolkits.system_tools.watch import watch
+from model.agent import Character
+from model.entities.message import Message
 from model.openai import get_openai_llm
 
 if __name__ == '__main__':

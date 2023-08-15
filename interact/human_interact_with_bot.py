@@ -1,9 +1,7 @@
-from model.entities.message import Message
 from bot.self_drive_bot import SelfDriveBot
 from interact.base_interact_tool import BaseInteractTool
-
+from model.entities.message import Message
 from repo.character import Character
-
 from world.botbroker import SyncBotBroker
 from world.world import TurnBaseWorld
 

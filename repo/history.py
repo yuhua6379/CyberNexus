@@ -4,9 +4,9 @@ from typing import Optional
 from pydantic import BaseModel
 from sqlalchemy import and_, or_
 
-from model.entities.message import Message
 from datasource.config import rdbms_instance
 from datasource.rdbms.entities import HistoryModel
+from model.entities.message import Message
 from repo.character import Character
 
 

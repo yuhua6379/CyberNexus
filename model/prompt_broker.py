@@ -1,6 +1,6 @@
-from model.entities.message import Message
 from datasource.vectordb.entities import Response
 from model.base_prompt_factory import BasePromptFactory
+from model.entities.message import Message
 from repo.character import Character
 from repo.history import History
 from repo.memory import Memory

@@ -1,6 +1,5 @@
-from model.entities.message import Message
 from repo.character import Character
-from repo.history import History, Direction
+from repo.history import History
 
 
 class ShortTermMemory:

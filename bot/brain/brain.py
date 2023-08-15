@@ -1,16 +1,16 @@
 from collections import defaultdict
 from typing import List, Optional
 
-from model.agent import AgentBuilder
 from bot.brain.ablity.conclude import ConcludeAbility
 from bot.brain.ablity.longterm_memory import LongTermMemory
 from bot.brain.ablity.react import ReactAbility
 from bot.brain.ablity.schedule import ScheduleAbility
 from bot.brain.ablity.shorterm_memory import ShortTermMemory
-from model.entities.message import Message
+from model.agent import AgentBuilder
 from model.base_prompt_factory import BasePromptFactory
-from model.sample_prompt_factory import SamplePromptFactory
+from model.entities.message import Message
 from model.prompt_broker import PromptBroker
+from model.sample_prompt_factory import SamplePromptFactory
 from repo.character import Character
 from repo.history import History, Direction
 from repo.scheudle import Schedule
@@ -85,7 +85,8 @@ class Brain:
                                                            recent_memory)
 
         # 记录到history
-        self.record(input_character, Message(from_character=input_character.name, to_character=input_character.name, stop=0), message)
+        self.record(input_character,
+                    Message(from_character=input_character.name, to_character=input_character.name, stop=0), message)
         return message
 
     def schedule(self, step: int, round_: int, left_step: int):
