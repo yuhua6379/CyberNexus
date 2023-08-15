@@ -40,6 +40,7 @@ class CharacterModel(OrmBaseModel, Base):
     name = Column(String(100), nullable=False, unique=True)
     type = Column(Enum("bot", "user", "system"), nullable=False)
     character_prompt = Column(String(10000), nullable=True, unique=False, default="")
+    character_appearance = Column(String(10000), nullable=True, unique=False, default="")
 
 
 class MemoryModel(OrmBaseModel, Base):

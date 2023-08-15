@@ -20,6 +20,7 @@ class Character(BaseModel, orm_mode=True):
     name: str
     type: CharacterType
     character_prompt: str
+    character_appearance: str
 
     @classmethod
     def get_by_name(cls, name: str):
