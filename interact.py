@@ -11,6 +11,8 @@ from repo.character import Character
 import tool_build_character
 
 if __name__ == '__main__':
+    tool_build_character.build()
+
     initialize.initialize()
 
     # 获取llm实例，用于后面predict
