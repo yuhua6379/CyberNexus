@@ -47,13 +47,17 @@ def get_log_dict_config(level):
         'handlers': {
             'console': {
                 'level': level,
-                'class': 'logging.StreamHandler',
-                'formatter': 'console'
+                'class': 'logging.handlers.RotatingFileHandler',
+                'formatter': 'file',
+                'filename': f"{config.log_path}/root",
+                'maxBytes': 1024 << 17,
+                'backupCount': 10,
+                'encoding': 'utf-8'
             },
         },
         'loggers': {
             'root': {
-                'handlers': ['console'],
+                'handlers': ['file'],
                 'level': level,
             }
         }
