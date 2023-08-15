@@ -13,13 +13,15 @@ class TurnBaseWorld:
 
         self.steps_of_round = steps_of_round
         self.round = 0
+        self._step = 0
         self.step = 0
 
     def next(self) -> Tuple[int, int]:
         # 每次step + 1
-        self.step += 1
+        self._step += 1
         # 重新计算第几round
-        self.round = math.ceil(self.step / self.steps_of_round)
+        self.round = math.ceil(self._step / self.steps_of_round)
+        self.round = self._step % self.steps_of_round
 
         return self.step, self.round
 

@@ -28,29 +28,41 @@ if __name__ == '__main__':
     bot1 = SelfDriveBot(llm=llm, tools=[], character=chr1)
     bot2 = SelfDriveBot(llm=llm, tools=[], character=chr2)
 
-    ret1 = bot1.meet(chr2)
-
-    ret2 = bot2.interact(ret1)
-
-    # world = TurnBaseWorld(steps_of_round=5, broker=SyncBotBroker())
-    # world.join(bot1)
-    # world.join(bot2)
-
-    print(ret1.to_prompt())
-    print(ret2.to_prompt())
+    world = TurnBaseWorld(steps_of_round=5, broker=SyncBotBroker())
+    world.join(bot1)
+    world.join(bot2)
 
     max_turn = 8
+    current_turn = world.round
     for i in range(max_turn):
 
-        if ret1.stop == ret2.stop == 1:
-            print("对话结束")
-            break
-        ret1 = bot1.interact(ret2)
-
+        # 一回合开始
+        ret1 = bot1.meet(chr2)
         ret2 = bot2.interact(ret1)
 
         print(ret1.to_prompt())
         print(ret2.to_prompt())
+
+        while True:
+            if ret1.stop == ret2.stop == 1:
+                print("对话结束")
+                break
+            ret1 = bot1.interact(ret2)
+
+            ret2 = bot2.interact(ret1)
+
+            print(ret1.to_prompt())
+            print(ret2.to_prompt())
+
+        # 互相生成印象
+        bot1.make_impression(chr2)
+        bot2.make_impression(chr1)
+
+        # 角色决定stop了，跑完整个round
+        while current_turn >= world.round:
+            # 跑到下一个round位置
+            world.run()
+        current_turn = world.round
 
     # while max_turn > 0:
     #     stop = 0

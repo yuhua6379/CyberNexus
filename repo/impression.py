@@ -14,26 +14,26 @@ class Impression(BaseModel, orm_mode=True):
     impression: str
 
     @classmethod
-    def _get_impression_about(cls, main_character_id: int, other_character_id: int):
-        with (rdbms_instance.get_session() as session):
-            filter_ = session.query(ImpressionModel)
-            filter_ = filter_.filter(ImpressionModel.main_character_id == main_character_id)
-            filter_.filter(ImpressionModel.other_character_id == other_character_id)
-            results = filter_.all()
-            return results
+    def _get_impression_about(cls, session, main_character_id: int, other_character_id: int):
+        filter_ = session.query(ImpressionModel)
+        filter_ = filter_.filter(ImpressionModel.main_character_id == main_character_id)
+        filter_.filter(ImpressionModel.other_character_id == other_character_id)
+        results = filter_.all()
+        return results
 
     @classmethod
     def get_impression_about(cls, main_character_id: int, other_character_id: int):
-        results = cls._get_impression_about(main_character_id, other_character_id)
-        if len(results) == 0:
-            return None
-        else:
-            return cls.from_orm(results[0])
+        with rdbms_instance.get_session() as session:
+            results = cls._get_impression_about(session, main_character_id, other_character_id)
+            if len(results) == 0:
+                return None
+            else:
+                return cls.from_orm(results[0])
 
     @classmethod
     def renew_impression(cls, main_character_id: int, other_character_id: int, impression: str):
         with rdbms_instance.get_session() as session:
-            results = cls._get_impression_about(main_character_id, other_character_id)
+            results = cls._get_impression_about(session, main_character_id, other_character_id)
 
             if len(results) == 0:
                 impression_model = ImpressionModel()

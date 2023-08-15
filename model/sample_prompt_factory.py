@@ -12,15 +12,13 @@ from repo.memory import Memory
 class SamplePromptFactory(BasePromptFactory):
     schedule_definition = {
         "type_": Schedule,
-        "title": "你需要完成接下来的一系列对话，要求如下： "
-                 "你必须用 JSON 格式表示角色之间的交互，具体要求如下：",
+        "title": "你必须用 JSON 格式表示角色之间的交互，具体要求如下：",
         "examples": [Schedule(schedule=["吃早餐", "去上班", "开始工作", "完成工作", "下班回家"])]
     }
 
     message_definition = {
         "type_": Message,
-        "title": "你需要完成接下来的一系列对话，要求如下： "
-                 "你必须用 JSON 格式表示角色之间的交互，具体要求如下：",
+        "title": "你必须用 JSON 格式表示角色之间的交互，具体要求如下：",
         "examples": [
             Message(from_character="lisa", to_character="tom", action="看了看天空，并对 tom 说道",
                     message="今天天气真不错，你不觉得吗？", stop=0),
@@ -84,7 +82,6 @@ class SamplePromptFactory(BasePromptFactory):
                                  other_character: Character,  # 对应的交互角色
                                  history_list: list[History]):
         conclude_template = '''
-            {history_format}
             这是最近的交互:
             {history}
 
@@ -92,8 +89,7 @@ class SamplePromptFactory(BasePromptFactory):
             '''
 
         kwargs = {
-            "history": "\n".join([history.to_prompt() for history in history_list]),
-            "history_format": pydantic2prompt(**self.message_definition)
+            "history": "\n".join([history.to_prompt(simple_string=True) for history in history_list]),
         }
 
         return PromptReturn(prompt_template=conclude_template,
@@ -102,8 +98,7 @@ class SamplePromptFactory(BasePromptFactory):
     @return_type(str)
     def on_build_impress_prompt(self, main_character: Character, other_character: Character,
                                 history_list: list[History], impression_before: str) -> PromptReturn:
-        conclude_template = '''
-                    {history_format}
+        impression_template = '''
                     这是你和{other_character}的之前的互动记录： 
 
                     ---
@@ -114,12 +109,11 @@ class SamplePromptFactory(BasePromptFactory):
                     '''
 
         kwargs = {
-            "history": "\n".join([history.to_prompt() for history in history_list]),
-            "other_character": other_character.name,
-            "history_format": pydantic2prompt(**self.message_definition)
+            "history": "\n".join([history.to_prompt(simple_string=True) for history in history_list]),
+            "other_character": other_character.name
         }
 
-        return PromptReturn(prompt_template=conclude_template,
+        return PromptReturn(prompt_template=impression_template,
                             kwargs=kwargs)
 
     @return_type(str)

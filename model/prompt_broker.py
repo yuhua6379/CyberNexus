@@ -30,7 +30,7 @@ class PromptBroker:
 
     def impress_prompt(self, main_character: Character, other_character: Character, history_list: list[History],
                        impression_before: str):
-        return self.factory.on_build_conclude_prompt(main_character, other_character, history_list, impression_before)
+        return self.factory.on_build_impress_prompt(main_character, other_character, history_list, impression_before)
 
     def rank_prompt(self, memory: str):
         return self.factory.on_build_rank_prompt(memory)
