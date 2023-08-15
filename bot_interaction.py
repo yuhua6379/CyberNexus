@@ -28,12 +28,11 @@ if __name__ == '__main__':
     bot1 = SelfDriveBot(llm=llm, tools=[], character=chr1)
     bot2 = SelfDriveBot(llm=llm, tools=[], character=chr2)
 
-    world = TurnBaseWorld(steps_of_round=5, broker=SyncBotBroker())
+    world = TurnBaseWorld(steps_of_round=2, broker=SyncBotBroker())
     world.join(bot1)
     world.join(bot2)
 
     max_turn = 8
-    current_turn = world.round
     for i in range(max_turn):
 
         # 一回合开始
@@ -61,10 +60,8 @@ if __name__ == '__main__':
         bot1.conclude_interact()
         bot2.conclude_interact()
 
-        # 角色决定stop了，跑完整个round
-        while current_turn >= world.round:
-            # 跑到下一个round位置
-            world.run()
+        # 跑到下一个round位置
+        world.run_until_next_round()
         current_turn = world.round
 
     # while max_turn > 0:

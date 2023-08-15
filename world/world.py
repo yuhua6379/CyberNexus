@@ -20,8 +20,8 @@ class TurnBaseWorld:
         # 每次step + 1
         self._step += 1
         # 重新计算第几round
-        self.round = math.ceil(self._step / self.steps_of_round)
-        self.round = self._step % self.steps_of_round
+        self.round = math.floor(self._step / self.steps_of_round)
+        self.step = self._step % self.steps_of_round
 
         return self.step, self.round
 
@@ -40,3 +40,8 @@ class TurnBaseWorld:
         for bot in self.broker.bots.values():
             get_logger().info(f"wake bot: {bot.character.id} - {bot.character.name}")
             self._wake_bot(bot, step, round_)
+
+    def run_until_next_round(self):
+        cur_round = self.round
+        while cur_round == self.round:
+            self.run()
