@@ -34,15 +34,15 @@ class SamplePromptFactory(BasePromptFactory):
                                  recent_memory: list[Memory]):
         scheduling_template = '''
             角色设定:
-            {character_setting}
+            """{character_setting}"""
             
             这是一些最近的记忆:
-            {memory}
+            """{memory}"""
 
-            {schedule_format}
+            """{schedule_format}"""
 
             这是你已完成的事项:
-            {item_done}
+            """{item_done}"""
             请你回应1个计划，包含{steps}个步骤
             你回应的计划，必须符合角色设定
             '''
@@ -63,9 +63,10 @@ class SamplePromptFactory(BasePromptFactory):
     @return_type(int)
     def on_build_rank_prompt(self, memory: str):
         rank_template = '''
-        请在1至10的刻度上，对下述记忆的重要性进行评估。其中，1代表日常琐事（如刷牙，铺床），而10则代表深远影响（如分手，大学录取）。
-        记忆描述：{memory}
-        请评定此记忆的深度(rank)，输出一个整数
+        请在1至10的刻度上，对下述记忆的重要性进行评估。其中，1代表日常琐事（如刷牙，铺床），而10则代表深远影响（如分手，大学录取）,如果你认为这个记忆不重要或者不符合要求，请输出0。
+        记忆描述："""{memory}"""
+        请评定此记忆的深度(rank)，输出一个整数。
+        <填写>.
         '''
 
         kwargs = {
@@ -82,7 +83,7 @@ class SamplePromptFactory(BasePromptFactory):
                                  history_list: list[History]):
         conclude_template = '''
             这是最近的交互:
-            {history}
+            """{history}"""
 
             请你用一段长度适中的话总结一下这段交互，而且你只能输出这句话
             '''
@@ -99,10 +100,7 @@ class SamplePromptFactory(BasePromptFactory):
                                 history_list: list[History], impression_before: str) -> PromptReturn:
         impression_template = '''
                     这是你和{other_character}的之前的互动记录： 
-
-                    ---
-                    {history}
-                    ---
+                    """{history}"""
                     
                     总结一下你对{other_character}的印象(impression)，输出一个100个字以内的字符串
                     '''
@@ -125,16 +123,16 @@ class SamplePromptFactory(BasePromptFactory):
 
         determine_whether_item_finish_template = '''
             角色设定:
-            {character_setting}
+            """{character_setting}"""
             
             这是一些最近的记忆:
-            {memory}
+            """{memory}"""
 
             这是你计划做的事情，但这事情可能受到干扰未必会完成:
-            {item}
+            """{item}"""
 
             这是最近的交互:
-            {history_string}
+            """{history_string}"""
 
             请你用一句话总结一下你最近真正做的事情
             '''
@@ -159,23 +157,22 @@ class SamplePromptFactory(BasePromptFactory):
                                        recent_memory: list[Memory]):
         react_template = '''
                             角色设定:
-                            {character_setting}
-
-                            {history_format}
+                            """{character_setting}"""
+                            """{history_format}"""
 
                             相关的记忆:
-                            {relative_memory}
+                            """{relative_memory}"""
 
                             最近的记忆:
-                            {recent_memory}
+                            """{recent_memory}"""
 
                             正在进行的计划:
-                            {item_doing}
+                            """{item_doing}"""
 
                             交互记录：
-                            {history}
+                            """{history}"""
                             现在，假设你是{main_character}
-                            假设你现在遇见{other_character}，请生成对{other_character}的回复：<填写>
+                            假设你现在遇见{other_character}，请生成对{other_character}的开场语和动作：<填写>
                             '''
 
         kwargs = {
@@ -203,24 +200,25 @@ class SamplePromptFactory(BasePromptFactory):
                               recent_memory: list[Memory]):
         react_template = '''
                                     角色设定:
-                                    {character_setting}
-
-                                    {history_format}
+                                    """{character_setting}"""
+                                    
+                                    """{history_format}"""
 
                                     相关的记忆:
-                                    {relative_memory}
+                                    """{relative_memory}"""
 
                                     最近的记忆:
-                                    {recent_memory}
+                                    """{recent_memory}"""
 
                                     正在进行的计划:
-                                    {item_doing}
+                                    """{item_doing}"""
 
                                     交互记录：
-                                    {history}
-                                    注意！！你生成的内容必须不能跟交互记录相似，必须不同
+                                    """{history}"""
+                                    
                                     现在，假设你是{main_character}
                                     请生成对{other_character}的回复：<填写>
+                                    ！请不要重复交互记录里面出现过的相似的内容。
                                     '''
         kwargs = {
             "item_doing": item_doing,
