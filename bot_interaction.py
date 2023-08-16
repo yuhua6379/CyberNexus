@@ -6,6 +6,7 @@ from bot.self_drive_bot import SelfDriveBot
 from model.agent import Character
 from model.openai import get_openai_llm
 from model.sample_prompt_factory import SamplePromptFactory
+from model.charlie_prompt_factory import CharliePromptFactory
 from world.botbroker import SyncBotBroker
 from world.world import TurnBaseWorld
 
@@ -21,18 +22,18 @@ if __name__ == '__main__':
 
     # 设置聊天对象，name是唯一的，会根据对象去加载历史聊天记录
 
-    chr1 = Character.get_by_name("hero")
-    chr2 = Character.get_by_name("monster")
+    chr1 = Character.get_by_name("镇长")
+    chr2 = Character.get_by_name("李华")
 
     # 构建一个bot，用于聊天
-    bot1 = SelfDriveBot(llm=llm, tools=[], character=chr1, factory=SamplePromptFactory())
-    bot2 = SelfDriveBot(llm=llm, tools=[], character=chr2, factory=SamplePromptFactory())
+    bot1 = SelfDriveBot(llm=llm, tools=[], character=chr1, factory=CharliePromptFactory())
+    bot2 = SelfDriveBot(llm=llm, tools=[], character=chr2, factory=CharliePromptFactory())
 
     world = TurnBaseWorld(steps_of_round=2, broker=SyncBotBroker())
     world.join(bot1)
     world.join(bot2)
 
-    max_turn = 8
+    max_turn = 4
     for i in range(max_turn):
 
         # 一回合开始
@@ -43,7 +44,7 @@ if __name__ == '__main__':
         print(ret2.to_prompt())
 
         while True:
-            if ret1.stop == ret2.stop == 1:
+            if ret1.stop + ret2.stop > 0:
                 print("对话结束")
                 break
             ret1 = bot1.interact(ret2)
