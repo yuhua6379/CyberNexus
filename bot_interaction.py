@@ -21,8 +21,8 @@ if __name__ == '__main__':
 
     # 设置聊天对象，name是唯一的，会根据对象去加载历史聊天记录
 
-    chr1 = Character.get_by_name("镇长先生")
-    chr2 = Character.get_by_name("李华")
+    chr1 = Character.get_by_name("hero")
+    chr2 = Character.get_by_name("monster")
 
     # 构建一个bot，用于聊天
     bot1 = SelfDriveBot(llm=llm, tools=[], character=chr1, factory=SamplePromptFactory())

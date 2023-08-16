@@ -51,7 +51,7 @@ class SamplePromptFactory(BasePromptFactory):
         kwargs = {
             "character_setting": main_character.character_prompt,
             "memory": memory_string,
-            "item_done": item_done,
+            "item_done": "\n".join(item_done),
             "steps": steps
         }
 
@@ -149,29 +149,6 @@ class SamplePromptFactory(BasePromptFactory):
         return PromptReturn(prompt_template=determine_whether_item_finish_template,
                             kwargs=kwargs)
 
-    @classmethod
-    def common_react(cls,
-                     react_template: str,
-                     main_character: Character,
-                     other_character: Character,
-                     item_doing: str,
-                     history_list: list[History],
-                     relative_memory: list[Response],
-                     recent_memory: list[Memory]):
-        kwargs = {
-            "item_doing": item_doing,
-            "character_setting": main_character.character_prompt,
-            "relative_memory": "\n".join([doc.document.content for doc in relative_memory]).strip(),
-            "recent_memory": "\n".join([memory.content for memory in recent_memory]).strip(),
-            "history": "\n".join([history.to_prompt() for history in history_list]),
-            "main_character": main_character.name,
-            "other_character": other_character.name
-        }
-
-        return PromptReturn(prompt_template=react_template,
-                            kwargs=kwargs,
-                            position="history_format")
-
     @return_type(**message_definition)
     def on_build_stimulus_of_character(self,
                                        main_character: Character,
@@ -201,14 +178,19 @@ class SamplePromptFactory(BasePromptFactory):
                             假设你现在遇见{other_character}，请生成对{other_character}的回复：<填写>
                             '''
 
-        return self.common_react(
-            react_template,
-            main_character,
-            other_character,
-            item_doing,
-            history_list,
-            relative_memory,
-            recent_memory)
+        kwargs = {
+            "item_doing": item_doing,
+            "character_setting": main_character.character_prompt,
+            "relative_memory": "\n".join([doc.document.content for doc in relative_memory]).strip(),
+            "recent_memory": "\n".join([memory.content for memory in recent_memory]).strip(),
+            "history": "\n".join([history.to_prompt() for history in history_list]),
+            "main_character": main_character.name,
+            "other_character": other_character.name
+        }
+
+        return PromptReturn(prompt_template=react_template,
+                            kwargs=kwargs,
+                            position="history_format")
 
     @return_type(**message_definition)
     def on_build_react_prompt(self,
@@ -236,14 +218,20 @@ class SamplePromptFactory(BasePromptFactory):
 
                                     交互记录：
                                     {history}
+                                    注意！！你生成的内容必须不能跟交互记录相似，必须不同
                                     现在，假设你是{main_character}
                                     请生成对{other_character}的回复：<填写>
                                     '''
-        return self.common_react(
-            react_template,
-            main_character,
-            other_character,
-            item_doing,
-            history_list,
-            relative_memory,
-            recent_memory)
+        kwargs = {
+            "item_doing": item_doing,
+            "character_setting": main_character.character_prompt,
+            "relative_memory": "\n".join([doc.document.content for doc in relative_memory]).strip(),
+            "recent_memory": "\n".join([memory.content for memory in recent_memory]).strip(),
+            "history": "\n".join([history.to_prompt() for history in history_list] + [input_.to_prompt()]),
+            "main_character": main_character.name,
+            "other_character": other_character.name
+        }
+
+        return PromptReturn(prompt_template=react_template,
+                            kwargs=kwargs,
+                            position="history_format")

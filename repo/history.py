@@ -98,10 +98,7 @@ class History(BaseModel):
     def get_not_remembered_history_by_character_id(cls, character_id: int):
         with rdbms_instance.get_session() as session:
             filter_ = session.query(HistoryModel).filter(HistoryModel.remembered == False)
-            filter_ = filter_.filter(or_(
-                HistoryModel.main_character_id == character_id,
-                HistoryModel.other_character_id == character_id)
-            )
+            filter_ = filter_.filter(HistoryModel.main_character_id == character_id)
 
             results = filter_.all()
             return [cls.from_model(model) for model in results]
@@ -110,14 +107,8 @@ class History(BaseModel):
     def get_not_remembered_history_by_couple_character_id(cls, main_character_id: int, other_character_id: int):
         with rdbms_instance.get_session() as session:
             filter_ = session.query(HistoryModel).filter(HistoryModel.remembered == False)
-            filter_ = filter_.filter(or_(
-                and_(HistoryModel.main_character_id == main_character_id,
-                     HistoryModel.other_character_id == other_character_id),
-                and_(HistoryModel.other_character_id == main_character_id,
-                     HistoryModel.main_character_id == other_character_id)
-            )
-            )
-            filter_ = filter_.filter()
+            filter_ = filter_.filter(HistoryModel.main_character_id == main_character_id)
+            filter_ = filter_.filter(HistoryModel.other_character_id == other_character_id)
             results = filter_.all()
             return [cls.from_model(model) for model in results]
 
