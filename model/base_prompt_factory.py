@@ -21,6 +21,15 @@ class BasePromptFactory:
     step，步骤，例如 24小时 = 24 steps
     """
 
+    def __init__(self):
+        self.debug_prompt = None
+
+    def set_debug_prompt(self, debug_prompt):
+        self.debug_prompt = debug_prompt
+
+    def get_debug_prompt(self):
+        return self.debug_prompt
+    
     def get_max_short_item_memory(self):
         """定义短期记忆最长多少条后会被自动conclude压缩"""
         return 10

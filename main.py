@@ -7,6 +7,7 @@ from bot.toolkits.system_tools.watch import watch
 from model.agent import Character
 from model.entities.message import Message
 from model.openai import get_openai_llm
+from model.sample_prompt_factory import SamplePromptFactory
 
 if __name__ == '__main__':
     # 初始化，一些数据库session和日志等公共组件
@@ -21,9 +22,12 @@ if __name__ == '__main__':
     chr_bot = Character.get_by_name("镇长先生")
 
     # 构建一个bot，用于聊天
-    bot = SimpleChatBot(llm=llm, tools=[get_weather_info_in_china, watch], character=chr_bot)
+    bot = SimpleChatBot(llm=llm, tools=[get_weather_info_in_china, watch], character=chr_bot, factory=SamplePromptFactory())
+    bot.set_debug_prompt("???????????????????????????????")
     ret = bot.interact(Message(from_character=chr_me.name,
                                to_character=chr_bot.name,
                                action="",
-                               message="我的名字是什么？"), chr_me)
+                               message="我的名字是什么？"))
+
+
     print(ret.dict())

@@ -192,13 +192,7 @@ class Brain:
         self.feed_history(character_input, message_in, message_out)
 
     def set_debug_prompt(self, prompt: str):
-        self.debug_prompt = prompt.strip()
-
-    def get_debug_prompt(self):
-        if len(self.debug_prompt) == 0:
-            return ""
-        else:
-            return self.debug_prompt + "\n\n"
+        self.broker.set_debug_prompt(prompt)
 
     def associate(self, input_: Optional[Message], input_character: Character):
         """机器人大脑对外部刺激联想到某些事情"""

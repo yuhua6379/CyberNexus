@@ -10,6 +10,9 @@ class PromptBroker:
     def __init__(self, factory: BasePromptFactory):
         self.factory = factory
 
+    def set_debug_prompt(self, debug_prompt: str):
+        self.factory.set_debug_prompt(debug_prompt)
+
     def stimulus_of_character(self,
                               main_character: Character,
                               other_character: Character,
