@@ -65,9 +65,12 @@ class PromptReturn(BaseModel):
 
         for k, v in kwargs.items():
             s = []
-            for item in str(v).split("\n"):
-                s.append("\t" + item.strip())
-            kwargs[k] = "\n".join(s)
+            v_list = str(v).split("\n")
+            if len(v_list) > 1:
+                # 太简单的值不予处理
+                for item in v_list:
+                    s.append("\t" + item.strip())
+                kwargs[k] = "\n".join(s)
         return prompt_template, kwargs
 
 
