@@ -16,19 +16,12 @@ class CharliePromptFactory(BasePromptFactory):
     }
 
     message_definition = {
-        "title": "你必须用 JSON 格式表示角色之间的交互，各个参数的含义如下：",
+        "title": "Do not include any explanations, only provide a RFC8259 compliant JSON response, only contains following parameters.",
         "type_": Message,
+        "examples": [],
         "example_title": "You should think step by step:"
-                         "1. 生成一个json格式的对话；"
-                         "2. 核实 json 格式，确保格式合法；"
-                         "3. 检查生成的内容是否和之前的记录重复，如果重复就重新生成；"
-                         "4. 如果你感觉对话可以结束（2 of 10），请将 stop 设置为 1，否则设置为 0。",
-        "examples": [
-            Message(from_character="lisa", to_character="tom", action="看了看天空，并对 tom 说道",
-                    message="今天天气真不错，你不觉得吗？", stop=0),
-            Message(from_character="tom", to_character="jack", action="一脸焦躁",
-                    message="我必须走了，不然赶不上3点半的火车了", stop=1)
-        ]
+                         "Step 1. 生成一个json格式的对话；\n Step 2. 调整 json 保证格式正确，不包含其他参数；\n Step 3. 如果生成的 message 和已经对话的内容重复，就重新生成；\n Step 4. 如果你感觉对话可以结束（2 of 10），请将 stop 设置为 1，否则设置为 0。",
+
     }
 
     @return_type(**schedule_definition)
@@ -152,7 +145,7 @@ class CharliePromptFactory(BasePromptFactory):
                                        history_list: list[History],
                                        relative_memory: list[Response],
                                        recent_memory: list[Memory]):
-        react_template = '''假设你是{main_character}，你需要决定是否和{other_character}进行交互以及开场语的内容是什么。
+        react_template = '''假设你是{main_character}，你需要决定是否和{other_character}进行互动以及开场语的内容是什么。
         
                             以下是所有的背景信息：
                             ---
@@ -175,6 +168,7 @@ class CharliePromptFactory(BasePromptFactory):
                             {history_format}
                              
                             假设你现在遇见{other_character}，请生成对{other_character}的开场语和动作：<填写>
+                            如果决定不互动，则直接回复 “不互动”。
                             '''
 
         kwargs = {
@@ -201,7 +195,7 @@ class CharliePromptFactory(BasePromptFactory):
                               history_list: list[History],
                               relative_memory: list[Response],
                               recent_memory: list[Memory]):
-        react_template = '''你是{main_character}，你需要和其他角色进行一系列对话。
+        react_template = '''你是{main_character}，你需要和其他角色互动。
                             
                             以下是所有的背景信息：
                             ---
@@ -218,12 +212,12 @@ class CharliePromptFactory(BasePromptFactory):
                             """{other_character_appearance}"""
                             ---
                             
-                            下面是已经对话的内容，请你接着已有内容继续回复，或者决定要结束对话：
+                            下面是已有的对话内容:
                             """{history}"""
                             
                             {history_format}
                             
-                            你的回复：<填写>
+                            请你接着已有的对话内容继续回复：<填写>
                             '''
         kwargs = {
             "item_doing": item_doing,
