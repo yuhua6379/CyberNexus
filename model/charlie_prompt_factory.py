@@ -16,9 +16,9 @@ class CharliePromptFactory(BasePromptFactory):
     }
 
     message_definition = {
-        "title": "Do not include any explanations, only provide a RFC8259 compliant JSON response, only contains following parameters.",
-        "type_": Message,
+        "title": "You should provide a valid RFC8259 compliant JSON response, including only the following parameters: ",
         "examples": [],
+        "type_": Message,
         "example_title": "You should think step by step:"
                          "Step 1. 生成一个json格式的对话；\n Step 2. 调整 json 保证格式正确，不包含其他参数；\n Step 3. 如果生成的 message 和已经对话的内容重复，就重新生成；\n Step 4. 如果你感觉对话可以结束（2 of 10），请将 stop 设置为 1，否则设置为 0。",
 
@@ -90,10 +90,10 @@ class CharliePromptFactory(BasePromptFactory):
     @return_type(str)
     def on_build_impress_prompt(self, main_character: Character, other_character: Character,
                                 history_list: list[History], impression_before: str) -> PromptReturn:
-        impression_template = '''这是你和{other_character}的之前的互动记录： 
+        impression_template = '''这是你和"{other_character}"的之前的互动记录： 
                     """{history}"""
 
-                    总结一下你对{other_character}的印象(impression)，输出一个100个字以内的字符串。
+                    总结一下你对"{other_character}"的印象(impression)，输出一个100个字以内的字符串。
                     '''
 
         kwargs = {
@@ -145,7 +145,7 @@ class CharliePromptFactory(BasePromptFactory):
                                        history_list: list[History],
                                        relative_memory: list[Response],
                                        recent_memory: list[Memory]):
-        react_template = '''假设你是{main_character}，你需要决定是否和{other_character}进行互动以及开场语的内容是什么。
+        react_template = '''假设你是"{main_character}"，你需要决定是否和"{other_character}"进行互动以及开场语的内容是什么。
         
                             以下是所有的背景信息：
                             ---
@@ -195,7 +195,7 @@ class CharliePromptFactory(BasePromptFactory):
                               history_list: list[History],
                               relative_memory: list[Response],
                               recent_memory: list[Memory]):
-        react_template = '''你是{main_character}，你需要和其他角色互动。
+        react_template = '''你是"{main_character}"，你需要和其他角色互动。
                             
                             以下是所有的背景信息：
                             ---

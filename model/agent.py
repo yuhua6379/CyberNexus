@@ -18,9 +18,9 @@ def complete(prompt):
         {"role": "user", "content": prompt},
     ]
     response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",  # 选择适当的引擎
+        model="gpt-3-turbo",  # 选择适当的引擎
         messages=messages,
-        temperature=0.2
+        temperature=0
     )
 
     if response['choices'][0]['message']:
