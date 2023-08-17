@@ -20,7 +20,7 @@ class CharliePromptFactory(BasePromptFactory):
         "examples": [],
         "type_": Message,
         "example_title": "You should think step by step:"
-                         "Step 1. 生成一个json格式的对话；\n Step 2. 调整 json 保证格式正确，不包含其他参数；\n Step 3. 如果生成的 message 和已经对话的内容重复，就重新生成；\n Step 4. 如果你感觉对话可以结束（2 of 10），请将 stop 设置为 1，否则设置为 0。",
+                         "Step 1. 生成一个json格式的对话；\n Step 2. 调整 json 保证格式正确，不包含其他参数；\n Step 3. 如果生成的 message 和已有内容重复或相似，就重新生成；\n Step 4. 如果你感觉对话可以结束（2 of 10），请将 stop 设置为 1，否则设置为 0。",
 
     }
 
@@ -93,7 +93,7 @@ class CharliePromptFactory(BasePromptFactory):
         impression_template = '''这是你和"{other_character}"的之前的互动记录： 
                     """{history}"""
 
-                    总结一下你对"{other_character}"的印象(impression)，输出一个100个字以内的字符串。
+                    总结一下你对"{other_character}"的印象(impression)，输出一个100个字以内的字符串，尽量包含重要细节。
                     '''
 
         kwargs = {
@@ -124,7 +124,7 @@ class CharliePromptFactory(BasePromptFactory):
                             这是最近的交互:
                             """{history_string}"""
                 
-                            请你用一句话总结一下你最近真正做的事情
+                            请你用一句话总结一下你最近真正做的事情。
                             '''
 
         kwargs = {
@@ -195,7 +195,7 @@ class CharliePromptFactory(BasePromptFactory):
                               history_list: list[History],
                               relative_memory: list[Response],
                               recent_memory: list[Memory]):
-        react_template = '''你是"{main_character}"，你需要和其他角色互动。
+        react_template = '''你是"{main_character}"，你需要决定是否继续互动，如果要互动，那么你需要简洁而自然的推动对话发展。
                             
                             以下是所有的背景信息：
                             ---
@@ -217,7 +217,7 @@ class CharliePromptFactory(BasePromptFactory):
                             
                             {history_format}
                             
-                            请你接着已有的对话内容继续回复：<填写>
+                            如果决定互动的话，请生成对"{other_character}"的动作和对话内容，请保证对话简要自然：<填写>
                             '''
         kwargs = {
             "item_doing": item_doing,

@@ -18,7 +18,7 @@ class Message(BaseModel):
                                                "不可用于陈述行动。若不需说话，则不加入此参数。message不能超过50字"
                                                "message 和 action 中至少要有一个。")
 
-    stop: int = Field(description="此参数意味着from_character代表的角色觉得对话已经结束，无需再进行回复。"
+    stop: int = Field(description="此参数意味着from_character代表的角色觉得对话已经结束(2 of 10)，无需再进行回复。"
                                   "若无此参数，则默认为0，即对话未结束。", default=0)
 
     def to_prompt(self, simple_string=False):
