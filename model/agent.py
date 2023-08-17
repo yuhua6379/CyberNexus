@@ -6,6 +6,7 @@ from langchain.chat_models.base import BaseChatModel
 from langchain.tools import BaseTool
 from pydantic import BaseModel
 
+from common.base_thread import get_logger
 from datasource.config import rdbms_instance
 from datasource.rdbms.entities import ChatLogModel
 from model.llm_session import LLMSession
@@ -39,11 +40,27 @@ class Agent(BaseModel):
         prompt = session.prompt
         message_in = self.on_chat(prompt)
         openai.api_key = os.environ['openai_api_key']
-        message_out = complete(message_in)
+
+        try_times = 1
+        while True:
+            message_out = complete(message_in)
+            session.set_result(message_out)
+            try:
+                session.get_result()
+                # 只要格式正确，立马中断
+                break
+            except Exception as e:
+                # 出现格式解析异常了
+                if try_times >= 3:
+                    raise e
+                else:
+                    get_logger().info(f"llm return incorrect json format retry: {try_times}")
+
+            try_times += 1
+
         # get_logger().debug(f"[[final message]]: {final_message}")
         self.after_chat(message_in, message_out)
 
-        session.set_result(message_out)
         return session
 
     def on_chat(self, input_: str) -> str:
