@@ -54,7 +54,7 @@ class Agent(BaseModel):
                 if try_times >= 3:
                     raise e
                 else:
-                    get_logger().info(f"llm return incorrect json format retry: {try_times}")
+                    get_logger().debug(f"llm return incorrect json format retry: {try_times} message_out: {message_out}")
 
             try_times += 1
 
