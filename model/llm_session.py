@@ -63,6 +63,9 @@ class PromptReturn(BaseModel):
             s.append(item.strip())
         prompt_template = "\n".join(s)
 
+        # 不允许中文逗号
+        prompt_template.replace("，", ",")
+
         for k, v in kwargs.items():
             s = []
             v_list = str(v).split("\n")
@@ -71,6 +74,8 @@ class PromptReturn(BaseModel):
                 for item in v_list:
                     s.append("\t" + item.strip())
                 kwargs[k] = "\n".join(s)
+
+            kwargs[k] = str(kwargs[k]).replace('，', ',')
         return prompt_template, kwargs
 
 
