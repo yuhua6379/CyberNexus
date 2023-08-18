@@ -17,13 +17,13 @@ class ReactAbility:
         self.prompt_broker = prompt_broker
         self.llm_agent_builder = llm_agent_builder
 
-    def stimulus_of_character(self,
+    def provoked_by_character(self,
                               input_character: Character,
                               item_doing: str,
                               history_list: list[History],
                               relative_memory: list[Response],
                               recent_memory: list[Memory]):
-        session = self.prompt_broker.stimulus_of_character(
+        session = self.prompt_broker.provoked_by_character(
             self.character,
             input_character,
             item_doing,
@@ -35,7 +35,7 @@ class ReactAbility:
                                              character2=self.character)
         session = agent.chat(session)
 
-        get_logger().info(f'stimulus_of_character return:{session}\n')
+        get_logger().info(f'provoked_by_character return:{session}\n')
 
         return session.get_result()
 

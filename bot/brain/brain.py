@@ -69,7 +69,7 @@ class Brain:
 
         return message
 
-    def stimulus_of_character(self, input_character: Character):
+    def provoked_by_character(self, input_character: Character):
         """机器人大脑受到了外部刺激，刺激对象是一个character"""
         item_doing = None
         if Schedule.get_by_character(self.character.id) is not None:
@@ -78,7 +78,7 @@ class Brain:
         history_list = self.interact_history_with(input_character)
         relative_memory = self.associate(None, input_character)
         recent_memory = self.recent_memory()
-        message = self.react_ability.stimulus_of_character(input_character,
+        message = self.react_ability.provoked_by_character(input_character,
                                                            item_doing,
                                                            history_list,
                                                            relative_memory,

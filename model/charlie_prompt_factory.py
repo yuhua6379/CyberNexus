@@ -138,7 +138,7 @@ class CharliePromptFactory(BasePromptFactory):
                             kwargs=kwargs)
 
     @return_type(**message_definition)
-    def on_build_stimulus_of_character(self,
+    def on_build_provoked_by_character(self,
                                        main_character: Character,
                                        other_character: Character,
                                        item_doing: str,

@@ -13,14 +13,14 @@ class PromptBroker:
     def set_debug_prompt(self, debug_prompt: str):
         self.factory.set_debug_prompt(debug_prompt)
 
-    def stimulus_of_character(self,
+    def provoked_by_character(self,
                               main_character: Character,
                               other_character: Character,
                               item_doing: str,
                               history_list: list[History],
                               relative_memory: list[Response],
                               recent_memory: list[Memory]):
-        return self.factory.on_build_stimulus_of_character(
+        return self.factory.on_build_provoked_by_character(
             main_character,
             other_character,
             item_doing,

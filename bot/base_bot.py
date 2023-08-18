@@ -19,7 +19,7 @@ class BaseBot:
         return self.brain.react(message, Character.get_by_name(message.from_character))
 
     def meet(self, input_character: Character):
-        return self.brain.stimulus_of_character(input_character)
+        return self.brain.provoked_by_character(input_character)
 
     def conclude_interact(self):
         # 总结所有的交互
