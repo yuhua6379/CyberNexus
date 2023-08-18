@@ -2,8 +2,8 @@ import os
 
 import initialize
 from bot.self_drive_bot import SelfDriveBot
-from model.agent import Character
-from model.openai import get_openai_llm
+from model.llm import get_openai_llm
+from model.llm_broker import Character
 from world.botbroker import SyncBotBroker
 from world.world import TurnBaseWorld
 

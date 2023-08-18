@@ -6,11 +6,10 @@ from bot.brain.ablity.longterm_memory import LongTermMemory
 from bot.brain.ablity.react import ReactAbility
 from bot.brain.ablity.schedule import ScheduleAbility
 from bot.brain.ablity.shorterm_memory import ShortTermMemory
-from model.agent import AgentBuilder
 from model.base_prompt_factory import BasePromptFactory
 from model.entities.message import Message
+from model.llm_broker import LLMBrokerBuilder
 from model.prompt_broker import PromptBroker
-from model.sample_prompt_factory import SamplePromptFactory
 from repo.character import Character
 from repo.history import History, Direction
 from repo.scheudle import Schedule
@@ -18,11 +17,11 @@ from repo.scheudle import Schedule
 
 class Brain:
 
-    def __init__(self, character: Character, llm_agent_builder: AgentBuilder,
-                 factory: BasePromptFactory = SamplePromptFactory()):
+    def __init__(self, character: Character, llm_broker_builder: LLMBrokerBuilder,
+                 factory: BasePromptFactory):
         self.broker = PromptBroker(factory)
         self.character = character
-        self.llm_agent_builder = llm_agent_builder
+        self.llm_broker_builder = llm_broker_builder
         self.debug_prompt = ""
 
         self.lt_memory = LongTermMemory(character)
@@ -30,12 +29,12 @@ class Brain:
             max_length=self.broker.factory.get_max_short_item_memory(),
             character=character)
 
-        self.conclude_ability = ConcludeAbility(self.llm_agent_builder, self.character, self.broker)
+        self.conclude_ability = ConcludeAbility(self.llm_broker_builder, self.character, self.broker)
 
-        self.schedule_ability = ScheduleAbility(self.llm_agent_builder, self.character, self.broker)
+        self.schedule_ability = ScheduleAbility(self.llm_broker_builder, self.character, self.broker)
 
         self.react_ability = ReactAbility(
-            character, self.broker, llm_agent_builder)
+            character, self.broker, llm_broker_builder)
 
     # ---------------------------------场景--------------------------------- #
     def react(self, input_: Message, input_character: Character):
@@ -56,7 +55,7 @@ class Brain:
         history_list = self.interact_history()
         relative_memory = self.associate(input_, input_character)
         recent_memory = self.recent_memory()
-        message = self.react_ability.react(
+        context = self.react_ability.react(
             input_,
             input_character,
             item_doing,
@@ -64,10 +63,11 @@ class Brain:
             relative_memory,
             recent_memory)
 
-        # 记录到history
-        self.record(input_character, input_, message)
+        if context.status == 0:
+            # 记录到history
+            self.record(input_character, input_, context.result)
 
-        return message
+        return context
 
     def provoked_by_character(self, input_character: Character):
         """机器人大脑受到了外部刺激，刺激对象是一个character"""
@@ -78,16 +78,18 @@ class Brain:
         history_list = self.interact_history_with(input_character)
         relative_memory = self.associate(None, input_character)
         recent_memory = self.recent_memory()
-        message = self.react_ability.provoked_by_character(input_character,
+        context = self.react_ability.provoked_by_character(input_character,
                                                            item_doing,
                                                            history_list,
                                                            relative_memory,
                                                            recent_memory)
 
-        # 记录到history
-        self.record(input_character,
-                    Message(from_character=input_character.name, to_character=input_character.name, stop=0), message)
-        return message
+        if context.status == 0:
+            # 记录到history
+            self.record(input_character,
+                        Message(from_character=input_character.name, to_character=input_character.name, stop=0),
+                        context.result)
+        return context
 
     def schedule(self, step: int, round_: int, left_step: int):
         """机器人的大脑具备计划能力，他可以根据目前的情况规划出之后需要做的事情"""
@@ -96,7 +98,7 @@ class Brain:
         if schedule is None:
             # 冷启动，规划
             llm_return = self.schedule_ability.schedule([], self.broker.factory.get_max_schedule(),
-                                                        self.recent_memory())
+                                                        self.recent_memory()).result
 
             # 安排一件正在做的item
             item_to_do = llm_return.schedule
@@ -109,7 +111,7 @@ class Brain:
             # 先判断真正做了的是什么
             item_done = self.schedule_ability.determine_whether_item_finish(schedule.item_doing,
                                                                             self.interact_history(),
-                                                                            self.recent_memory())
+                                                                            self.recent_memory()).result
 
             if left_step == 0:
                 # 这个round已经结束了，总结下最近的事情
@@ -119,7 +121,7 @@ class Brain:
             # 调整计划
             llm_return = self.schedule_ability.schedule(recent_done_item,
                                                         self.broker.factory.get_max_schedule(),
-                                                        self.recent_memory())
+                                                        self.recent_memory()).result
 
             # 安排一件正在做的item
             item_to_do = llm_return.schedule
@@ -140,7 +142,7 @@ class Brain:
             self.lt_memory.save(memory)
             return
 
-        rank = self.conclude_ability.rank(memory)
+        rank = self.conclude_ability.rank(memory).result
         if rank >= self.broker.factory.get_threshold_of_rank_to_remember():
             self.lt_memory.save(memory)
 
@@ -153,7 +155,7 @@ class Brain:
         history_list = self.st_memory.get_not_impressed_history_with_character(other_character)
 
         impression_before = self.lt_memory.get_impression_about(other_character)
-        impression_now = self.conclude_ability.impress(history_list, other_character, impression_before)
+        impression_now = self.conclude_ability.impress(history_list, other_character, impression_before).result
         self.lt_memory.make_impression_about(other_character, impression_now)
 
         # 标记印象已经形成
@@ -166,7 +168,7 @@ class Brain:
         if len(history_list) == 0:
             return
 
-        conclusion = self.conclude_ability.conclude(history_list, other_character)
+        conclusion = self.conclude_ability.conclude(history_list, other_character).result
         self.remember_deeply(conclusion)
 
         # 标记已经被总结过的history，这里没法做成事务，但是无所谓，long term memory可以接受低概率的重复

@@ -2,7 +2,6 @@ from enum import Enum
 from typing import Optional
 
 from pydantic import BaseModel
-from sqlalchemy import and_, or_
 
 from datasource.config import rdbms_instance
 from datasource.rdbms.entities import HistoryModel

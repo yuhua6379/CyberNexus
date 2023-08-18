@@ -1,12 +1,9 @@
-import os
-
 import initialize
 import tool_build_character
 from bot.self_drive_bot import SelfDriveBot
-from model.agent import Character
-from model.openai import get_openai_llm
-from model.sample_prompt_factory import SamplePromptFactory
-from model.charlie_prompt_factory import CharliePromptFactory
+from model.prompts.charlie_prompt_factory import CharliePromptFactory
+from model.llm import ChatGPT
+from model.llm_broker import Character
 from world.botbroker import SyncBotBroker
 from world.world import TurnBaseWorld
 
@@ -18,7 +15,7 @@ if __name__ == '__main__':
     # print(f'your key is {os.environ["open_ai_key"]}')
 
     # 获取llm实例，用于后面predict
-    llm = get_openai_llm(openai_api_key=os.environ['openai_api_key'])
+    llm = ChatGPT(model="gpt-3.5-turbo-0613")
 
     # 设置聊天对象，name是唯一的，会根据对象去加载历史聊天记录
 
@@ -26,8 +23,8 @@ if __name__ == '__main__':
     chr2 = Character.get_by_name("李华")
 
     # 构建一个bot，用于聊天
-    bot1 = SelfDriveBot(llm=llm, tools=[], character=chr1, factory=CharliePromptFactory())
-    bot2 = SelfDriveBot(llm=llm, tools=[], character=chr2, factory=CharliePromptFactory())
+    bot1 = SelfDriveBot(llm=llm, character=chr1, factory=CharliePromptFactory())
+    bot2 = SelfDriveBot(llm=llm, character=chr2, factory=CharliePromptFactory())
 
     world = TurnBaseWorld(steps_of_round=2, broker=SyncBotBroker())
     world.join(bot1)
@@ -38,21 +35,23 @@ if __name__ == '__main__':
 
         # 一回合开始
         ret1 = bot1.meet(chr2)
-        ret2 = bot2.interact(ret1)
+        if ret1.status != 0:
+            print(f"{chr1.name}没有与{chr2.name}互动")
+        ret2 = bot2.interact(ret1.result)
 
-        print(ret1.to_prompt())
-        print(ret2.to_prompt())
+        print(ret1.result.to_prompt())
+        print(ret2.result.to_prompt())
 
         while True:
-            if ret1.stop + ret2.stop > 0:
+            if ret1.result.stop + ret2.result.stop > 0:
                 print("对话结束")
                 break
-            ret1 = bot1.interact(ret2)
+            ret1 = bot1.interact(ret2.result)
 
-            ret2 = bot2.interact(ret1)
+            ret2 = bot2.interact(ret1.result)
 
-            print(ret1.to_prompt())
-            print(ret2.to_prompt())
+            print(ret1.result.to_prompt())
+            print(ret2.result.to_prompt())
 
         # 互相生成印象
         bot1.make_impression(chr2)

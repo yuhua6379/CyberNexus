@@ -1,7 +1,7 @@
 from common.base_thread import get_logger
 from datasource.vectordb.entities import Response
-from model.agent import AgentBuilder
 from model.entities.message import Message
+from model.llm_broker import LLMBrokerBuilder
 from model.prompt_broker import PromptBroker
 from repo.character import Character
 from repo.history import History
@@ -12,10 +12,10 @@ class ReactAbility:
     def __init__(self,
                  character: Character,
                  prompt_broker: PromptBroker,
-                 llm_agent_builder: AgentBuilder):
+                 llm_broker_builder: LLMBrokerBuilder):
         self.character = character
         self.prompt_broker = prompt_broker
-        self.llm_agent_builder = llm_agent_builder
+        self.llm_broker_builder = llm_broker_builder
 
     def provoked_by_character(self,
                               input_character: Character,
@@ -31,13 +31,13 @@ class ReactAbility:
             relative_memory,
             recent_memory)
 
-        agent = self.llm_agent_builder.build(character1=input_character,
-                                             character2=self.character)
-        session = agent.chat(session)
+        llm_broker = self.llm_broker_builder.build(character1=input_character,
+                                                   character2=self.character)
+        context = llm_broker.chat(session).get_context()
 
-        get_logger().info(f'provoked_by_character return:{session}\n')
+        get_logger().info(f'provoked_by_character return:{context}\n')
 
-        return session.get_result()
+        return context
 
     def react(self,
               input_: Message,
@@ -55,10 +55,10 @@ class ReactAbility:
             relative_memory,
             recent_memory)
 
-        agent = self.llm_agent_builder.build(character1=input_character,
-                                             character2=self.character)
-        session = agent.chat(session)
+        llm_broker = self.llm_broker_builder.build(character1=input_character,
+                                                   character2=self.character)
+        context = llm_broker.chat(session).get_context()
 
-        get_logger().info(f'react return:{session}\n')
+        get_logger().info(f'react return:{context}\n')
 
-        return session.get_result()
+        return context

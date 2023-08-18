@@ -2,7 +2,7 @@ from datasource.vectordb.entities import Response
 from model.base_prompt_factory import BasePromptFactory
 from model.entities.message import Message
 from model.entities.schedule import Schedule
-from model.llm_session import return_type, PromptReturn
+from model.llm_session import return_type, PromptReturn, CallBack, Context
 from repo.character import Character
 from repo.history import History
 from repo.memory import Memory
@@ -182,9 +182,17 @@ class CharliePromptFactory(BasePromptFactory):
             "other_character_appearance": other_character.character_appearance
         }
 
+        class _CallBack(CallBack):
+            def call(self, context: Context):
+                if context.llm_output.strip() == "不互动":
+                    context.llm_output = None
+                    # 返回一个int，这里随便定义的，非0就会不互动
+                    context.status = 1
+
         return PromptReturn(prompt_template=react_template,
                             kwargs=kwargs,
-                            position="history_format")
+                            position="history_format",
+                            callback=_CallBack())
 
     @return_type(**message_definition)
     def on_build_react_prompt(self,

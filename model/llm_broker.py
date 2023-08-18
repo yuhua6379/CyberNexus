@@ -2,40 +2,27 @@ import os
 from typing import List
 
 import openai
-from langchain.chat_models.base import BaseChatModel
 from langchain.tools import BaseTool
 from pydantic import BaseModel
 
 from common.base_thread import get_logger
 from datasource.config import rdbms_instance
 from datasource.rdbms.entities import ChatLogModel
+from model.llm import BaseLLM
 from model.llm_session import LLMSession
 from repo.character import Character
 
 
-def complete(prompt):
-    messages = [
-        {"role": "user", "content": prompt},
-    ]
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo-0613",  # 选择适当的引擎
-        # model="gpt-4"
-        messages=messages,
-        temperature=0
-    )
+class LLMBroker:
 
-    if response['choices'][0]['message']:
-        return response['choices'][0]['message']['content'].strip()
-    else:
-        return ''
-
-
-class Agent(BaseModel):
-    llm: BaseChatModel
-    # agent_core: AgentExecutor
-    character1: Character
-    character2: Character
-    version: str = '0.0.1'
+    def __init__(self, llm: BaseLLM,
+                 character1: Character,
+                 character2: Character,
+                 version: str = '0.0.1'):
+        self.llm = llm
+        self.character1 = character1
+        self.character2 = character2
+        self.version = version
 
     def chat(self, session: LLMSession) -> LLMSession:
         prompt = session.prompt
@@ -44,10 +31,16 @@ class Agent(BaseModel):
 
         try_times = 1
         while True:
-            message_out = complete(message_in)
+            message_out = self.llm.chat(message_in)
             session.set_result(message_out)
             try:
-                session.get_result()
+                context = session.get_context()
+                if context.status != 0:
+                    # 如果callback函数返回了非0，终止正常流程
+                    break
+                else:
+                    session.get_context().valid()
+
                 # 只要格式正确，立马中断
                 break
             except Exception as e:
@@ -55,7 +48,8 @@ class Agent(BaseModel):
                 if try_times >= 3:
                     raise e
                 else:
-                    get_logger().debug(f"llm return incorrect json format retry: {try_times} message_out: {message_out}")
+                    get_logger().debug(
+                        f"llm return incorrect json format retry: {try_times} message_out: {message_out}")
 
             try_times += 1
 
@@ -74,7 +68,7 @@ class Agent(BaseModel):
         log.character1_message = message_in
         log.character2_message = message_out
 
-        # 记录agent的版本，便于筛选数据
+        # 记录llm_broker的版本，便于筛选数据
         log.version = self.version
 
         with rdbms_instance.get_session() as session:
@@ -82,17 +76,15 @@ class Agent(BaseModel):
             session.commit()
 
 
-class AgentBuilder:
+class LLMBrokerBuilder:
 
-    def __init__(self, llm: BaseChatModel,
-                 tools: List[BaseTool]):
+    def __init__(self, llm: BaseLLM):
         self.llm = llm
-        self.tools = tools
 
-    def build(self, character1: Character, character2: Character) -> Agent:
+    def build(self, character1: Character, character2: Character) -> LLMBroker:
         # prompt = OpenAIFunctionsAgent.create_prompt(system_message=SystemMessage(content=prompt))
-        # langchain_agent = OpenAIFunctionsAgent(llm=self.llm, tools=self.tools, prompt=prompt)
+        # langchain_llm_broker = OpenAIFunctionsAgent(llm=self.llm, tools=self.tools, prompt=prompt)
 
-        return Agent(llm=self.llm,
-                     character1=character1,
-                     character2=character2)
+        return LLMBroker(llm=self.llm,
+                         character1=character1,
+                         character2=character2)

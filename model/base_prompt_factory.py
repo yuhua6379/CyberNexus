@@ -29,7 +29,7 @@ class BasePromptFactory:
 
     def get_debug_prompt(self):
         return self.debug_prompt
-    
+
     def get_max_short_item_memory(self):
         """定义短期记忆最长多少条后会被自动conclude压缩"""
         return 10
@@ -160,3 +160,31 @@ class BasePromptFactory:
         :return:
         """
         pass
+
+    @return_type(str)
+    def on_build_do_something_prompt(self, main_character: Character, something_to_do: str):
+        """
+
+        :param main_character: main角色
+        :param something_to_do: 一件事情，例如查一下今天的天气
+        :return:
+        """
+        do_something_template = '''
+        角色设定:
+        """{character_setting}"""
+        
+        假设你是{main_character}现在需要你去做下面这件事:
+        {something_to_do}
+        
+        然后，总结一下你所做的事情，请以第三方的角度去描述这件事情，注意不可以照抄例子，要以实际做的事情为准，例子:
+        """{main_character}喝了咖啡，并且写完了代码"""
+        '''
+
+        kwargs = {
+            "character_setting": main_character.character_prompt,
+            "main_character": main_character.name,
+            "something_to_do": something_to_do
+        }
+
+        return PromptReturn(prompt_template=do_something_template,
+                            kwargs=kwargs)
