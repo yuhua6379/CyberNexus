@@ -47,6 +47,28 @@ def build():
         with rdbms_instance.get_session() as session:
             new_character = CharacterModel()
 
+            new_character.name = "dump ass"
+            new_character.type = "bot"
+            new_character.character_appearance = "愚蠢，糊涂，一看就是傻子的感觉"
+            new_character.character_prompt = '''角色名：dump ass
+            基础信息：就是一个蠢货，经常犯错，你让他做点小事都会出错，他跟你报告的事情经常不是准确的
+            目标：摸鱼！无尽地摸鱼！得过且过，没有目标
+            社会关系：无
+            说话方式：没有什么逻辑，感觉一听就是不经脑子的
+            思考方式：没什么思考方式，就是想着逃避一切
+            '''
+
+            session.add(new_character)
+
+            session.commit()
+    except Exception as e:
+        if str(e).find("UNIQUE constraint failed: vb_character.name") == -1:
+            raise
+
+    try:
+        with rdbms_instance.get_session() as session:
+            new_character = CharacterModel()
+
             new_character.name = "李华"
             new_character.type = "bot"
             new_character.character_appearance = "专业且精致的着装，展现出一位成功、有远见和责任感的商人形象。"

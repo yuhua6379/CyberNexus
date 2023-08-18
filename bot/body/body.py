@@ -16,6 +16,6 @@ class Body:
         self.broker = PromptBroker(factory)
 
     def do_something(self, something_to_do: str):
-        prompt = self.broker.do_something(self.character, something_to_do)
+        session = self.broker.do_something_prompt(self.character, something_to_do)
         agent_executor = AgentExecutor(agent=self.agent, tools=self.tools)
-        return agent_executor.run(prompt)
+        return agent_executor.run(session.prompt)

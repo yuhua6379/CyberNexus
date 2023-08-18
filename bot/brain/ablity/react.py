@@ -23,7 +23,7 @@ class ReactAbility:
                               history_list: list[History],
                               relative_memory: list[Response],
                               recent_memory: list[Memory]):
-        session = self.prompt_broker.provoked_by_character(
+        session = self.prompt_broker.provoked_by_character_prompt(
             self.character,
             input_character,
             item_doing,

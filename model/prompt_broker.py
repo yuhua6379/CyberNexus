@@ -13,16 +13,17 @@ class PromptBroker:
     def set_debug_prompt(self, debug_prompt: str):
         self.factory.set_debug_prompt(debug_prompt)
 
-    def do_something(self, main_character: Character, do_something: str):
-        pass
+    def do_something_prompt(self, main_character: Character, do_something: str):
+        ret = self.factory.on_build_do_something_prompt(main_character, do_something)
+        return ret
 
-    def provoked_by_character(self,
-                              main_character: Character,
-                              other_character: Character,
-                              item_doing: str,
-                              history_list: list[History],
-                              relative_memory: list[Response],
-                              recent_memory: list[Memory]):
+    def provoked_by_character_prompt(self,
+                                     main_character: Character,
+                                     other_character: Character,
+                                     item_doing: str,
+                                     history_list: list[History],
+                                     relative_memory: list[Response],
+                                     recent_memory: list[Memory]):
         return self.factory.on_build_provoked_by_character(
             main_character,
             other_character,
