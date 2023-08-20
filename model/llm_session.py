@@ -150,10 +150,13 @@ def build_prompt_event(type_: Type, title=None, example_title=None, examples: li
 
 
 def build_prompt_phase(func):
-    def wrapper(self, *args, **kwargs) -> str:
+    def wrapper(self, *args, **kwargs) -> Optional[str]:
         # 适配所有成员函数的wrapper
 
-        ret: PromptReturn = func(self, *args, **kwargs)
+        ret: Optional[PromptReturn] = func(self, *args, **kwargs)
+        if ret is None:
+            return None
+
         prompt_template, kwargs = ret.prompt_template, ret.kwargs
 
         prompt_template, kwargs = PromptReturn.beautify_prompt(prompt_template, kwargs)
