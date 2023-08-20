@@ -32,6 +32,12 @@ class BaseBot:
         # awake并且感知到了situation
         self.broker.set_situation(situation)
 
+    def reschedule(self):
+        self.brain.schedule()
+
+    def make_impression(self, character: Character):
+        self.brain.impress(character)
+
 
 class SimpleChatBot(BaseBot):
     """朴素，简单的，只能做普通一对一交互的机器人"""
