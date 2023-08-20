@@ -194,8 +194,8 @@ class BasePromptFactory:
 
     @build_prompt_phase
     def on_build_world_environment_prompt(self, event_name: str, situation: BaseSituation):
-        return PromptReturn(prompt_template="", kwargs={})
+        print(event_name, situation)
+        return None
 
     def before_call_llm(self, event_name: str, llm_session: LLMSession):
         return llm_session
-

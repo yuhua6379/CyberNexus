@@ -1,9 +1,4 @@
-from typing import List
-
-from langchain.tools import BaseTool
-
 from bot.base_bot import BaseBot
-from common.base_thread import get_logger
 from model.base_prompt_factory import BasePromptFactory
 from model.llm import BaseLLM
 from repo.character import Character

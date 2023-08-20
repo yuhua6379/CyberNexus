@@ -9,7 +9,8 @@ from repo.character import Character
 
 
 class Body:
-    def __init__(self, character: Character, agent: BaseSingleActionAgent, factory: BasePromptFactory, tools: Sequence[BaseTool]):
+    def __init__(self, character: Character, agent: BaseSingleActionAgent, factory: BasePromptFactory,
+                 tools: Sequence[BaseTool]):
         self.agent = agent
         self.tools = tools
         self.character = character

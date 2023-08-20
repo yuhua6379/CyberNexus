@@ -1,19 +1,12 @@
-import os
-
-from langchain.agents import OpenAIFunctionsAgent
 from langchain.schema import SystemMessage
 
 import initialize
-from bot.base_bot import SimpleChatBot
+import tool_build_character
 from bot.toolkits.internet_tools.get_weather_information_in_china import get_weather_info_in_china
-from bot.toolkits.system_tools.watch import watch
 from bot.worker_bot import WorkerBot
-from model.entities.message import Message
 from model.llm import ChatGPT
 from model.llm_broker import Character
 from model.prompts.charlie_prompt_factory import CharliePromptFactory
-from model.prompts.sample_prompt_factory import SamplePromptFactory
-import tool_build_character
 
 if __name__ == '__main__':
     # 初始化，一些数据库session和日志等公共组件

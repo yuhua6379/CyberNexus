@@ -1,7 +1,6 @@
 from typing import Dict
 
 from bot.base_bot import BaseBot
-from bot.self_drive_bot import SelfDriveBot
 from world.situation import BaseSituation
 
 

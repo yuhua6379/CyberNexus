@@ -1,5 +1,3 @@
-
-
 from bot.brain.brain import Brain
 from model.base_prompt_factory import BasePromptFactory
 from model.entities.message import Message

@@ -2,7 +2,7 @@ import json
 from abc import abstractmethod
 from typing import Type, Optional, Callable, Any
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 
 from common.base_thread import get_logger
 

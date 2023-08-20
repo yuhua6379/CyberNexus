@@ -2,7 +2,6 @@ import copy
 from abc import abstractmethod
 
 import openai
-from langchain.agents import OpenAIFunctionsAgent, AgentExecutor
 
 
 class BaseLLM:

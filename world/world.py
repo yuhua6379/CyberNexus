@@ -2,7 +2,6 @@ import math
 from typing import Tuple
 
 from bot.base_bot import BaseBot
-from bot.self_drive_bot import SelfDriveBot
 from common.base_thread import get_logger
 from world.botbroker import SyncBotBroker
 from world.situation import BaseSituation

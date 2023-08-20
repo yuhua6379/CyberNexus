@@ -1,9 +1,6 @@
 import os
-from typing import List
 
 import openai
-from langchain.tools import BaseTool
-from pydantic import BaseModel
 
 from common.base_thread import get_logger
 from datasource.config import rdbms_instance

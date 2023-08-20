@@ -1,11 +1,11 @@
 import initialize
 import tool_build_character
-from bot.self_drive_bot import SelfDriveBot
-from model.prompts.charlie_prompt_factory import CharliePromptFactory
+from bot.base_bot import SimpleChatBot
 from model.llm import ChatGPT
 from model.llm_broker import Character
+from model.prompts.charlie_prompt_factory import CharliePromptFactory
 from world.botbroker import SyncBotBroker
-from world.world import BaseWorld, SimpleTuneBaseWorld
+from world.world import SimpleTuneBaseWorld
 
 tool_build_character.build()
 
@@ -23,8 +23,8 @@ if __name__ == '__main__':
     chr2 = Character.get_by_name("李华")
 
     # 构建一个bot，用于聊天
-    bot1 = SelfDriveBot(llm=llm, character=chr1, factory=CharliePromptFactory())
-    bot2 = SelfDriveBot(llm=llm, character=chr2, factory=CharliePromptFactory())
+    bot1 = SimpleChatBot(llm=llm, character=chr1, factory=CharliePromptFactory())
+    bot2 = SimpleChatBot(llm=llm, character=chr2, factory=CharliePromptFactory())
 
     world = SimpleTuneBaseWorld(steps_of_round=2, broker=SyncBotBroker())
     world.join(bot1)
@@ -62,5 +62,3 @@ if __name__ == '__main__':
 
         # 跑到下一个round位置
         world.run_until_next_round()
-
-

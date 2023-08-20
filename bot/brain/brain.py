@@ -6,7 +6,6 @@ from bot.brain.ablity.longterm_memory import LongTermMemory
 from bot.brain.ablity.react import ReactAbility
 from bot.brain.ablity.schedule import ScheduleAbility
 from bot.brain.ablity.shorterm_memory import ShortTermMemory
-from model.base_prompt_factory import BasePromptFactory
 from model.entities.message import Message
 from model.llm_broker import LLMBrokerBuilder
 from model.prompt_broker import PromptBroker
@@ -91,7 +90,7 @@ class Brain:
                         context.result)
         return context
 
-    def schedule(self, left_step: int):
+    def schedule(self):
         """机器人的大脑具备计划能力，他可以根据目前的情况规划出之后需要做的事情"""
         schedule = Schedule.get_by_character(self.character.id)
 
