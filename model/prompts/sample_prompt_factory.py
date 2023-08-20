@@ -2,7 +2,7 @@ from datasource.vectordb.entities import Response
 from model.base_prompt_factory import BasePromptFactory
 from model.entities.message import Message
 from model.entities.schedule import Schedule
-from model.llm_session import return_type, PromptReturn
+from model.llm_session import build_prompt_event, PromptReturn
 from repo.character import Character
 from repo.history import History
 from repo.memory import Memory
@@ -29,7 +29,7 @@ class SamplePromptFactory(BasePromptFactory):
         ]
     }
 
-    @return_type(**schedule_definition)
+    @build_prompt_event(**schedule_definition)
     def on_build_schedule_prompt(self, main_character: Character, item_done: list[str], steps: int,
                                  recent_memory: list[Memory]):
         scheduling_template = '''
@@ -60,7 +60,7 @@ class SamplePromptFactory(BasePromptFactory):
                             kwargs=kwargs,
                             position="schedule_format")
 
-    @return_type(int)
+    @build_prompt_event(int)
     def on_build_rank_prompt(self, memory: str):
         rank_template = '''
         请在1至10的刻度上，对下述记忆的重要性进行评估。其中，1代表日常琐事（如刷牙，铺床），而10则代表深远影响（如分手，大学录取）,如果你认为这个记忆不重要或者不符合要求，请输出0。
@@ -76,7 +76,7 @@ class SamplePromptFactory(BasePromptFactory):
         return PromptReturn(prompt_template=rank_template,
                             kwargs=kwargs)
 
-    @return_type(str)
+    @build_prompt_event(str)
     def on_build_conclude_prompt(self,
                                  main_character: Character,
                                  other_character: Character,  # 对应的交互角色
@@ -95,7 +95,7 @@ class SamplePromptFactory(BasePromptFactory):
         return PromptReturn(prompt_template=conclude_template,
                             kwargs=kwargs)
 
-    @return_type(str)
+    @build_prompt_event(str)
     def on_build_impress_prompt(self, main_character: Character, other_character: Character,
                                 history_list: list[History], impression_before: str) -> PromptReturn:
         impression_template = '''
@@ -113,7 +113,7 @@ class SamplePromptFactory(BasePromptFactory):
         return PromptReturn(prompt_template=impression_template,
                             kwargs=kwargs)
 
-    @return_type(str)
+    @build_prompt_event(str)
     def on_build_determine_whether_item_finish_prompt(self,
                                                       main_character: Character,
                                                       target_item: str,
@@ -147,7 +147,7 @@ class SamplePromptFactory(BasePromptFactory):
         return PromptReturn(prompt_template=determine_whether_item_finish_template,
                             kwargs=kwargs)
 
-    @return_type(**message_definition)
+    @build_prompt_event(**message_definition)
     def on_build_provoked_by_character(self,
                                        main_character: Character,
                                        other_character: Character,
@@ -189,7 +189,7 @@ class SamplePromptFactory(BasePromptFactory):
                             kwargs=kwargs,
                             position="history_format")
 
-    @return_type(**message_definition)
+    @build_prompt_event(**message_definition)
     def on_build_react_prompt(self,
                               main_character: Character,
                               other_character: Character,

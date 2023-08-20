@@ -1,5 +1,6 @@
 from typing import Dict
 
+from bot.base_bot import BaseBot
 from bot.self_drive_bot import SelfDriveBot
 from world.situation import BaseSituation
 
@@ -7,13 +8,13 @@ from world.situation import BaseSituation
 class SyncBotBroker:
 
     def __init__(self):
-        self.bots: Dict[int, SelfDriveBot] = {}
+        self.bots: Dict[int, BaseBot] = {}
 
-    def join(self, bot: SelfDriveBot):
+    def join(self, bot: BaseBot):
         if bot in self.bots:
             return
         self.bots[bot.character.id] = bot
 
     # @abstractmethod
-    def wake_bot(self, bot: SelfDriveBot, step: int, round_: int):
-        bot.wake(BaseSituation(step=step, round=round_))
+    def notify(self, bot: BaseBot, situation: BaseSituation):
+        bot.wake(situation)

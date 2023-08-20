@@ -3,7 +3,7 @@ from interact.base_interact_tool import BaseInteractTool
 from model.entities.message import Message
 from repo.character import Character
 from world.botbroker import SyncBotBroker
-from world.world import TurnBaseWorld
+from world.world import BaseWorld
 
 
 class HumanInteractWithBot(BaseInteractTool):
@@ -13,7 +13,7 @@ class HumanInteractWithBot(BaseInteractTool):
         self.bot = bot
         self.llm = llm
         self.tools = tools
-        self.world = TurnBaseWorld(steps_of_round=5, broker=SyncBotBroker())
+        self.world = BaseWorld(steps_of_round=5, broker=SyncBotBroker())
         self.bot_instance = None
         self.inject_prompt = ""
 
@@ -99,7 +99,7 @@ class HumanInteractWithBot(BaseInteractTool):
                 # 标记，下次对话后触发，跑完整个round
                 self.run_left_step = True
                 # 总结所有的东西
-                self.bot_instance.conclude_interact()
+                self.bot_instance.conclude_interactions()
                 # 总结印象
                 self.bot_instance.make_impression(self.human)
 

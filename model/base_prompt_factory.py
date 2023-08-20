@@ -3,10 +3,11 @@ from abc import abstractmethod
 from datasource.vectordb.entities import Response
 from model.entities.message import Message
 from model.entities.schedule import Schedule
-from model.llm_session import return_type, PromptReturn
+from model.llm_session import build_prompt_event, PromptReturn, build_prompt_phase, LLMSession
 from repo.character import Character
 from repo.history import History
 from repo.memory import Memory
+from world.situation import BaseSituation
 
 
 class BasePromptFactory:
@@ -50,7 +51,7 @@ class BasePromptFactory:
         """单次规划最多的item数"""
         return 8
 
-    @return_type(Schedule)
+    @build_prompt_event(Schedule)
     @abstractmethod
     def on_build_schedule_prompt(self, main_character: Character,
                                  item_done: list[str],
@@ -65,7 +66,7 @@ class BasePromptFactory:
         """
         pass
 
-    @return_type(str)
+    @build_prompt_event(str)
     @abstractmethod
     def on_build_conclude_prompt(self,
                                  main_character: Character,
@@ -79,7 +80,7 @@ class BasePromptFactory:
         """
         pass
 
-    @return_type(str)
+    @build_prompt_event(str)
     @abstractmethod
     def on_build_impress_prompt(self,
                                 main_character: Character,
@@ -95,7 +96,7 @@ class BasePromptFactory:
         """
         pass
 
-    @return_type(int)
+    @build_prompt_event(int)
     @abstractmethod
     def on_build_rank_prompt(self, memory: str):
         """
@@ -103,7 +104,7 @@ class BasePromptFactory:
         """
         pass
 
-    @return_type(str)
+    @build_prompt_event(str)
     @abstractmethod
     def on_build_determine_whether_item_finish_prompt(self,
                                                       main_character: Character,
@@ -119,7 +120,7 @@ class BasePromptFactory:
         """
         pass
 
-    @return_type(Message)
+    @build_prompt_event(Message)
     @abstractmethod
     def on_build_provoked_by_character(self,
                                        main_character: Character,
@@ -139,7 +140,7 @@ class BasePromptFactory:
         """
         pass
 
-    @return_type(Message)
+    @build_prompt_event(Message)
     @abstractmethod
     def on_build_react_prompt(self,
                               main_character: Character,
@@ -161,7 +162,7 @@ class BasePromptFactory:
         """
         pass
 
-    @return_type(str)
+    @build_prompt_event(str)
     def on_build_do_something_prompt(self, main_character: Character, something_to_do: str):
         """
 
@@ -190,3 +191,11 @@ class BasePromptFactory:
 
         return PromptReturn(prompt_template=do_something_template,
                             kwargs=kwargs)
+
+    @build_prompt_phase
+    def on_build_world_environment_prompt(self, event_name: str, situation: BaseSituation):
+        return PromptReturn(prompt_template="", kwargs={})
+
+    def before_call_llm(self, event_name: str, llm_session: LLMSession):
+        return llm_session
+

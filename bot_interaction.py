@@ -5,7 +5,7 @@ from model.prompts.charlie_prompt_factory import CharliePromptFactory
 from model.llm import ChatGPT
 from model.llm_broker import Character
 from world.botbroker import SyncBotBroker
-from world.world import TurnBaseWorld
+from world.world import BaseWorld, SimpleTuneBaseWorld
 
 tool_build_character.build()
 
@@ -26,7 +26,7 @@ if __name__ == '__main__':
     bot1 = SelfDriveBot(llm=llm, character=chr1, factory=CharliePromptFactory())
     bot2 = SelfDriveBot(llm=llm, character=chr2, factory=CharliePromptFactory())
 
-    world = TurnBaseWorld(steps_of_round=2, broker=SyncBotBroker())
+    world = SimpleTuneBaseWorld(steps_of_round=2, broker=SyncBotBroker())
     world.join(bot1)
     world.join(bot2)
 
@@ -57,29 +57,10 @@ if __name__ == '__main__':
         bot1.make_impression(chr2)
         bot2.make_impression(chr1)
 
-        bot1.conclude_interact()
-        bot2.conclude_interact()
+        bot1.conclude_interactions()
+        bot2.conclude_interactions()
 
         # 跑到下一个round位置
         world.run_until_next_round()
-        current_turn = world.round
 
-    # while max_turn > 0:
-    #     stop = 0
-    #     ret = bot1.interact(Message(from_character=chr_me.name,
-    #                                 to_character=chr_bot.name,
-    #                                 action=ret.action,
-    #                                 message=ret.message), chr_me)
-    #     stop = ret.stop + stop
-    #     ret = bot2.interact(Message(from_character=chr_bot.name,
-    #                                 to_character=chr_me.name,
-    #                                 action=ret.action,
-    #                                 message=ret.message), chr_bot)
-    #     stop = ret.stop + stop
-    #
-    #     if stop > 0:
-    #         break
-    #
-    #     max_turn = max_turn - 1
-    #
-    # print(ret.dict())
+

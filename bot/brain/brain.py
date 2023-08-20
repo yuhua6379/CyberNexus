@@ -18,8 +18,8 @@ from repo.scheudle import Schedule
 class Brain:
 
     def __init__(self, character: Character, llm_broker_builder: LLMBrokerBuilder,
-                 factory: BasePromptFactory):
-        self.broker = PromptBroker(factory)
+                 broker: PromptBroker):
+        self.broker = broker
         self.character = character
         self.llm_broker_builder = llm_broker_builder
         self.debug_prompt = ""
@@ -91,7 +91,7 @@ class Brain:
                         context.result)
         return context
 
-    def schedule(self, step: int, round_: int, left_step: int):
+    def schedule(self, left_step: int):
         """机器人的大脑具备计划能力，他可以根据目前的情况规划出之后需要做的事情"""
         schedule = Schedule.get_by_character(self.character.id)
 
@@ -112,10 +112,6 @@ class Brain:
             item_done = self.schedule_ability.determine_whether_item_finish(schedule.item_doing,
                                                                             self.interact_history(),
                                                                             self.recent_memory()).result
-
-            if left_step == 0:
-                # 这个round已经结束了，总结下最近的事情
-                self.conclude_all(self.st_memory.shrink(shrink_all=True))
 
             recent_done_item = Schedule.get_recent_done_items(self.character.id) + [item_done]
             # 调整计划
@@ -192,9 +188,6 @@ class Brain:
     def record(self, character_input: Character, message_in: Message, message_out: Message):
         """机器人大脑记录信息"""
         self.feed_history(character_input, message_in, message_out)
-
-    def set_debug_prompt(self, prompt: str):
-        self.broker.set_debug_prompt(prompt)
 
     def associate(self, input_: Optional[Message], input_character: Character):
         """机器人大脑对外部刺激联想到某些事情"""

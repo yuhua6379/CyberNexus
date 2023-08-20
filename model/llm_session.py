@@ -35,6 +35,7 @@ class CallBack(Callable):
     """
     回调函数，可以处理LLM的原始返回值
     """
+
     def __call__(self, context: Context):
         self.call(context)
 
@@ -81,7 +82,6 @@ def pydantic2prompt(type_: Type[BaseModel], title, examples: list[BaseModel] = (
 
 
 class PromptReturn(BaseModel):
-
     # prompt模板
     prompt_template: str
     # 模板参数，除了return_type标记的返回类型
@@ -114,7 +114,7 @@ class PromptReturn(BaseModel):
         return prompt_template, kwargs
 
 
-def return_type(type_: Type, title=None, example_title=None, examples: list = ()):
+def build_prompt_event(type_: Type, title=None, example_title=None, examples: list = ()):
     """
     注册返回类型，返回类型生成的prompt会在prompt在模板指定位置
     具体指定方法，需要返回一个tuple，
@@ -127,7 +127,7 @@ def return_type(type_: Type, title=None, example_title=None, examples: list = ()
 
     def decorator(func):
         # 输入函数
-        def wrapper(self, *args, **kwargs):
+        def wrapper(self, *args, **kwargs) -> LLMSession:
             # 适配所有成员函数的wrapper
 
             ret: PromptReturn = func(self, *args, **kwargs)
@@ -147,3 +147,19 @@ def return_type(type_: Type, title=None, example_title=None, examples: list = ()
         return wrapper
 
     return decorator
+
+
+def build_prompt_phase(func):
+    def wrapper(self, *args, **kwargs) -> str:
+        # 适配所有成员函数的wrapper
+
+        ret: PromptReturn = func(self, *args, **kwargs)
+        prompt_template, kwargs = ret.prompt_template, ret.kwargs
+
+        prompt_template, kwargs = PromptReturn.beautify_prompt(prompt_template, kwargs)
+        prompt = prompt_template.format(**kwargs)
+        get_logger().debug(f"{func.__name__}: \n{prompt}")
+
+        return prompt
+
+    return wrapper

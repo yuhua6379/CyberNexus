@@ -5,7 +5,7 @@ from bot.self_drive_bot import SelfDriveBot
 from model.llm import get_openai_llm
 from model.llm_broker import Character
 from world.botbroker import SyncBotBroker
-from world.world import TurnBaseWorld
+from world.world import BaseWorld
 
 if __name__ == '__main__':
     # 初始化，一些数据库session和日志等公共组件
@@ -20,7 +20,7 @@ if __name__ == '__main__':
 
     bot_instance = SelfDriveBot(llm=llm, tools=[], character=chr_bot)
 
-    world = TurnBaseWorld(steps_of_round=5, broker=SyncBotBroker())
+    world = BaseWorld(steps_of_round=5, broker=SyncBotBroker())
     world.join(bot_instance)
 
     while True:
