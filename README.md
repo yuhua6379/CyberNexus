@@ -28,13 +28,13 @@
 
 # 技术架构 (toDo)
 1.Bot的模块结构，下面这张图解释了机器人的模块结构
-![模块结构](D:\PycharmProjects\CyberNexus\showcase\modules.png)
+![模块结构](./showcase/modules.png)
 
 2.记忆的处理方法，下面这张图解释了机器人的记忆模块是如何运作的
-![记忆处理](D:\PycharmProjects\CyberNexus\showcase\memory.png)
+![记忆处理](./showcase/memory.png)
 
 3.如何构建一个能感知世界且实时自驱动的机器人？
-![自驱动机器人](D:\PycharmProjects\CyberNexus\showcase\selfdrive_bot.png)
+![自驱动机器人](./showcase/selfdrive_bot.png)
 
 # 功能清单
 
