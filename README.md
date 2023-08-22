@@ -33,6 +33,7 @@ pip install -r requirements.txt
 # 默认使用了gpt3，如果你觉得对话不够生动，你可以直接使用gpt4，但这个可能会更贵  :)
 export openai_api_key="{你的openai api key}"; python ./bot_interaction.py
 ```
+如果你不想运行只是想看看效果，你可以在 [这个聊天记录](./showcase/sample_conversation.md)找到我们调试出来的一些记录
 
 ## 运转逻辑
 
