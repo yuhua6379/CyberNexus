@@ -30,6 +30,7 @@ pip install -r requirements.txt
 
 ```shell
 # 这是一个两个角色相互交流的demo，角色的设定在tool_build_character.py里面
+# 默认使用了gpt3，如果你觉得对话不够生动，你可以直接使用gpt4 :)
 export openai_api_key="{你的openai api key}"; python ./bot_interaction.py
 ```
 
