@@ -1,4 +1,4 @@
-# VirtualBot
+# CyberNexus
 
 我们在构建一个虚拟世界，借助大语言模型的“自然语言处理能力”和有限的"推理能力"来驱动整个世界中角色们的运作。
 
@@ -27,6 +27,14 @@
 ![运转逻辑](./showcase/howitworks.png)
 
 # 技术架构 (toDo)
+1.Bot的模块结构，下面这张图解释了机器人的模块结构
+![模块结构](D:\PycharmProjects\CyberNexus\showcase\modules.png)
+
+2.记忆的处理方法，下面这张图解释了机器人的记忆模块是如何运作的
+![记忆处理](D:\PycharmProjects\CyberNexus\showcase\memory.png)
+
+3.如何构建一个能感知世界且实时自驱动的机器人？
+![自驱动机器人](D:\PycharmProjects\CyberNexus\showcase\selfdrive_bot.png)
 
 # 功能清单
 

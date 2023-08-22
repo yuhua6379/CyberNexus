@@ -1,7 +1,7 @@
 import os
 
 if os.environ.get("running_environment", "local").lower() == "local":
-    pass
+    from .config_local import *
 
 elif os.environ.get("running_environment", "gcp").lower() == "local":
-    pass
+    from .config_gcp import *

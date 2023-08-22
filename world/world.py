@@ -40,7 +40,7 @@ class BaseWorld:
         step, round_ = self.next()
         get_logger().info(f"step: {step} round: {round_}")
         for bot in self.broker.bots.values():
-            get_logger().info(f"wake bot: {bot.character.id} - {bot.character.name}")
+            get_logger().info(f"notify bot: {bot.character.id} - {bot.character.name}")
             self._notify_bot(bot, step, round_)
 
     def run_until_next_round(self):

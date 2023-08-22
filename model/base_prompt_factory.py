@@ -194,7 +194,11 @@ class BasePromptFactory:
 
     @build_prompt_phase
     def on_build_world_environment_prompt(self, event_name: str, situation: BaseSituation):
-        print(event_name, situation)
+        # import random
+        # print(event_name, situation)
+        # if random.randint(0, 3) == 0:
+        #     print("下大雨了！")
+        #     return PromptReturn(prompt_template="注意！这个时候下起了大雨！", kwargs={})
         return None
 
     def before_call_llm(self, event_name: str, llm_session: LLMSession):
