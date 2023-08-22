@@ -22,11 +22,22 @@
 2. 大循环
 3. 资源管理
 
+## Quick Start
+本项目使用python3.11开发，在开始前首先我强烈建议起一个venv来试运行
+```shell
+pip install -r requirements.txt
+```
+
+```shell
+# 这是一个两个角色相互交流的demo，角色的设定在tool_build_character.py里面
+export openai_api_key="{你的openai api key}"; python ./bot_interaction.py
+```
+
 ## 运转逻辑
 
 ![运转逻辑](./showcase/howitworks.png)
 
-# 技术架构 (toDo)
+# 技术架构 
 Bot的模块结构，下面这张图解释了机器人的模块结构
 1. Bot: 机器人的外壳，整合了Brain和Body
 2. Brain: 机器人的大脑，具备各种各样的能力，例如: 回应能力 交互能力等

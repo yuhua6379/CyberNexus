@@ -7,7 +7,6 @@ import tool_build_character
 from bot.toolkits import get_weather_info_in_china
 from bot.toolkits.system_tools import watch
 from interact.human_interact_with_bot import HumanInteractWithBot
-from model.llm import get_openai_llm
 from repo.character import Character
 
 if __name__ == '__main__':
