@@ -39,7 +39,7 @@ export openai_api_key="{你的openai api key}"; python ./bot_interaction.py
 
 如果你不想运行只是想看看效果，你可以在 [这个聊天记录](./showcase/sample_conversation.md)找到我们调试出来的一些记录
 在这个case里面，我们设置了角色的性格，思考方式，目标和外表着装，所以可以看到角色的行为非常的生动，他们甚至会打量对方，并且根据对方的特征来打招呼，还能做出一些简单的动作，例如握手，打招呼，点头微笑，展示一些文件等
-## 运转逻辑
+## 运转逻辑及实现原理
 
 ![运转逻辑](./showcase/howitworks.png)
 
