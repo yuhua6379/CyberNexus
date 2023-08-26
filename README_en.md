@@ -15,6 +15,7 @@ Characters:
 2. Interaction
 3. Memory
 4. Reflection
+5. Tools
 
 World:
 
