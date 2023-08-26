@@ -7,7 +7,7 @@ Characters are endowed with the abilities to think and remember, and can interac
 
 # Operating Principles
 
-## Key Mechanisms (toDo)
+## Key Mechanisms
 
 Characters:
 
