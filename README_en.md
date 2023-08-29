@@ -3,7 +3,7 @@ English | [简体中文](./README.md)
 
 We are building a virtual world, utilizing the "natural language processing capabilities" of large language models and limited "reasoning abilities" to drive the functioning of characters within the world.
 
-Characters are endowed with the abilities to think and remember, and can interact with other characters in the world. You can see how the basic characters “come to life” and communicate for their own purposes in [this chat log](./showcase/sample_conversation.md).
+Characters are endowed with the abilities to think and remember, and can interact with other characters in the world. You can see how the basic characters “come to life” and communicate for their own purposes in [this chat log](./showcase/sample_conversation_en.md).
 
 # Operating Principles
 
@@ -35,7 +35,7 @@ pip install -r requirements.txt
 export openai_api_key="{your openai api key}"; python ./bot_interaction.py
 ```
 
-If you don't want to run it and just want to see the effects, you can find some of our debugging records in [this chat log](./showcase/sample_conversation.md). In this case, we have set the characters' personalities, thinking styles, goals, and physical appearances, so you can see that their behaviors are very lively. They may even size each other up, greet each other based on their features, and perform simple actions such as handshakes, greetings, nods, smiles, and displaying documents, etc.
+If you don't want to run it and just want to see the effects, you can find some of our debugging records in [this chat log](./showcase/sample_conversation_en.md). In this case, we have set the characters' personalities, thinking styles, goals, and physical appearances, so you can see that their behaviors are very lively. They may even size each other up, greet each other based on their features, and perform simple actions such as handshakes, greetings, nods, smiles, and displaying documents, etc.
 
 ## Operational Logic
 
